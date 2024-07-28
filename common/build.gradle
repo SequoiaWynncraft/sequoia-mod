@@ -1,0 +1,42 @@
+def wynntils = {
+    var url = "https://github.com/Wynntils/Artemis/releases/download/v1.2.31/wynntils-1.2.31-fabric+MC-${minecraft_version}.jar"
+    var name = "wynntils-1.2.31"
+
+    File file = new File("$projectDir/libs/artemis/${name}.jar")
+    file.parentFile.mkdirs()
+    if (!file.exists()) {
+        new URL(url).withInputStream { downloadStream ->
+            file.withOutputStream { fileOut ->
+                fileOut << downloadStream
+            }
+        }
+
+        File modsFile = new File("$projectDir/run/mods/wynntils.jar")
+        modsFile.parentFile.mkdirs()
+
+        var os = new FileInputStream(file)
+
+        modsFile.withOutputStream { fileOut ->
+            fileOut << os
+        }
+    }
+
+    files(file.absolutePath)
+}
+
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+
+    // This dependency is provided by forge naturally and by fabric in its build.gradle
+    compileOnly "net.minecraftforge:eventbus:${forge_eventbus_version}"
+
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
+
+    modCompileOnly wynntils()
+}
+
+architectury {
+    common(enabled_platforms.split(","))
+}
