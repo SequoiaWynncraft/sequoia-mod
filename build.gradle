@@ -13,14 +13,13 @@ architectury {
 // or ~/.gradle/gradle.properties on Linux/MacOS.
 def usingHotswapAgent = project.hasProperty("sequoia.hotswap") ? project.getProperty("sequoia.hotswap") == "true" : false
 
-version = "0.1.0-SNAPSHOT"
+version = "0.2.1-SNAPSHOT"
 
 subprojects {
     apply plugin: "dev.architectury.loom"
 
     repositories {
         maven { url = "https://pkgs.dev.azure.com/djtheredstoner/DevAuth/_packaging/public/maven/v1" }
-        maven { url = "https://jitpack.io" }
     }
 
     loom {
@@ -35,7 +34,7 @@ subprojects {
                     vmArgs "-XX:+AllowEnhancedClassRedefinition"
                     vmArgs "-XX:HotswapAgent=fatjar"
                 }
-                vmArgs "-ea"
+                vmArgs "-ea" // run dev builds with asserts
                 client()
             }
         }
@@ -63,6 +62,7 @@ allprojects {
     repositories {
         maven { url "https://maven.parchmentmc.org/" }
         maven { url "https://jitpack.io" }
+        maven { url 'https://maven.wispforest.io' }
     }
 
     tasks.withType(JavaCompile).configureEach {

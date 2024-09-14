@@ -1,82 +1,38 @@
 package dev.lotnest.sequoia;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.common.collect.Maps;
 import com.wynntils.core.WynntilsMod;
 import com.wynntils.core.mod.type.CrashType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.component.CoreComponent;
-import dev.lotnest.sequoia.event.events.SequoiaCrashEvent;
+import dev.lotnest.sequoia.configs.SequoiaConfig;
+import dev.lotnest.sequoia.events.SequoiaCrashEvent;
+import dev.lotnest.sequoia.feature.WynntilsFeatureInjector;
+import dev.lotnest.sequoia.function.WynntilsFunctionInjector;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
-import java.io.File;
-import java.io.InputStream;
+import dev.lotnest.sequoia.overlay.WynntilsOverlayInjector;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import net.minecraft.SharedConstants;
-import net.minecraftforge.eventbus.api.Event;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class SequoiaMod {
     public static final String MOD_ID = "sequoia";
-    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    public static final SequoiaConfig CONFIG = SequoiaConfig.createAndLoad();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    private static final File MOD_STORAGE_ROOT = new File(McUtils.mc().gameDirectory, MOD_ID);
 
     private static ModLoader modLoader;
     private static String version = "";
     private static boolean developmentBuild = false;
     private static boolean developmentEnvironment;
-    private static File modJar;
     private static boolean initCompleted = false;
-    private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = new HashMap<>();
-
-    public static ModLoader getModLoader() {
-        return modLoader;
-    }
-
-    public static void postEventOnMainThread(Event event) {
-        com.wynntils.core.components.Managers.TickScheduler.scheduleNextTick(() -> WynntilsMod.postEvent(event));
-    }
-
-    public static void reloadAllComponentData() {
-        componentMap.get(Manager.class).forEach(c -> ((Manager) c).reloadData());
-        //        componentMap.get(Model.class).forEach(c -> ((Model) c).reloadData());
-        //        componentMap.get(Service.class).forEach(c -> ((Service) c).reloadData());
-    }
-
-    private static void handleExceptionInEventListener(Throwable t, Event event) {
-        StackTraceElement[] stackTrace = t.getStackTrace();
-
-        String crashingFeatureName = Arrays.stream(stackTrace)
-                .filter(line -> line.getClassName().startsWith("dev.lotnest.sequoia.features."))
-                .findFirst()
-                .map(StackTraceElement::getClassName)
-                .orElse(null);
-
-        if (crashingFeatureName == null) {
-            error("Exception in event listener not belonging to a feature", t);
-            return;
-        }
-
-        //        if (Managers.Feature == null) {
-        //            warn("Cannot lookup feature name: " + crashingFeatureName, t);
-        //            return;
-        //        }
-        //
-        //        Managers.Feature.handleExceptionInEventListener(event, crashingFeatureName, t);
-    }
-
-    public static File getModJar() {
-        return modJar;
-    }
+    private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
 
     public static String getVersion() {
         return version;
@@ -88,14 +44,6 @@ public final class SequoiaMod {
 
     public static boolean isDevelopmentEnvironment() {
         return developmentEnvironment;
-    }
-
-    public static File getModStorageDir(String dirName) {
-        return new File(MOD_STORAGE_ROOT, dirName);
-    }
-
-    public static InputStream getModResourceAsStream(String resourceName) {
-        return SequoiaMod.class.getClassLoader().getResourceAsStream("assets/" + MOD_ID + "/" + resourceName);
     }
 
     public static Logger getLogger() {
@@ -114,8 +62,8 @@ public final class SequoiaMod {
         LOGGER.warn(message);
     }
 
-    public static void warn(String message, Throwable t) {
-        LOGGER.warn(message, t);
+    public static void warn(String message, Throwable throwable) {
+        LOGGER.warn(message, throwable);
     }
 
     public static void info(String message) {
@@ -129,28 +77,22 @@ public final class SequoiaMod {
 
         try {
             registerComponents(Managers.class, Manager.class);
-            //        registerComponents(Handlers.class, Handler.class);
-            //        registerComponents(Models.class, Model.class);
-            //        registerComponents(Services.class, Service.class);
-
-            // Init storage for loaded components immediately
-            //        Managers.Storage.initComponents();
 
             addCrashCallbacks();
 
             initFeatures();
-        } catch (Throwable t) {
-            LOGGER.error("Failed to initialize Sequoia features", t);
+
+            WynntilsFeatureInjector.injectFeatures();
+            WynntilsFunctionInjector.injectFunctions();
+            WynntilsOverlayInjector.injectOverlays();
+        } catch (Throwable throwable) {
+            LOGGER.error("Failed to initialize Sequoia components", throwable);
         }
     }
 
-    public static void init(ModLoader loader, String modVersion, boolean isDevelopmentEnvironment, File modFile) {
-        modJar = modFile;
-
+    public static void init(ModLoader modLoader, String modVersion, boolean isDevelopmentEnvironment) {
         // Note that at this point, no resources (including I18n) are available, so we postpone features until then
-
-        // Setup mod core properties
-        modLoader = loader;
+        SequoiaMod.modLoader = modLoader;
         developmentEnvironment = isDevelopmentEnvironment;
 
         parseVersion(modVersion);
@@ -172,7 +114,6 @@ public final class SequoiaMod {
                     try {
                         CoreComponent component = (CoreComponent) field.get(null);
                         WynntilsMod.registerEventListener(component);
-                        //                        Managers.Storage.registerStorageable(component);
                         components.add(component);
                     } catch (IllegalAccessException exception) {
                         error("Internal error in " + registryClass.getSimpleName(), exception);
@@ -187,16 +128,8 @@ public final class SequoiaMod {
     }
 
     private static void initFeatures() {
-        // Init all features and functions. Now resources (i.e I18n) are available.
+        // Init all features. Resources (i.e I18n) are now available.
         Managers.Feature.init();
-        //        Managers.Function.init();
-
-        // Init config and data from files
-        //        Managers.Config.init();
-        //        Managers.Storage.initFeatures();
-
-        // Init services that depends on I18n
-        //        Services.Statistics.init();
 
         LOGGER.info(
                 "Sequoia: {} features are now loaded and ready",

@@ -11,8 +11,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 @Category(CategoryType.CHAT)
 public class GuildMessageFilterFeature extends Feature {
@@ -80,7 +80,7 @@ public class GuildMessageFilterFeature extends Feature {
             Pattern.compile(
                     "§3\\[INFO]§b A §3Guild Tome§b has been found and added to the Guild Rewards. §3Owner and Chiefs§b can gift it to members."));
 
-    private static Set<String> FFA_TERRITORIES = Sets.newHashSet(
+    private static final Set<String> FFA_TERRITORIES = Sets.newHashSet(
             "Nexus of Light",
             "Azure Frontier",
             "Field of Life",
@@ -89,13 +89,14 @@ public class GuildMessageFilterFeature extends Feature {
             "Otherwordly Monolith",
             "Luminous Plateau",
             "Heavenly Ingress",
-            "Light Forest West Upper",
             "Light Forest East Mid",
+            "Light Forest East Lower",
             "Light Forest Canyon",
+            "Light Forest West Upper",
             "Light Forest West Mid",
-            "Light Forest West Lower",
             "Aldorei Valley South Entrance",
             "Aldorei's North Exit",
+            "Cinfras County Lower",
             "Path To The Arch",
             "Aldorei's Arch",
             "Ghostly Path",
@@ -151,11 +152,11 @@ public class GuildMessageFilterFeature extends Feature {
             } else if (guildMessageFilterDecision == GuildMessageFilterDecision.GRAY_OUT_FFA
                     && FFA_TERRITORIES.stream()
                             .anyMatch(territory -> message.getString().contains(territory))) {
-                event.setMessage(
-                        Component.literal(message.getStringWithoutFormatting()).withStyle(ChatFormatting.DARK_GRAY));
+                event.setMessage(StyledText.fromComponent(
+                        Component.literal(message.getStringWithoutFormatting()).withStyle(ChatFormatting.DARK_GRAY)));
             } else if (guildMessageFilterDecision == GuildMessageFilterDecision.GRAY_OUT) {
-                event.setMessage(
-                        Component.literal(message.getStringWithoutFormatting()).withStyle(ChatFormatting.DARK_GRAY));
+                event.setMessage(StyledText.fromComponent(
+                        Component.literal(message.getStringWithoutFormatting()).withStyle(ChatFormatting.DARK_GRAY)));
             }
             return true;
         }

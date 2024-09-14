@@ -1,8 +1,7 @@
 def wynntils = {
-    var url = "https://github.com/Wynntils/Artemis/releases/download/v1.2.31/wynntils-1.2.31-fabric+MC-${minecraft_version}.jar"
-    var name = "wynntils-1.2.31"
+    var url = "https://github.com/Wynntils/Wynntils/releases/download/v${wynntils_version}/wynntils-${wynntils_version}-fabric+MC-${minecraft_version}.jar"
 
-    File file = new File("$projectDir/libs/artemis/${name}.jar")
+    File file = new File("$projectDir/libs/artemis/${wynntils_version}.jar")
     file.parentFile.mkdirs()
     if (!file.exists()) {
         new URL(url).withInputStream { downloadStream ->
@@ -30,11 +29,14 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
 
     // This dependency is provided by forge naturally and by fabric in its build.gradle
-    compileOnly "net.minecraftforge:eventbus:${forge_eventbus_version}"
+    compileOnly "net.neoforged:bus:${neoforge_eventbus_version}"
 
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
     modCompileOnly wynntils()
+
+    modImplementation "io.wispforest:owo-lib:${project.owo_lib_version}"
+    annotationProcessor "io.wispforest:owo-lib:${project.owo_lib_version}"
 }
 
 architectury {

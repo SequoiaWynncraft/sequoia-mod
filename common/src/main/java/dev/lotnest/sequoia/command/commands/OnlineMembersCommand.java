@@ -4,12 +4,12 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
-import com.wynntils.core.WynntilsMod;
 import com.wynntils.core.components.Models;
 import com.wynntils.models.players.type.GuildInfo;
 import com.wynntils.models.players.type.GuildMemberInfo;
 import com.wynntils.models.players.type.GuildRank;
 import com.wynntils.utils.mc.McUtils;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,7 +58,7 @@ public class OnlineMembersCommand extends Command {
                 McUtils.sendMessageToClient(Component.literal(
                                 "Unable to view online members for " + context.getArgument("guildName", String.class))
                         .withStyle(ChatFormatting.RED));
-                WynntilsMod.error("Error trying to parse guild online members", throwable);
+                SequoiaMod.error("Error trying to parse guild online members", throwable);
             } else {
                 if (guild == null) {
                     McUtils.sendMessageToClient(

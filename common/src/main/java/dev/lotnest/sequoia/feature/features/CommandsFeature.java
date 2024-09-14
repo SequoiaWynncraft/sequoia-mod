@@ -5,10 +5,10 @@ import dev.lotnest.sequoia.feature.Category;
 import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.manager.Managers;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
-@Category(CategoryType.SEQUOIA)
+@Category(CategoryType.COMMANDS)
 public class CommandsFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onCommand(CommandSentEvent event) {

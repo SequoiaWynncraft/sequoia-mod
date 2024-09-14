@@ -15,7 +15,10 @@ import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
 import dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature;
+import dev.lotnest.sequoia.feature.features.MantleOfTheBovemistsTrackerFeature;
+import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.feature.features.RevealNicknamesFeature;
+import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
 import java.util.List;
@@ -25,9 +28,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.Event;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 /**
  * Loads {@link Feature}s
@@ -52,9 +55,17 @@ public final class FeatureManager extends Manager {
         // Chat
         registerFeature(new GuildMessageFilterFeature());
         registerFeature(new RevealNicknamesFeature());
+        registerFeature(new PlayerIgnoreFeature());
 
-        // Sequoia
+        // Commands
         registerFeature(new CommandsFeature());
+
+        // Combat
+        registerFeature(new MantleOfTheBovemistsTrackerFeature());
+        //        registerFeature(new PvpTagFeature());
+
+        // Sounds
+        registerFeature(new SequoiaOSTFeature());
 
         // Reload Minecraft's config files so our own keybinds get loaded
         // This is needed because we are late to register the keybinds,
@@ -107,7 +118,7 @@ public final class FeatureManager extends Manager {
 
         // Determine if feature should be enabled & set default enabled value for user features
         boolean startDisabled = featureClass.isAnnotationPresent(StartDisabled.class);
-        //        feature.userEnabled.store(!startDisabled);
+        feature.userEnabled.store(!startDisabled);
 
         //        Managers.Overlay.discoverOverlays(feature);
         //        Managers.Overlay.discoverOverlayGroups(feature);
@@ -120,7 +131,7 @@ public final class FeatureManager extends Manager {
         assert !feature.getTranslatedDescription().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedDescription();
 
-        //        if (!feature.userEnabled.get()) return; // not enabled by user
+        if (!feature.userEnabled.get()) return; // not enabled by user
 
         enableFeature(feature);
     }

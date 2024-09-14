@@ -14,24 +14,25 @@ import java.util.regex.Pattern;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.Style;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 @Category(CategoryType.CHAT)
 public class RevealNicknamesFeature extends Feature {
-    public static final Pattern NICKNAME_REGEX = Pattern.compile("(?<nickname>.+)'s real username is (?<username>.+)");
+    private static final Pattern NICKNAME_PATTERN =
+            Pattern.compile("(?<nickname>.+)'(s?) real username is (?<username>.+)");
 
-    // TODO: Implement a config option for this
+    // TODO: Implement a config option
     private static boolean replaceNicknames = false;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatReceived(ChatMessageReceivedEvent event) {
-        event.setMessage(revealNickname(event.getStyledText()).getComponent());
+        event.setMessage(revealNickname(event.getStyledText()));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientsideMessage(ClientsideMessageEvent event) {
-        event.setMessage(revealNickname(event.getStyledText()).getComponent());
+        event.setMessage(revealNickname(event.getStyledText()));
     }
 
     public static StyledText revealNickname(StyledText text) {
@@ -44,7 +45,7 @@ public class RevealNicknamesFeature extends Feature {
                 for (StyledText nicknameText : StyledText.fromComponent(
                                 hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT))
                         .split("\n")) {
-                    Matcher nicknameMatcher = nicknameText.getMatcher(NICKNAME_REGEX, PartStyle.StyleType.NONE);
+                    Matcher nicknameMatcher = nicknameText.getMatcher(NICKNAME_PATTERN, PartStyle.StyleType.NONE);
                     if (!nicknameMatcher.matches()) continue;
 
                     String username = nicknameMatcher.group("username");

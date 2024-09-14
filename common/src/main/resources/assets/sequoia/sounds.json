@@ -1,0 +1,164 @@
+{
+  "ost.aura-buffet": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/aura-buffet",
+        "stream": true,
+        "subtitle": "Aura Buffet - Crussant's Theme"
+      }
+    ]
+  },
+  "ost.call-of-the-void": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/call-of-the-void",
+        "stream": true,
+        "subtitle": "Call of The Void - Ztirom22's Theme"
+      }
+    ]
+  },
+  "ost.containment-protocol": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/containment-protocol",
+        "stream": true,
+        "subtitle": "Containment Protocol - Morrmor's Theme"
+      }
+    ]
+  },
+  "ost.corrosive-paint": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/corrosive-paint",
+        "stream": true,
+        "subtitle": "Corrosive Paint - Acid_07's Theme"
+      }
+    ]
+  },
+  "ost.everything-in-its-place": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/everything-in-its-place",
+        "stream": true,
+        "subtitle": "Everything In Its Place - 5hotgun's Theme"
+      }
+    ]
+  },
+  "ost.flying-kick-me-into-a-wall-pretty-please": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/flying-kick-me-into-a-wall-pretty-please",
+        "stream": true,
+        "subtitle": "Flying kick me into a wall pretty please - Aethei's Theme"
+      }
+    ]
+  },
+  "ost.hymn-of-hate": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/hymn-of-hate",
+        "stream": true,
+        "subtitle": "Hymn of Hate - OwORawr's Theme"
+      }
+    ]
+  },
+  "ost.monster-under-the-bed": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/monster-under-the-bed",
+        "stream": true,
+        "subtitle": "Monster Under The Bed - Atchziens's Theme"
+      }
+    ]
+  },
+  "ost.moonrise": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/moonrise",
+        "stream": true,
+        "subtitle": "Moonrise - XSRT's Theme"
+      }
+    ]
+  },
+  "ost.rooted-in-stone": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/rooted-in-stone",
+        "stream": true,
+        "subtitle": "Rooted in Stone - DoctorDreamer's Theme"
+      }
+    ]
+  },
+  "ost.semper-virens": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/semper-virens",
+        "stream": true,
+        "subtitle": "Semper Virens - Lamadile's Theme"
+      }
+    ]
+  },
+  "ost.sequoia-theme": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/sequoia-theme",
+        "stream": true,
+        "subtitle": "Sequoia Theme"
+      }
+    ]
+  },
+  "ost.shut-up-mom-im-gaming": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/shut-up-mom-im-gaming",
+        "stream": true,
+        "subtitle": "Shut up Mom I'm Gaming - GazTheMiner's Theme"
+      }
+    ]
+  },
+  "ost.taking-its-toll": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/taking-its-tol",
+        "stream": true,
+        "subtitle": "Taking Its Toll - RaidKeeper's Theme"
+      }
+    ]
+  },
+  "ost.the-beast-of-light-forest": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/the-beast-of-light-forest",
+        "stream": true,
+        "subtitle": "The Beast of Light Forest - TCommanderRex's Theme"
+      }
+    ]
+  },
+  "ost.tower-removal-service": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/tower-removal-service",
+        "stream": true,
+        "subtitle": "Tower Removal Service - Brentinn's Theme"
+      }
+    ]
+  },
+  "ost.well-maid": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/well-maid",
+        "stream": true,
+        "subtitle": "Well Maid - Obstacles_'s Theme"
+      }
+    ]
+  },
+  "ost.wrath-of-the-ocean": {
+    "sounds": [
+      {
+        "name": "sequoia:ost/wrath-of-the-ocean",
+        "stream": true,
+        "subtitle": "Wrath of the Ocean - Calluum's Theme"
+      }
+    ]
+  }
+}

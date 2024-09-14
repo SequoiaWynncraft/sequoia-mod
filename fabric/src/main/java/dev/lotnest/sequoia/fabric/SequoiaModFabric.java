@@ -1,7 +1,6 @@
 package dev.lotnest.sequoia.fabric;
 
 import dev.lotnest.sequoia.SequoiaMod;
-import java.io.File;
 import java.util.Optional;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -19,7 +18,6 @@ public class SequoiaModFabric implements ClientModInitializer {
         SequoiaMod.init(
                 SequoiaMod.ModLoader.FABRIC,
                 sequoiaModContainer.get().getMetadata().getVersion().getFriendlyString(),
-                FabricLoader.getInstance().isDevelopmentEnvironment(),
-                new File(sequoiaModContainer.get().getOrigin().getPaths().get(0).toUri()));
+                FabricLoader.getInstance().isDevelopmentEnvironment());
     }
 }

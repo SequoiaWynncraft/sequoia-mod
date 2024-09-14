@@ -45,6 +45,10 @@ public class PlayerCommand extends Command {
                         .then(Commands.argument("username", StringArgumentType.word())
                                 .suggests(PLAYER_NAME_SUGGESTION_PROVIDER)
                                 .executes(this::lookupPlayerLastSeen)))
+                .then(Commands.literal("armor")
+                        .then(Commands.argument("username", StringArgumentType.word())
+                                .suggests(PLAYER_NAME_SUGGESTION_PROVIDER)
+                                .executes(this::lookupPlayerArmor)))
                 .executes(this::syntaxError);
     }
 
@@ -136,6 +140,18 @@ public class PlayerCommand extends Command {
             }
         });
 
+        return 1;
+    }
+
+    private int lookupPlayerArmor(CommandContext<CommandSourceStack> commandSourceStackCommandContext) {
+        McUtils.sendMessageToClient(Component.literal("TEST: Your armor:\n")
+                .append(McUtils.player().getInventory().getArmor(0).getDisplayName())
+                .append(Component.literal(" "))
+                .append(McUtils.player().getInventory().getArmor(1).getDisplayName())
+                .append(Component.literal(" "))
+                .append(McUtils.player().getInventory().getArmor(2).getDisplayName())
+                .append(Component.literal(" "))
+                .append(McUtils.player().getInventory().getArmor(3).getDisplayName()));
         return 1;
     }
 }

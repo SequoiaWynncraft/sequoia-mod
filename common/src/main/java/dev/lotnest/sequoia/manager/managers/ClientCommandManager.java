@@ -13,6 +13,7 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.ClientCommandSourceStack;
 import dev.lotnest.sequoia.command.Command;
+import dev.lotnest.sequoia.command.commands.FeatureCommand;
 import dev.lotnest.sequoia.command.commands.GuildMessageFilterCommand;
 import dev.lotnest.sequoia.command.commands.IgnorePlayerCommand;
 import dev.lotnest.sequoia.command.commands.OnlineMembersCommand;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.commands.CommandRuntimeException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.ClickEvent;
@@ -31,8 +31,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 
 // Credits to Earthcomputer and Forge
 // Parts of this code originates from https://github.com/Earthcomputer/clientcommands, and other
@@ -103,8 +103,6 @@ public final class ClientCommandManager extends Manager {
 
         try {
             clientDispatcher.execute(parse);
-        } catch (CommandRuntimeException exception) {
-            McUtils.sendErrorToClient(exception.getMessage());
         } catch (CommandSyntaxException exception) {
             McUtils.sendErrorToClient(exception.getRawMessage().getString());
             if (exception.getInput() != null && exception.getCursor() >= 0) {
@@ -131,7 +129,7 @@ public final class ClientCommandManager extends Manager {
                     exception.getMessage() == null ? exception.getClass().getName() : exception.getMessage());
             sendError(Component.translatable("command.failed")
                     .withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, error))));
-            SequoiaMod.error("Failed to execute command.", exception);
+            SequoiaMod.error("Failed to execute command", exception);
         }
 
         return true;
@@ -168,6 +166,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new IgnorePlayerCommand());
         registerCommand(new GuildMessageFilterCommand());
         registerCommand(new OnlineMembersCommand());
+        registerCommand(new FeatureCommand());
 
         // The SequoiaCommand must be registered last, since it
         // need the above commands as aliases

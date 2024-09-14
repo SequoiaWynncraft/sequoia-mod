@@ -1,12 +1,14 @@
 {
   "authors": [
-    "Lotnest"
+    "Lotnest (Mod Developer)",
+    "OwORawr (Sequoia OST composer)"
   ],
   "depends": {
-    "fabric": ">=0.91.6+1.20.2",
-    "fabricloader": ">=0.15.11",
-    "minecraft": "1.20.2",
-    "wynntils": ">=1.2.31"
+    "fabric": ">=${fabric_version}",
+    "fabricloader": ">=${fabric_loader_version}",
+    "minecraft": "${minecraft_version}",
+    "owo-lib": ">=${owo_lib_version}",
+    "wynntils": ">=${wynntils_version}"
   },
   "description": "Guild mod for Sequoia [SEQ].",
   "entrypoints": {
@@ -16,7 +18,7 @@
   },
   "environment": "*",
   "icon": "assets/sequoia/logo.png",
-  "id": "sequoia",
+  "id": "${mod_id}",
   "license": "LGPL-3.0-only",
   "mixins": [
     "sequoia.mixins.json",
@@ -24,5 +26,5 @@
   ],
   "name": "Sequoia",
   "schemaVersion": 1,
-  "version": "${version}"
+  "version": "${mod_version}"
 }

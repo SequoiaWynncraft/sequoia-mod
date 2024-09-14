@@ -59,6 +59,7 @@ public class SequoiaCommand extends Command {
         } else {
             buildText = Component.literal("You are running Sequoia " + SequoiaMod.getVersion())
                     .append(SequoiaMod.isDevelopmentBuild() ? " (Development build)" : "")
+                    .append(" by Lotnest (Credits to OwORawr for Sequoia OST).")
                     .withStyle(ChatFormatting.GREEN);
         }
 
@@ -71,6 +72,11 @@ public class SequoiaCommand extends Command {
                 .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD));
 
         describeSequoiaSubcommand(text, "version", "Shows the version of Sequoia currently installed");
+        describeSequoiaSubcommand(text, "feature", "Manage Sequoia features");
+        describeSequoiaSubcommand(text, "guildmessagefilter", "Manage guild message filter settings");
+        describeSequoiaSubcommand(text, "playerignore", "Manage player ignore settings");
+        describeSequoiaSubcommand(text, "onlinemembers", "Check online members of any guild");
+        describeSequoiaSubcommand(text, "player", "Check player information");
 
         List<Command> otherCommands = Managers.Command.getCommandInstanceSet().stream()
                 .filter(command -> !(command instanceof SequoiaCommand))
