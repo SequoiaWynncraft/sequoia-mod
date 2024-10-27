@@ -7,8 +7,8 @@ public enum CategoryType {
     CHAT,
     COMBAT,
     COMMANDS,
-    OVERLAYS,
     SOUNDS,
+    TRACKERS,
     UNCATEGORIZED;
 
     @Override

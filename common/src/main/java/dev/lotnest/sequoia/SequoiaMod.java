@@ -7,11 +7,8 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.component.CoreComponent;
 import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
-import dev.lotnest.sequoia.feature.WynntilsFeatureInjector;
-import dev.lotnest.sequoia.function.WynntilsFunctionInjector;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
-import dev.lotnest.sequoia.overlay.WynntilsOverlayInjector;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -81,10 +78,6 @@ public final class SequoiaMod {
             addCrashCallbacks();
 
             initFeatures();
-
-            WynntilsFeatureInjector.injectFeatures();
-            WynntilsFunctionInjector.injectFunctions();
-            WynntilsOverlayInjector.injectOverlays();
         } catch (Throwable throwable) {
             LOGGER.error("Failed to initialize Sequoia components", throwable);
         }

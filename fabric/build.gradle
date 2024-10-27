@@ -13,7 +13,6 @@ architectury {
 
 configurations {
     common
-    // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
     shadowCommon
     implementation.extendsFrom shadowImplementation
     compileClasspath.extendsFrom common

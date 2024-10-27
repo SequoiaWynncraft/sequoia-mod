@@ -111,9 +111,6 @@ public class GuildMessageFilterFeature extends Feature {
             "Dernel Jungle Upper",
             "Dernel Jungle Lower");
 
-    //    @Persisted
-    //    private final Config<Boolean> hideGuildAttacks = new Config<>(false);
-
     public static GuildMessageFilterDecision guildMessageFilterDecision = GuildMessageFilterDecision.KEEP_ALL;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
