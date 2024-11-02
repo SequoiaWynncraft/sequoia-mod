@@ -35,7 +35,8 @@ public class GuildRaidTrackerFeature extends Feature {
             .map(name -> name.substring(name.lastIndexOf(' ') + 1))
             .toList();
 
-    private static final Pattern SEASONAL_RATING_PATTERN = Pattern.compile("\\+(\\d+)");
+    private static final Pattern SEASONAL_RATING_PATTERN = Pattern.compile("\\+(\\d+) ");
+    private static final Pattern EXPERIENCE_PATTERN = Pattern.compile("\\+(\\d+)m ");
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper(new GsonBuilder().create());
@@ -46,13 +47,14 @@ public class GuildRaidTrackerFeature extends Feature {
             List<String> guildRaidParticipants = Lists.newArrayList();
             String guildRaidName = null;
             int seasonalRating = 0;
+            int experience = 0;
 
             if (event.getStyledText() == null || event.getStyledText().getComponent() == null) {
                 return;
             }
 
             String message = event.getStyledText().getString();
-            if (!StringUtils.contains(message, "Seasonal Rating")) {
+            if (!StringUtils.contains(message, "finished")) {
                 return;
             }
 
@@ -86,11 +88,16 @@ public class GuildRaidTrackerFeature extends Feature {
                 if (seasonalRatingMatcher.find()) {
                     seasonalRating = Integer.parseInt(seasonalRatingMatcher.group(1));
                 }
+
+                Matcher experienceMatcher = EXPERIENCE_PATTERN.matcher(messagePart);
+                if (experienceMatcher.find()) {
+                    experience = Integer.parseInt(experienceMatcher.group(1));
+                }
             }
 
             if (guildRaidName != null) {
-                sendGuildRaidCompletionReport(
-                        new GuildRaid(GuildRaidType.fromString(guildRaidName), guildRaidParticipants, seasonalRating));
+                sendGuildRaidCompletionReport(new GuildRaid(
+                        GuildRaidType.fromString(guildRaidName), guildRaidParticipants, seasonalRating, experience));
             }
         });
     }

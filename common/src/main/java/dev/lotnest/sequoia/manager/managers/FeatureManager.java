@@ -14,7 +14,6 @@ import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
-import dev.lotnest.sequoia.feature.features.CustomDeathSoundFeature;
 import dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.feature.features.RevealNicknamesFeature;
@@ -60,7 +59,6 @@ public final class FeatureManager extends Manager {
 
         // Sounds
         registerFeature(new SequoiaOSTFeature());
-        registerFeature(new CustomDeathSoundFeature());
 
         // Trackers
         registerFeature(new GuildRaidTrackerFeature());
