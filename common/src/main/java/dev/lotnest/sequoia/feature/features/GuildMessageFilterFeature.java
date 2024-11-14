@@ -20,65 +20,60 @@ public class GuildMessageFilterFeature extends Feature {
             List.of(Pattern.compile("§3.+§b (.+) defense is (.+)"));
 
     private static final List<Pattern> WAR_STARTS = List.of(
+            Pattern.compile("§cThewar for (?<territory>.+) will start in (?<remaining>.+) (?<type>minutes|seconds)\\."),
             Pattern.compile(
-                    "§3\\[WAR] §cThe war for (?<territory>.+) will start in (?<remaining>.+) (?<type>minutes|seconds)\\."),
-            Pattern.compile(
-                    "§3\\[WAR]§c The war for (?<territory>.+) will start in (?<remaining>.+) (?<type>minutes|seconds)\\."),
-            Pattern.compile("§3\\[WAR]§c The battle has begun!"));
+                    "§cThe war for (?<territory>.+) will start in (?<remaining>.+) (?<type>minutes|seconds)\\."),
+            Pattern.compile("§cThe battle has begun!"));
 
     private static final List<Pattern> TERRITORY_CAPTURED_BY_OTHER_GUILD = List.of(
-            Pattern.compile("§3\\[INFO]§b §c\\[(?<guild>.+)] has taken control of (?<territory>.+)!"),
-            Pattern.compile("§3\\[WAR]§c \\[(?<guild>.+)] captured the territory (?<territory>.+)\\."),
-            Pattern.compile("§3\\[WAR]§c Your active attack was canceled and refunded to your headquarter."));
+            Pattern.compile("§c\\[(?<guild>.+)] has taken control of (?<territory>.+)!"),
+            Pattern.compile("§c\\[(?<guild>.+)] captured the territory (?<territory>.+)\\."),
+            Pattern.compile("§cYour active attack was canceled and refunded to your headquarter."));
 
     private static final List<Pattern> TERRITORY_CAPTURED_BY_OWN_GUILD = List.of(
             Pattern.compile(
-                    "§3\\[WAR]§c You have taken control of (?<territory>.+) from (?<guild>.+)! Use /guild territory to defend this territory\\."));
+                    "§cYou have taken control of (?<territory>.+) from (?<guild>.+)! Use /guild territory to defend this territory\\."));
 
     private static final List<Pattern> TERRITORY_PRODUCTION = List.of(
-            Pattern.compile("§3\\[INFO]§b Territory §3(?<territory>.+) §bproduction has stabilised"),
-            Pattern.compile(
-                    "§3\\[INFO]§b Territory §3(?<territory>.+) §bis producing more resources than it can store!"),
-            Pattern.compile("§3\\[INFO]§b Territory §3(?<territory>.+) §bis using more resources than it can store!"));
+            Pattern.compile("§b Territory §3(?<territory>.+) §bproduction has stabilised"),
+            Pattern.compile("§b Territory §3(?<territory>.+) §bis producing more resources than it can store!"),
+            Pattern.compile("§b Territory §3(?<territory>.+) §bis using more resources than it can store!"));
 
     private static final List<Pattern> TERRITORY_CHANGED = List.of(
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) changed the style of (?<territory>.+) to (?<style>.+)"),
-            Pattern.compile(
-                    "§3\\[INFO]§b (?<player>.+) set (?<bonus>.+) bonus to level (?<level>.+) on (?<territory>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) changed (?<amount>.+) bonuses on (?<territory>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) changed (?<amount>.+) upgrades on (?<territory>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) set (?<bonus>.+) to level (?<level>.+) on (?<territory>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) applied the Loadout §3(?<bonus>.+)§b on §3(?<territory>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) updated Loadout §3(?<bonus>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) removed (?<bonus>.+) bonus from (?<territory>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) removed (?<bonus>.+) upgrade from (?<territory>.+)"),
-            Pattern.compile("§3\\[INFO]§b (?<player>.+) changed the borders of (?<territory>.+) to (?<style>.+)"));
+            Pattern.compile("§b(?<player>.+) changed the style of (?<territory>.+) to (?<style>.+)"),
+            Pattern.compile("§b(?<player>.+) set (?<bonus>.+) bonus to level (?<level>.+) on (?<territory>.+)"),
+            Pattern.compile("§b(?<player>.+) changed (?<amount>.+) bonuses on (?<territory>.+)"),
+            Pattern.compile("§b(?<player>.+) changed (?<amount>.+) upgrades on (?<territory>.+)"),
+            Pattern.compile("§b(?<player>.+) set (?<bonus>.+) to level (?<level>.+) on (?<territory>.+)"),
+            Pattern.compile("§b(?<player>.+) applied the Loadout §3(?<bonus>.+)§b on §3(?<territory>.+)"),
+            Pattern.compile("§b(?<player>.+) updated Loadout §3(?<bonus>.+)"),
+            Pattern.compile("§b(?<player>.+) removed (?<bonus>.+) bonus from (?<territory>.+)"),
+            Pattern.compile("§b(?<player>.+) removed (?<bonus>.+) upgrade from (?<territory>.+)"),
+            Pattern.compile("§b(?<player>.+) changed the borders of (?<territory>.+) to (?<style>.+)"));
 
     private static final List<Pattern> REWARD_GIVEN = List.of(
             Pattern.compile(
-                    "§3\\[INFO]§b (?<player>.+) rewarded §3(?<amount>.+) (?<reward>.+)§b to (?<recipient>.+)\n§3Rewards can be claimed in the Member Menu."));
+                    "§b(?<player>.+) rewarded §3(?<amount>.+) (?<reward>.+)§b to (?<recipient>.+)\n§3Rewards can be claimed in the Member Menu."));
 
     private static final List<Pattern> TERRITORY_DEFENDED = List.of(
-            Pattern.compile("§3\\[WAR]§c Your guild has successfully defended (?<territory>.+)\\."),
-            Pattern.compile("§3\\[WAR]§c \\[(?<guild>.+)] has lost the war!"),
-            Pattern.compile("§3\\[WAR]§c Your guild has lost the war for (?<territory>.+)\\."),
-            Pattern.compile("§3\\[WAR]§c \\[(?<guild>.+)] was victorious!"));
+            Pattern.compile("§cYour guild has successfully defended (?<territory>.+)\\."),
+            Pattern.compile("§c\\[(?<guild>.+)] has lost the war!"),
+            Pattern.compile("§cYour guild has lost the war for (?<territory>.+)\\."),
+            Pattern.compile("§c\\[(?<guild>.+)] was victorious!"));
 
     private static final List<Pattern> EVERYONE_GUILD_BANK = List.of(
-            Pattern.compile(
-                    "§3\\[INFO]§b (?<player>.+) withdrew (?<amount>.+)x (?<item>.+) from the Guild Bank \\(Everyone\\)"),
-            Pattern.compile(
-                    "§3\\[INFO]§b (?<player>.+) deposited (?<amount>.+)x (?<item>.+) to the Guild Bank \\(Everyone\\)"));
+            Pattern.compile("§b(?<player>.+) withdrew (?<amount>.+)x (?<item>.+) from the Guild Bank \\(Everyone\\)"),
+            Pattern.compile("§b(?<player>.+) deposited (?<amount>.+)x (?<item>.+) to the Guild Bank \\(Everyone\\)"));
 
     private static final List<Pattern> HIGH_RANKED_GUILD_BANK = List.of(
             Pattern.compile(
-                    "§3\\[INFO]§b (?<player>.+) withdrew (?<amount>.+)x (?<item>.+) from the Guild Bank \\(High Ranked\\)"),
+                    "§b(?<player>.+) withdrew (?<amount>.+)x (?<item>.+) from the Guild Bank \\(High Ranked\\)"),
             Pattern.compile(
-                    "§3\\[INFO]§b (?<player>.+) deposited (?<amount>.+)x (?<item>.+) to the Guild Bank \\(High Ranked\\)"));
+                    "§b(?<player>.+) deposited (?<amount>.+)x (?<item>.+) to the Guild Bank \\(High Ranked\\)"));
 
     private static final List<Pattern> GUILD_TOME_FOUND = List.of(
             Pattern.compile(
-                    "§3\\[INFO]§b A §3Guild Tome§b has been found and added to the Guild Rewards. §3Owner and Chiefs§b can gift it to members."));
+                    "b A §3Guild Tome§b has been found and added to the Guild Rewards. §3Owner and Chiefs§b can gift it to members."));
 
     private static final Set<String> FFA_TERRITORIES = Sets.newHashSet(
             "Nexus of Light",
@@ -86,30 +81,30 @@ public class GuildMessageFilterFeature extends Feature {
             "Field of Life",
             "Primal Fen",
             "Path to Light",
-            "Otherwordly Monolith",
+            "Otherworldly Monolith",
             "Luminous Plateau",
             "Heavenly Ingress",
-            "Light Forest East Mid",
-            "Light Forest East Lower",
-            "Light Forest Canyon",
-            "Light Forest West Upper",
-            "Light Forest West Mid",
-            "Aldorei Valley South Entrance",
-            "Aldorei's North Exit",
-            "Cinfras County Lower",
-            "Path To The Arch",
-            "Aldorei's Arch",
-            "Ghostly Path",
+            "Unicorn Trail",
+            "Collapsed Bridge",
+            "Chasm Overlook",
+            "Dodegar's Forge",
+            "Mycelial Expanse",
+            "Big Mushroom Cave",
+            "Waterfall Cave",
+            "Paper Trail",
+            "Pine Pillar Forest",
+            "Timeworn Arch",
+            "Evergreen Outbreak",
             "Burning Farm",
-            "Jungle Lake",
+            "Troms Lake",
             "Herb Cave",
-            "Great Bridge Jungle",
-            "Jungle Lower",
-            "Jungle Mid",
-            "Jungle Upper",
-            "Dernel Jungle Mid",
-            "Dernel Jungle Upper",
-            "Dernel Jungle Lower");
+            "Jungle Entrance",
+            "Monte's Village",
+            "Apprentice Huts",
+            "Iboju Village",
+            "Fountain of Youth",
+            "Delnar Manor",
+            "Entamis Village");
 
     public static GuildMessageFilterDecision guildMessageFilterDecision = GuildMessageFilterDecision.KEEP_ALL;
 

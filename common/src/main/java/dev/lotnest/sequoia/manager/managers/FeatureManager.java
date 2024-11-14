@@ -16,7 +16,6 @@ import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
 import dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
-import dev.lotnest.sequoia.feature.features.RevealNicknamesFeature;
 import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
 import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaidTrackerFeature;
 import dev.lotnest.sequoia.manager.Manager;
@@ -44,14 +43,12 @@ public final class FeatureManager extends Manager {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onCommandsAdded(CommandsAddedEvent event) {
-        // Register feature commands
         Managers.Command.addNode(event.getRoot(), commands.getCommandNode());
     }
 
     public void init() {
         // Chat
         registerFeature(new GuildMessageFilterFeature());
-        registerFeature(new RevealNicknamesFeature());
         registerFeature(new PlayerIgnoreFeature());
 
         // Commands
@@ -87,7 +84,6 @@ public final class FeatureManager extends Manager {
                 System.exit(1);
             }
         } catch (Throwable exception) {
-            // Log and handle gracefully, just disable this feature
             crashFeature(feature);
             SequoiaMod.reportCrash(
                     CrashType.FEATURE,
@@ -103,31 +99,26 @@ public final class FeatureManager extends Manager {
     private void initializeFeature(Feature feature) {
         Class<? extends Feature> featureClass = feature.getClass();
 
-        // Set feature category
         Category category = feature.getClass().getAnnotation(Category.class);
         CategoryType categoryType = category != null ? category.value() : CategoryType.UNCATEGORIZED;
         feature.setCategory(categoryType);
 
-        // Register commands and key binds
         commands.discoverCommands(feature);
         //        Managers.KeyBind.discoverKeyBinds(feature);
 
-        // Determine if feature should be enabled & set default enabled value for user features
         boolean startDisabled = featureClass.isAnnotationPresent(StartDisabled.class);
         feature.userEnabled.store(!startDisabled);
 
         //        Managers.Overlay.discoverOverlays(feature);
         //        Managers.Overlay.discoverOverlayGroups(feature);
 
-        // Assert that the feature name is properly translated
         assert !feature.getTranslatedName().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedName();
 
-        // Assert that the feature description is properly translated
         assert !feature.getTranslatedDescription().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedDescription();
 
-        if (!feature.userEnabled.get()) return; // not enabled by user
+        if (!feature.userEnabled.get()) return;
 
         enableFeature(feature);
     }

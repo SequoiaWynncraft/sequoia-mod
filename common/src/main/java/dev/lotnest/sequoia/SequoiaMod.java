@@ -26,9 +26,9 @@ public final class SequoiaMod {
 
     private static ModLoader modLoader;
     private static String version = "";
-    private static boolean developmentBuild = false;
-    private static boolean developmentEnvironment;
-    private static boolean initCompleted = false;
+    private static boolean isDevelopmentBuild = false;
+    private static boolean isDevelopmentEnvironment = false;
+    private static boolean isInitCompleted = false;
     private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
 
     public static String getVersion() {
@@ -36,11 +36,11 @@ public final class SequoiaMod {
     }
 
     public static boolean isDevelopmentBuild() {
-        return developmentBuild;
+        return isDevelopmentBuild;
     }
 
     public static boolean isDevelopmentEnvironment() {
-        return developmentEnvironment;
+        return isDevelopmentEnvironment;
     }
 
     public static Logger getLogger() {
@@ -69,8 +69,10 @@ public final class SequoiaMod {
 
     // Ran when resources (including I18n) are available
     public static void onResourcesFinishedLoading() {
-        if (initCompleted) return;
-        initCompleted = true;
+        if (isInitCompleted) {
+            return;
+        }
+        isInitCompleted = true;
 
         try {
             registerComponents(Managers.class, Manager.class);
@@ -86,7 +88,7 @@ public final class SequoiaMod {
     public static void init(ModLoader modLoader, String modVersion, boolean isDevelopmentEnvironment) {
         // Note that at this point, no resources (including I18n) are available, so we postpone features until then
         SequoiaMod.modLoader = modLoader;
-        developmentEnvironment = isDevelopmentEnvironment;
+        SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
 
         parseVersion(modVersion);
 
@@ -98,7 +100,6 @@ public final class SequoiaMod {
     }
 
     private static void registerComponents(Class<?> registryClass, Class<? extends CoreComponent> componentClass) {
-        // Register all handler singletons as event listeners
         List<CoreComponent> components = componentMap.computeIfAbsent(componentClass, k -> new ArrayList<>());
 
         FieldUtils.getAllFieldsList(registryClass).stream()
@@ -116,7 +117,7 @@ public final class SequoiaMod {
     }
 
     private static void parseVersion(String modVersion) {
-        developmentBuild = modVersion.contains("SNAPSHOT");
+        isDevelopmentBuild = modVersion.contains("SNAPSHOT");
         version = "v" + modVersion;
     }
 

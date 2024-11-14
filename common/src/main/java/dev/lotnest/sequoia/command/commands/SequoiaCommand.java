@@ -22,7 +22,6 @@ public class SequoiaCommand extends Command {
             Consumer<LiteralArgumentBuilder<CommandSourceStack>> consumer, List<Command> commands) {
         List<LiteralArgumentBuilder<CommandSourceStack>> commandBuilders = getCommandBuilders();
 
-        // Also register all our commands as subcommands under the Sequoia command and it's aliases
         for (LiteralArgumentBuilder<CommandSourceStack> builder : commandBuilders) {
             for (Command commandInstance : commands) {
                 if (commandInstance == this) continue;

@@ -13,7 +13,7 @@ architectury {
 // or ~/.gradle/gradle.properties on Linux/MacOS.
 def usingHotswapAgent = project.hasProperty("sequoia.hotswap") ? project.getProperty("sequoia.hotswap") == "true" : false
 
-version = "0.3.1-SNAPSHOT"
+version = "0.4.0-SNAPSHOT"
 
 subprojects {
     apply plugin: "dev.architectury.loom"
@@ -34,7 +34,7 @@ subprojects {
                     vmArgs "-XX:+AllowEnhancedClassRedefinition"
                     vmArgs "-XX:HotswapAgent=fatjar"
                 }
-                vmArgs "-ea" // run dev builds with asserts
+                vmArgs "-ea"
                 client()
             }
         }
@@ -83,7 +83,6 @@ allprojects {
             palantirJavaFormat(spotless_palantir_version)
             trimTrailingWhitespace()
             endWithNewline()
-            // Custom rule from https://github.com/apache/geode
             custom "Refuse wildcard imports", {
                 if (it =~ /\nimport .*\*;/) {
                     throw new AssertionError("Do not use wildcard imports. 'spotlessApply' cannot resolve this issue.")

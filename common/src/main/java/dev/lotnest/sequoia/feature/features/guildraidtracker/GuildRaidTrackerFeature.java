@@ -1,42 +1,46 @@
 package dev.lotnest.sequoia.feature.features.guildraidtracker;
 
+import com.google.common.collect.Maps;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.minecraft.client.ObjectMapper;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Category;
 import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
+import dev.lotnest.sequoia.utils.IntegerUtils;
+import dev.lotnest.sequoia.utils.WynncraftUtils;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextColor;
+import net.minecraft.network.chat.HoverEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.lang3.StringUtils;
 
 @Category(CategoryType.TRACKERS)
 public class GuildRaidTrackerFeature extends Feature {
     private static final String GUILD_RAID_TRACKER_API_URL =
-            "http://167.172.177.72:8084/sequoia-tree/api/public/v1/guildRaidTracker";
+            "http://167.172.177.72:8084/sequoia-tree/api/public/v2/guildRaidTracker";
 
-    private static final List<String> GUILD_RAID_NAMES =
-            Arrays.stream(GuildRaidType.values()).map(GuildRaidType::getName).toList();
-    private static final List<String> GUILD_RAID_KEYWORDS = GUILD_RAID_NAMES.stream()
-            .map(name -> name.substring(name.lastIndexOf(' ') + 1))
-            .toList();
-
-    private static final Pattern SEASONAL_RATING_PATTERN = Pattern.compile("\\+(\\d+) ");
-    private static final Pattern EXPERIENCE_PATTERN = Pattern.compile("\\+(\\d+)m ");
+    private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
+            "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and "
+                    + "([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, .(.+?m)"
+                    + " Guild Experience, and \\+(\\d+) Seasonal Rating",
+            Pattern.MULTILINE);
 
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final ObjectMapper objectMapper = new ObjectMapper(new GsonBuilder().create());
@@ -44,66 +48,61 @@ public class GuildRaidTrackerFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGuildRaidCompletion(ChatMessageReceivedEvent event) {
         CompletableFuture.runAsync(() -> {
-            List<String> guildRaidParticipants = Lists.newArrayList();
-            String guildRaidName = null;
-            int seasonalRating = 0;
-            int experience = 0;
+            Component message = event.getStyledText().getComponent();
+            String unformattedMessage = WynncraftUtils.getUnformattedString(message.getString());
+            Matcher guildRaidCompletionMatcher = GUILD_RAID_COMPLETION_PATTERN.matcher(unformattedMessage);
+            Map<String, List<String>> nameMap = Maps.newHashMap();
 
-            if (event.getStyledText() == null || event.getStyledText().getComponent() == null) {
+            createRealNameMap(message, nameMap);
+            if (!guildRaidCompletionMatcher.matches()) {
                 return;
             }
 
-            String message = event.getStyledText().getString();
-            if (!StringUtils.contains(message, "finished")) {
+            String player1 = guildRaidCompletionMatcher.group(1);
+            if (nameMap.containsKey(player1)) {
+                player1 = nameMap.get(player1).removeLast();
+            }
+
+            String player2 = guildRaidCompletionMatcher.group(2);
+            if (nameMap.containsKey(player2)) {
+                player2 = nameMap.get(player2).removeLast();
+            }
+
+            String player3 = guildRaidCompletionMatcher.group(3);
+            if (nameMap.containsKey(player3)) {
+                player3 = nameMap.get(player3).removeLast();
+            }
+
+            String player4 = guildRaidCompletionMatcher.group(4);
+            if (nameMap.containsKey(player4)) {
+                player4 = nameMap.get(player4).removeLast();
+            }
+
+            String raidString = guildRaidCompletionMatcher.group(5);
+            String aspects = guildRaidCompletionMatcher.group(6);
+            String emeralds = guildRaidCompletionMatcher.group(7);
+            String xp = guildRaidCompletionMatcher.group(8);
+            String sr = guildRaidCompletionMatcher.group(9);
+            RaidType raidType = RaidType.getRaidType(raidString);
+            UUID reporterID = Minecraft.getInstance().player.getUUID();
+
+            if (raidType == null) {
+                SequoiaMod.error("Failed to parse RaidType: " + raidString);
+                McUtils.sendMessageToClient(
+                        Component.literal("Failed to report Guild Raid completion, unknown RaidType: " + raidString)
+                                .withStyle(ChatFormatting.RED));
                 return;
             }
 
-            for (Component sibling : event.getStyledText().getComponent().getSiblings()) {
-                String messagePart = sibling.getString();
-                if (StringUtils.isBlank(messagePart)) {
-                    continue;
-                }
-
-                TextColor messageColor = sibling.getStyle().getColor();
-                if (messageColor == null) {
-                    continue;
-                }
-
-                String colorHex = messageColor.toString();
-                if (StringUtils.equals("#FFFF55", colorHex)) {
-                    String playerName = extractPlayerName(messagePart);
-                    if (playerName != null) {
-                        guildRaidParticipants.add(playerName);
-                    }
-                } else if (StringUtils.equals("#00AAAA", colorHex)) {
-                    for (int i = 0; i < GUILD_RAID_KEYWORDS.size(); i++) {
-                        if (StringUtils.contains(messagePart, GUILD_RAID_KEYWORDS.get(i))) {
-                            guildRaidName = GUILD_RAID_NAMES.get(i);
-                            break;
-                        }
-                    }
-                }
-
-                Matcher seasonalRatingMatcher = SEASONAL_RATING_PATTERN.matcher(messagePart);
-                if (seasonalRatingMatcher.find()) {
-                    seasonalRating = Integer.parseInt(seasonalRatingMatcher.group(1));
-                }
-
-                Matcher experienceMatcher = EXPERIENCE_PATTERN.matcher(messagePart);
-                if (experienceMatcher.find()) {
-                    experience = Integer.parseInt(experienceMatcher.group(1));
-                }
-            }
-
-            if (guildRaidName != null) {
-                sendGuildRaidCompletionReport(new GuildRaid(
-                        GuildRaidType.fromString(guildRaidName), guildRaidParticipants, seasonalRating, experience));
-            }
+            sendGuildRaidCompletionReport(new GuildRaid(
+                    raidType,
+                    List.of(player1, player2, player3, player4),
+                    reporterID,
+                    Integer.parseInt(aspects),
+                    Integer.parseInt(emeralds),
+                    IntegerUtils.convertToInt(xp),
+                    Integer.parseInt(sr)));
         });
-    }
-
-    private String extractPlayerName(String messagePart) {
-        return StringUtils.strip(messagePart);
     }
 
     private void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
@@ -117,15 +116,79 @@ public class GuildRaidTrackerFeature extends Feature {
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200 || response.statusCode() == 204) {
-                SequoiaMod.info("Reported guild raid completion of \"" + guildRaid.type() + "\" for players: "
+                SequoiaMod.info("Reported Guild Raid completion of \"" + guildRaid.type() + "\" for players: "
                         + guildRaid.players());
             } else {
                 SequoiaMod.error(
-                        "Unexpected guild raid tracker response: " + response.statusCode() + ": " + response.body());
+                        "Unexpected Guild Raid Tracker response: " + response.statusCode() + ": " + response.body());
+                McUtils.sendMessageToClient(Component.literal(
+                                "Failed to report Guild Raid completion, check the logs for more information.")
+                        .withStyle(ChatFormatting.RED));
             }
         } catch (IOException | InterruptedException exception) {
-            SequoiaMod.error("Failed to report guild raid completion", exception);
+            SequoiaMod.error("Failed to report Guild Raid completion", exception);
             Thread.currentThread().interrupt();
         }
+    }
+
+    private static void createRealNameMap(Component message, Map<String, List<String>> nameMap) {
+        if (!messageHasNickHoverDeep(message)) {
+            return;
+        }
+
+        if (!message.getSiblings().isEmpty()) {
+            for (Component siblingMessage : message.getSiblings()) {
+                if (messageHasNickHoverDeep(siblingMessage)) {
+                    createRealNameMap(siblingMessage, nameMap);
+                    tryToAddRealName(siblingMessage, nameMap);
+                }
+            }
+        }
+    }
+
+    private static void tryToAddRealName(Component message, Map<String, List<String>> nameMap) {
+        if (messageHasNickHover(message)) {
+            HoverEvent hover = message.getStyle().getHoverEvent();
+            if (hover == null) {
+                return;
+            }
+            if (hover.getValue(hover.getAction()) instanceof Component hoverText) {
+                String regex = "(.*?)'s? real username is (.*)";
+                Matcher matcher = Pattern.compile(regex, Pattern.MULTILINE).matcher(hoverText.getString());
+
+                if (!matcher.matches()) {
+                    return;
+                }
+
+                String realName = matcher.group(2);
+                String nickname = matcher.group(1);
+
+                if (nameMap.containsKey(nickname)) {
+                    nameMap.get(nickname).add(realName);
+                } else {
+                    nameMap.put(nickname, new ArrayList<>(Collections.singletonList(realName)));
+                }
+            }
+        }
+    }
+
+    private static boolean messageHasNickHoverDeep(Component message) {
+        boolean hasNick = false;
+        if (!message.getSiblings().isEmpty()) {
+            for (Component messageSibling : message.getSiblings()) {
+                hasNick = hasNick || messageHasNickHoverDeep(messageSibling);
+            }
+        } else {
+            return messageHasNickHover(message);
+        }
+        return hasNick;
+    }
+
+    private static boolean messageHasNickHover(Component message) {
+        HoverEvent hover = message.getStyle().getHoverEvent();
+        if (hover != null && hover.getValue(hover.getAction()) instanceof Component hoverText) {
+            return hoverText.getString().contains("real username");
+        }
+        return false;
     }
 }

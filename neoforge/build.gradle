@@ -2,7 +2,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "${shadow_version}"
 }
 
-def wynntils = {
+def wynntilsNeoForge = {
     var url = "https://github.com/Wynntils/Wynntils/releases/download/v${wynntils_version}/wynntils-${wynntils_version}-neoforge+MC-${minecraft_version}.jar"
 
     File file = new File("$projectDir/libs/artemis/${wynntils_version}.jar")
@@ -43,7 +43,6 @@ architectury {
 
 configurations {
     common
-    // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
     shadowCommon
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
@@ -60,7 +59,7 @@ dependencies {
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
     implementation(include("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}"))
 
-    modCompileOnly wynntils()
+    modCompileOnly wynntilsNeoForge()
 }
 
 processResources {
