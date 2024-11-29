@@ -34,7 +34,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 @Category(CategoryType.TRACKERS)
 public class GuildRaidTrackerFeature extends Feature {
     private static final String GUILD_RAID_TRACKER_API_URL =
-            "http://167.172.177.72:8084/sequoia-tree/api/public/v2/guildRaidTracker";
+            "http://64.225.107.161:8084/sequoia-tree/api/public/v2/guildRaidTracker";
 
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
             "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and "
@@ -115,7 +115,7 @@ public class GuildRaidTrackerFeature extends Feature {
                     .build();
 
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200 || response.statusCode() == 204) {
+            if (response.statusCode() == 200 || response.statusCode() == 201 || response.statusCode() == 204) {
                 SequoiaMod.info("Reported Guild Raid completion of \"" + guildRaid.type() + "\" for players: "
                         + guildRaid.players());
             } else {
