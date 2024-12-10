@@ -3,7 +3,6 @@ package dev.lotnest.sequoia.manager.managers;
 import com.google.common.collect.Maps;
 import com.wynntils.core.WynntilsMod;
 import com.wynntils.core.consumers.features.FeatureState;
-import com.wynntils.core.consumers.features.properties.StartDisabled;
 import com.wynntils.core.mod.type.CrashType;
 import com.wynntils.mc.event.ClientsideMessageEvent;
 import com.wynntils.mc.event.CommandsAddedEvent;
@@ -107,16 +106,11 @@ public final class FeatureManager extends Manager {
 
         commands.discoverCommands(feature);
 
-        boolean startDisabled = featureClass.isAnnotationPresent(StartDisabled.class);
-        feature.userEnabled.store(!startDisabled);
-
         assert !feature.getTranslatedName().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedName();
 
         assert !feature.getTranslatedDescription().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedDescription();
-
-        if (!feature.userEnabled.get()) return;
 
         enableFeature(feature);
     }

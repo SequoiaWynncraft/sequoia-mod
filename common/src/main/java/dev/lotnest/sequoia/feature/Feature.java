@@ -1,16 +1,11 @@
 package dev.lotnest.sequoia.feature;
 
 import com.google.common.collect.ComparisonChain;
-import com.wynntils.core.persisted.Persisted;
-import com.wynntils.core.persisted.config.Config;
 import dev.lotnest.sequoia.component.CoreComponent;
 import dev.lotnest.sequoia.manager.Managers;
 
 public abstract class Feature extends CoreComponent implements Comparable<Feature> {
     private CategoryType categoryType = CategoryType.UNCATEGORIZED;
-
-    @Persisted(i18nKey = "sequoia.feature.userFeature.userEnabled")
-    public final Config<Boolean> userEnabled = new Config<>(true);
 
     @Override
     public String getTypeName() {
@@ -45,7 +40,6 @@ public abstract class Feature extends CoreComponent implements Comparable<Featur
     }
 
     public void setUserEnabled(boolean newState) {
-        userEnabled.store(newState);
         tryUserToggle();
     }
 
@@ -53,11 +47,11 @@ public abstract class Feature extends CoreComponent implements Comparable<Featur
      * Updates the feature's enabled/disabled state to match the user's setting, if necessary
      */
     private void tryUserToggle() {
-        if (userEnabled.get()) {
-            Managers.Feature.enableFeature(this);
-        } else {
-            Managers.Feature.disableFeature(this);
-        }
+        //        if (userEnabled.get()) {
+        //            Managers.Feature.enableFeature(this);
+        //        } else {
+        //            Managers.Feature.disableFeature(this);
+        //        }
     }
 
     @Override

@@ -196,7 +196,7 @@ public class Guild {
                                         .withStyle(style -> style.withHoverEvent(new HoverEvent(
                                                         HoverEvent.Action.SHOW_TEXT,
                                                         Component.translatable(
-                                                                "sequoia.command.onlineMembers.clickToPrivateMessage",
+                                                                "sequoia.tooltip.clickToPrivateMessage",
                                                                 entry.getKey())))
                                                 .withClickEvent(new ClickEvent(
                                                         ClickEvent.Action.SUGGEST_COMMAND,

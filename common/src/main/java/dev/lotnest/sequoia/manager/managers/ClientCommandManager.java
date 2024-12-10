@@ -14,8 +14,11 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.ClientCommandSourceStack;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.command.commands.ConfigCommand;
+import dev.lotnest.sequoia.command.commands.LastSeenCommand;
 import dev.lotnest.sequoia.command.commands.MeowCommand;
 import dev.lotnest.sequoia.command.commands.OnlineMembersCommand;
+import dev.lotnest.sequoia.command.commands.PlayerGuildCommand;
+import dev.lotnest.sequoia.command.commands.PlayerRaidsCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.manager.Manager;
 import java.util.ArrayList;
@@ -163,6 +166,9 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new ConfigCommand());
         registerCommand(new OnlineMembersCommand());
         registerCommand(new MeowCommand());
+        registerCommand(new LastSeenCommand());
+        registerCommand(new PlayerGuildCommand());
+        registerCommand(new PlayerRaidsCommand());
 
         // The SequoiaCommand must be registered last, since it
         // need the above commands as aliases

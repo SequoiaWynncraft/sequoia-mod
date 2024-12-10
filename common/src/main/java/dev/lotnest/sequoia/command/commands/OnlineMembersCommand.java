@@ -34,9 +34,9 @@ public class OnlineMembersCommand extends Command {
 
     private int lookupGuild(CommandContext<CommandSourceStack> context) {
         String guildName = context.getArgument("guildName", String.class);
-        CompletableFuture<Guild> completableFuture = GuildService.getGuild(guildName);
+        CompletableFuture<Guild> guildCompletableFuture = GuildService.getGuild(guildName);
 
-        completableFuture.whenComplete((guild, throwable) -> {
+        guildCompletableFuture.whenComplete((guild, throwable) -> {
             if (throwable != null) {
                 SequoiaMod.error("Error looking up " + guildName + "'s guild members", throwable);
                 context.getSource()

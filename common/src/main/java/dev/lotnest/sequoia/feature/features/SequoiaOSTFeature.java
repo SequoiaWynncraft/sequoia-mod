@@ -1,7 +1,6 @@
 package dev.lotnest.sequoia.feature.features;
 
 import com.google.common.collect.Lists;
-import com.wynntils.core.consumers.features.properties.StartDisabled;
 import com.wynntils.mc.event.TickAlwaysEvent;
 import dev.lotnest.sequoia.feature.Category;
 import dev.lotnest.sequoia.feature.CategoryType;
@@ -16,7 +15,6 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 @Category(CategoryType.SOUNDS)
-@StartDisabled
 public class SequoiaOSTFeature extends Feature {
     private final List<SoundInstance> playlist;
     private int currentIndex;

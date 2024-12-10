@@ -74,8 +74,11 @@ public class SequoiaCommand extends Command {
 
         describeSequoiaSubcommand(helpMessage, "version", "Shows the version of Sequoia currently installed.");
         describeSequoiaSubcommand(helpMessage, "config", "Opens the config GUI.");
-        describeSequoiaSubcommand(helpMessage, "onlinemembers", "Checks online members of any guild.");
+        describeSequoiaSubcommand(helpMessage, "onlinemembers", "Checks online members of a guild.");
         describeSequoiaSubcommand(helpMessage, "meow", "Meow!");
+        describeSequoiaSubcommand(helpMessage, "lastseen", "Checks when a player was last seen online.");
+        describeSequoiaSubcommand(helpMessage, "playerguild", "Checks the guild of a player.");
+        describeSequoiaSubcommand(helpMessage, "playerraids", "Checks the raids of a player.");
 
         List<Command> otherCommands = Managers.Command.getCommandInstanceSet().stream()
                 .filter(command -> !(command instanceof SequoiaCommand))
