@@ -13,11 +13,9 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.ClientCommandSourceStack;
 import dev.lotnest.sequoia.command.Command;
-import dev.lotnest.sequoia.command.commands.FeatureCommand;
-import dev.lotnest.sequoia.command.commands.GuildMessageFilterCommand;
-import dev.lotnest.sequoia.command.commands.IgnorePlayerCommand;
+import dev.lotnest.sequoia.command.commands.ConfigCommand;
+import dev.lotnest.sequoia.command.commands.MeowCommand;
 import dev.lotnest.sequoia.command.commands.OnlineMembersCommand;
-import dev.lotnest.sequoia.command.commands.PlayerCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.manager.Manager;
 import java.util.ArrayList;
@@ -162,11 +160,9 @@ public final class ClientCommandManager extends Manager {
     }
 
     private void registerAllCommands() {
-        registerCommand(new PlayerCommand());
-        registerCommand(new IgnorePlayerCommand());
-        registerCommand(new GuildMessageFilterCommand());
+        registerCommand(new ConfigCommand());
         registerCommand(new OnlineMembersCommand());
-        registerCommand(new FeatureCommand());
+        registerCommand(new MeowCommand());
 
         // The SequoiaCommand must be registered last, since it
         // need the above commands as aliases

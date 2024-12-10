@@ -17,6 +17,7 @@ import dev.lotnest.sequoia.feature.features.CommandsFeature;
 import dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
+import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
 import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaidTrackerFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
@@ -50,6 +51,7 @@ public final class FeatureManager extends Manager {
         // Chat
         registerFeature(new GuildMessageFilterFeature());
         registerFeature(new PlayerIgnoreFeature());
+        registerFeature(new DiscordChatBridgeFeature());
 
         // Commands
         registerFeature(new CommandsFeature());
@@ -104,13 +106,9 @@ public final class FeatureManager extends Manager {
         feature.setCategory(categoryType);
 
         commands.discoverCommands(feature);
-        //        Managers.KeyBind.discoverKeyBinds(feature);
 
         boolean startDisabled = featureClass.isAnnotationPresent(StartDisabled.class);
         feature.userEnabled.store(!startDisabled);
-
-        //        Managers.Overlay.discoverOverlays(feature);
-        //        Managers.Overlay.discoverOverlayGroups(feature);
 
         assert !feature.getTranslatedName().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedName();
@@ -137,10 +135,6 @@ public final class FeatureManager extends Manager {
         FEATURES.put(feature, FeatureState.ENABLED);
 
         WynntilsMod.registerEventListener(feature);
-
-        //        Managers.Overlay.enableOverlays(feature);
-
-        //        Managers.KeyBind.enableFeatureKeyBinds(feature);
     }
 
     public void disableFeature(Feature feature) {
@@ -157,10 +151,6 @@ public final class FeatureManager extends Manager {
         FEATURES.put(feature, FeatureState.DISABLED);
 
         WynntilsMod.unregisterEventListener(feature);
-
-        //        Managers.Overlay.disableOverlays(feature);
-
-        //        Managers.KeyBind.disableFeatureKeyBinds(feature);
     }
 
     public void crashFeature(Feature feature) {

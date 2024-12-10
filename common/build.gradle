@@ -1,7 +1,7 @@
 def wynntilsFabric = {
     var url = "https://github.com/Wynntils/Wynntils/releases/download/v${wynntils_version}/wynntils-${wynntils_version}-fabric+MC-${minecraft_version}.jar"
 
-    File file = new File("$projectDir/libs/artemis/${wynntils_version}.jar")
+    File file = new File("$projectDir/libs/artemis/wynntils-${wynntils_version}.jar")
     file.parentFile.mkdirs()
     if (!file.exists()) {
         new URL(url).withInputStream { downloadStream ->
@@ -24,16 +24,15 @@ def wynntilsFabric = {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-
-    compileOnly "net.neoforged:bus:${neoforge_eventbus_version}"
+    modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
     implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
 
+    compileOnly("net.neoforged:bus:${neoforge_eventbus_version}")
     modCompileOnly wynntilsFabric()
 
-    modImplementation "io.wispforest:owo-lib:${project.owo_lib_version}"
-    annotationProcessor "io.wispforest:owo-lib:${project.owo_lib_version}"
+    implementation(annotationProcessor("io.wispforest:owo-lib:${project.owo_lib_version}"))
+    implementation("org.java-websocket:Java-WebSocket:${java_websocket_version}")
 }
 
 architectury {

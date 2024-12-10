@@ -3,6 +3,7 @@ package dev.lotnest.sequoia.feature.features;
 import com.google.common.collect.Sets;
 import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Category;
 import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
@@ -106,11 +107,9 @@ public class GuildMessageFilterFeature extends Feature {
             "Delnar Manor",
             "Entamis Village");
 
-    public static GuildMessageFilterDecision guildMessageFilterDecision = GuildMessageFilterDecision.KEEP_ALL;
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onMessage(ChatMessageReceivedEvent event) {
-        if (guildMessageFilterDecision == GuildMessageFilterDecision.KEEP_ALL) {
+        if (SequoiaMod.CONFIG.guildMessageFilterFeature.decisionType() == GuildMessageFilterDecisionType.KEEP_ALL) {
             return;
         }
 
@@ -135,18 +134,21 @@ public class GuildMessageFilterFeature extends Feature {
 
     private boolean processAndHandleFilter(StyledText message, List<Pattern> patterns, ChatMessageReceivedEvent event) {
         if (processFilter(message, patterns)) {
-            if (guildMessageFilterDecision == GuildMessageFilterDecision.CANCEL_FFA
+            if (SequoiaMod.CONFIG.guildMessageFilterFeature.decisionType() == GuildMessageFilterDecisionType.CANCEL_FFA
                     && FFA_TERRITORIES.stream()
                             .anyMatch(territory -> message.getString().contains(territory))) {
                 event.setCanceled(true);
-            } else if (guildMessageFilterDecision == GuildMessageFilterDecision.CANCEL) {
+            } else if (SequoiaMod.CONFIG.guildMessageFilterFeature.decisionType()
+                    == GuildMessageFilterDecisionType.CANCEL) {
                 event.setCanceled(true);
-            } else if (guildMessageFilterDecision == GuildMessageFilterDecision.GRAY_OUT_FFA
+            } else if (SequoiaMod.CONFIG.guildMessageFilterFeature.decisionType()
+                            == GuildMessageFilterDecisionType.GRAY_OUT_FFA
                     && FFA_TERRITORIES.stream()
                             .anyMatch(territory -> message.getString().contains(territory))) {
                 event.setMessage(StyledText.fromComponent(
                         Component.literal(message.getStringWithoutFormatting()).withStyle(ChatFormatting.DARK_GRAY)));
-            } else if (guildMessageFilterDecision == GuildMessageFilterDecision.GRAY_OUT) {
+            } else if (SequoiaMod.CONFIG.guildMessageFilterFeature.decisionType()
+                    == GuildMessageFilterDecisionType.GRAY_OUT) {
                 event.setMessage(StyledText.fromComponent(
                         Component.literal(message.getStringWithoutFormatting()).withStyle(ChatFormatting.DARK_GRAY)));
             }
@@ -164,7 +166,7 @@ public class GuildMessageFilterFeature extends Feature {
         return false;
     }
 
-    public enum GuildMessageFilterDecision {
+    public enum GuildMessageFilterDecisionType {
         KEEP_ALL,
         CANCEL,
         CANCEL_FFA,

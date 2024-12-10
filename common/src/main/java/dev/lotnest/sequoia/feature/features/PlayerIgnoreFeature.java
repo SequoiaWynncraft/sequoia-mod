@@ -13,7 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 
 @Category(CategoryType.CHAT)
 public class PlayerIgnoreFeature extends Feature {
-    // &b󏿼󐀆 󏿿󏿿󏿿󏿿󏿿󏿿󏿢&0󐀂&b &3&o&<1>Tinkaton&c&<1> (OwORawr)&3:&b npnp congrats
     private static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
             "^(?:(?:§b)?(?:\uDAFF\uDFFC\uE006\uDAFF\uDFFF\uE002\uDAFF\uDFFE|\uDAFF\uDFFC\uE001\uDB00\uDC07)\\s)?(?:§o[^§]+§c\\s*\\((?<nicknameOrUsername>[^)]+)\\)§3|(?<username>[^:]+)): §b(?<message>.+)$");
 
@@ -25,8 +24,6 @@ public class PlayerIgnoreFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onMessage(ChatMessageReceivedEvent event) {
-        SequoiaMod.info("[CHAT] " + event.getStyledText().toString().replace("§", "&"));
-
         Matcher guildChatMatcher = event.getStyledText().getMatcher(GUILD_CHAT_PATTERN);
         if (guildChatMatcher.matches()) {
             String nicknameOrUsername = guildChatMatcher.group("nicknameOrUsername");

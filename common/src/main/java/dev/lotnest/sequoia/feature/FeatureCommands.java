@@ -44,7 +44,6 @@ public class FeatureCommands {
     }
 
     public void init() {
-        // Build the command node if it hasn't been built yet
         if (commandNode == null) {
             commandNode = commandNodeBuilder.build();
         }

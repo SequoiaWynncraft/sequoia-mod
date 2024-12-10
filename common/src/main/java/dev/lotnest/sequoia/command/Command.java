@@ -2,6 +2,8 @@ package dev.lotnest.sequoia.command;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.wynntils.utils.mc.McUtils;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.component.Translatable;
 import java.util.List;
 import java.util.stream.Stream;
@@ -37,7 +39,7 @@ public abstract class Command implements Translatable {
     }
 
     protected final int syntaxError(CommandContext<CommandSourceStack> context) {
-        context.getSource().sendFailure(Component.translatable("sequoia.command.syntaxError"));
-        return 0;
+        McUtils.sendMessageToClient(SequoiaMod.prefix(Component.translatable("sequoia.command.syntaxError")));
+        return 1;
     }
 }

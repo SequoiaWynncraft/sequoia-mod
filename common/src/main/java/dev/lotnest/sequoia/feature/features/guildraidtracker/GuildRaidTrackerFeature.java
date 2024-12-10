@@ -1,8 +1,6 @@
 package dev.lotnest.sequoia.feature.features.guildraidtracker;
 
 import com.google.common.collect.Maps;
-import com.google.gson.GsonBuilder;
-import com.mojang.authlib.minecraft.client.ObjectMapper;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
@@ -10,12 +8,9 @@ import dev.lotnest.sequoia.feature.Category;
 import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.IntegerUtils;
-import dev.lotnest.sequoia.utils.WynncraftUtils;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
+import dev.lotnest.sequoia.ws.WSMessage;
+import dev.lotnest.sequoia.wynn.WynnUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,23 +28,25 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 @Category(CategoryType.TRACKERS)
 public class GuildRaidTrackerFeature extends Feature {
-    private static final String GUILD_RAID_TRACKER_API_URL =
-            "http://167.172.177.72:8084/sequoia-tree/api/public/v2/guildRaidTracker";
-
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
             "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and "
                     + "([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, .(.+?m)"
                     + " Guild Experience, and \\+(\\d+) Seasonal Rating",
             Pattern.MULTILINE);
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
-    private final ObjectMapper objectMapper = new ObjectMapper(new GsonBuilder().create());
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGuildRaidCompletion(ChatMessageReceivedEvent event) {
         CompletableFuture.runAsync(() -> {
+            if (event.getStyledText() == null) {
+                return;
+            }
+
+            if (event.getStyledText().isBlank()) {
+                return;
+            }
+
             Component message = event.getStyledText().getComponent();
-            String unformattedMessage = WynncraftUtils.getUnformattedString(message.getString());
+            String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
             Matcher guildRaidCompletionMatcher = GUILD_RAID_COMPLETION_PATTERN.matcher(unformattedMessage);
             Map<String, List<String>> nameMap = Maps.newHashMap();
 
@@ -107,27 +104,14 @@ public class GuildRaidTrackerFeature extends Feature {
 
     private void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
         try {
-            String payload = objectMapper.writeValueAsString(guildRaid);
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(GUILD_RAID_TRACKER_API_URL))
-                    .header("Content-Type", "application/json")
-                    .POST(HttpRequest.BodyPublishers.ofString(payload))
-                    .build();
-
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() == 200 || response.statusCode() == 204) {
-                SequoiaMod.info("Reported Guild Raid completion of \"" + guildRaid.type() + "\" for players: "
-                        + guildRaid.players());
-            } else {
-                SequoiaMod.error(
-                        "Unexpected Guild Raid Tracker response: " + response.statusCode() + ": " + response.body());
-                McUtils.sendMessageToClient(Component.literal(
-                                "Failed to report Guild Raid completion, check the logs for more information.")
-                        .withStyle(ChatFormatting.RED));
-            }
-        } catch (IOException | InterruptedException exception) {
-            SequoiaMod.error("Failed to report Guild Raid completion", exception);
-            Thread.currentThread().interrupt();
+            WSMessage guildRaidWSMessage = new GuildRaidWSMessage(guildRaid);
+            String payload = SequoiaWebSocketClient.getInstance().sendAsJson(guildRaidWSMessage);
+            SequoiaMod.debug("Sent Guild Raid completion: " + payload);
+        } catch (Exception exception) {
+            SequoiaMod.error("Failed to send Guild Raid completion report", exception);
+            McUtils.sendMessageToClient(
+                    Component.literal("Failed to report Guild Raid completion, check the logs for more info.")
+                            .withStyle(ChatFormatting.RED));
         }
     }
 
@@ -153,8 +137,8 @@ public class GuildRaidTrackerFeature extends Feature {
                 return;
             }
             if (hover.getValue(hover.getAction()) instanceof Component hoverText) {
-                String regex = "(.*?)'s? real username is (.*)";
-                Matcher matcher = Pattern.compile(regex, Pattern.MULTILINE).matcher(hoverText.getString());
+                Matcher matcher = Pattern.compile("(.*?)'s? real username is (.*)", Pattern.MULTILINE)
+                        .matcher(hoverText.getString());
 
                 if (!matcher.matches()) {
                     return;

@@ -9,11 +9,18 @@ import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,12 +30,19 @@ public final class SequoiaMod {
     public static final SequoiaConfig CONFIG = SequoiaConfig.createAndLoad();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    private static final MutableComponent PREFIX = Component.empty()
+            .append(Component.literal("Sequoia")
+                    .withStyle(style -> style.withColor(0x19A775).withBold(true)))
+            .append(Component.literal(" » ")
+                    .withStyle(style -> style.withColor(ChatFormatting.GRAY).withBold(false)))
+            .append(Component.empty().withStyle(ChatFormatting.YELLOW));
 
     private static ModLoader modLoader;
     private static String version = "";
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
+    private static String jarFileHash = null;
     private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
 
     public static String getVersion() {
@@ -67,6 +81,12 @@ public final class SequoiaMod {
         LOGGER.info(message);
     }
 
+    public static void debug(String message) {
+        if (CONFIG.verboseLogging()) {
+            LOGGER.info("[VERBOSE] {}", message);
+        }
+    }
+
     // Ran when resources (including I18n) are available
     public static void onResourcesFinishedLoading() {
         if (isInitCompleted) {
@@ -85,18 +105,55 @@ public final class SequoiaMod {
         }
     }
 
-    public static void init(ModLoader modLoader, String modVersion, boolean isDevelopmentEnvironment) {
+    public static void init(ModLoader modLoader, String modVersion) {
         // Note that at this point, no resources (including I18n) are available, so we postpone features until then
         SequoiaMod.modLoader = modLoader;
-        SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
-
-        parseVersion(modVersion);
+        isDevelopmentBuild = modVersion.contains("SNAPSHOT");
+        version = "v" + modVersion;
 
         LOGGER.info(
                 "Sequoia: Starting version {} (using {} on Minecraft {})",
                 version,
                 modLoader,
                 SharedConstants.getCurrentVersion().getName());
+
+        jarFileHash = getJarFileHash();
+    }
+
+    private static String getJarFileHash() {
+        if (jarFileHash == null) {
+            try {
+                File jarFile = new File(SequoiaMod.class
+                        .getProtectionDomain()
+                        .getCodeSource()
+                        .getLocation()
+                        .toURI());
+                if (!jarFile.exists()) {
+                    throw new IOException("JAR file not found at: " + jarFile.getAbsolutePath());
+                }
+
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                try (FileInputStream fis = new FileInputStream(jarFile)) {
+                    byte[] byteArray = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = fis.read(byteArray)) != -1) {
+                        digest.update(byteArray, 0, bytesRead);
+                    }
+                }
+
+                byte[] hashBytes = digest.digest();
+                StringBuilder hexString = new StringBuilder();
+                for (byte b : hashBytes) {
+                    hexString.append(String.format("%02x", b));
+                }
+
+                jarFileHash = hexString.toString();
+            } catch (Exception exception) {
+                LOGGER.error("Failed to compute JAR file hash", exception);
+                return null;
+            }
+        }
+        return jarFileHash;
     }
 
     private static void registerComponents(Class<?> registryClass, Class<? extends CoreComponent> componentClass) {
@@ -114,11 +171,6 @@ public final class SequoiaMod {
                         throw new RuntimeException(exception);
                     }
                 });
-    }
-
-    private static void parseVersion(String modVersion) {
-        isDevelopmentBuild = modVersion.contains("SNAPSHOT");
-        version = "v" + modVersion;
     }
 
     private static void initFeatures() {
@@ -156,6 +208,10 @@ public final class SequoiaMod {
         }
 
         WynntilsMod.postEvent(new SequoiaCrashEvent(fullName, type, throwable));
+    }
+
+    public static MutableComponent prefix(Component component) {
+        return PREFIX.copy().append(component);
     }
 
     public enum ModLoader {

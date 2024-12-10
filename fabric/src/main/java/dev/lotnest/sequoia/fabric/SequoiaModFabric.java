@@ -17,7 +17,6 @@ public class SequoiaModFabric implements ClientModInitializer {
 
         SequoiaMod.init(
                 SequoiaMod.ModLoader.FABRIC,
-                sequoiaModContainer.get().getMetadata().getVersion().getFriendlyString(),
-                FabricLoader.getInstance().isDevelopmentEnvironment());
+                sequoiaModContainer.get().getMetadata().getVersion().getFriendlyString());
     }
 }
