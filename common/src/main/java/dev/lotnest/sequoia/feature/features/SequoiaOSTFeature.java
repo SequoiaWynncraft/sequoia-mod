@@ -2,6 +2,7 @@ package dev.lotnest.sequoia.feature.features;
 
 import com.google.common.collect.Lists;
 import com.wynntils.mc.event.TickAlwaysEvent;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Category;
 import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
@@ -95,7 +96,7 @@ public class SequoiaOSTFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onTickAlways(TickAlwaysEvent ignored) {
-        if (isEnabled() && !isPlaying()) {
+        if (SequoiaMod.CONFIG.sequoiaOSTFeature.enabled() && !isPlaying()) {
             playNextTrack();
         }
     }

@@ -9,8 +9,8 @@ public enum WSMessageType {
     GLocationService(4),
     GGuildMap(5),
     GGetSessionID(6),
-    GReserved5(7),
-    GReserved6(8),
+    GGuildWarResults(7),
+    GLootPoolUpdate(8),
     GReserved7(9),
     GReserved8(10),
     GReserved9(11),
@@ -19,8 +19,8 @@ public enum WSMessageType {
     SChannelMessage(13),
     SCommandData(14),
     SCommandResult(15),
-    SChatMessageBroadcast(16), // Echo to all clients
-    SCommandPipe(17), // Pipe command to connected Discord bot
+    SChatMessageBroadcast(16),
+    SCommandPipe(17),
     SRaidSubmission(18),
     SReserved2(19),
     SSessionIDResult(20),
