@@ -8,8 +8,6 @@ import com.wynntils.mc.event.ClientsideMessageEvent;
 import com.wynntils.mc.event.CommandsAddedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.feature.Category;
-import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
@@ -18,6 +16,7 @@ import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
 import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaidTrackerFeature;
+import dev.lotnest.sequoia.feature.features.lootpool.LootPoolFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
 import java.util.List;
@@ -47,19 +46,13 @@ public final class FeatureManager extends Manager {
     }
 
     public void init() {
-        // Chat
+        registerFeature(new CommandsFeature());
         registerFeature(new GuildMessageFilterFeature());
         registerFeature(new PlayerIgnoreFeature());
-        registerFeature(new DiscordChatBridgeFeature());
-
-        // Commands
-        registerFeature(new CommandsFeature());
-
-        // Sounds
         registerFeature(new SequoiaOSTFeature());
-
-        // Trackers
         registerFeature(new GuildRaidTrackerFeature());
+        registerFeature(new DiscordChatBridgeFeature());
+        registerFeature(new LootPoolFeature());
 
         // Reload Minecraft's config files so our own keybinds get loaded
         // This is needed because we are late to register the keybinds,
@@ -98,12 +91,6 @@ public final class FeatureManager extends Manager {
     }
 
     private void initializeFeature(Feature feature) {
-        Class<? extends Feature> featureClass = feature.getClass();
-
-        Category category = feature.getClass().getAnnotation(Category.class);
-        CategoryType categoryType = category != null ? category.value() : CategoryType.UNCATEGORIZED;
-        feature.setCategory(categoryType);
-
         commands.discoverCommands(feature);
 
         assert !feature.getTranslatedName().startsWith("sequoia.feature.")

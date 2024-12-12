@@ -4,8 +4,6 @@ import com.google.common.collect.Sets;
 import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.feature.Category;
-import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +13,6 @@ import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
-@Category(CategoryType.CHAT)
 public class GuildMessageFilterFeature extends Feature {
     private static final List<Pattern> GUILD_CHAT_TERRITORY_DEFENSE =
             List.of(Pattern.compile("§3.+§b (.+) defense is (.+)"));

@@ -2,8 +2,6 @@ package dev.lotnest.sequoia.feature.features;
 
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.feature.Category;
-import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,7 +9,6 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 
-@Category(CategoryType.CHAT)
 public class PlayerIgnoreFeature extends Feature {
     private static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
             "^(?:(?:§b)?(?:\uDAFF\uDFFC\uE006\uDAFF\uDFFF\uE002\uDAFF\uDFFE|\uDAFF\uDFFC\uE001\uDB00\uDC07)\\s)?(?:§o[^§]+§c\\s*\\((?<nicknameOrUsername>[^)]+)\\)§3|(?<username>[^:]+)): §b(?<message>.+)$");

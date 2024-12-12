@@ -3,8 +3,6 @@ package dev.lotnest.sequoia.feature.features;
 import com.google.common.collect.Lists;
 import com.wynntils.mc.event.TickAlwaysEvent;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.feature.Category;
-import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.sound.SequoiaSounds;
 import java.util.Collections;
@@ -15,7 +13,6 @@ import net.minecraft.client.resources.sounds.SoundInstance;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
-@Category(CategoryType.SOUNDS)
 public class SequoiaOSTFeature extends Feature {
     private final List<SoundInstance> playlist;
     private int currentIndex;
