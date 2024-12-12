@@ -8,6 +8,12 @@ import dev.lotnest.sequoia.feature.Category;
 import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -15,14 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
 
 @Category(CategoryType.CHAT)
 public class DiscordChatBridgeFeature extends Feature {
@@ -33,74 +33,72 @@ public class DiscordChatBridgeFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        CompletableFuture.runAsync(() -> {
-            if (!SequoiaMod.CONFIG.discordChatBridgeFeature.enabled()) {
-                return;
-            }
+        if (!SequoiaMod.CONFIG.discordChatBridgeFeature.enabled()) {
+            return;
+        }
 
-            if (!SequoiaMod.CONFIG.discordChatBridgeFeature.sendInGameGuildChatMessagesToDiscord()) {
-                return;
-            }
+        if (!SequoiaMod.CONFIG.discordChatBridgeFeature.sendInGameGuildChatMessagesToDiscord()) {
+            return;
+        }
 
-            if (event.getStyledText() == null || event.getStyledText().isBlank()) {
-                return;
-            }
+        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
+            return;
+        }
 
-            MutableComponent messageComponent = event.getStyledText().getComponent();
-            String messageStringWithoutFormatting = event.getStyledText().getStringWithoutFormatting();
+        MutableComponent messageComponent = event.getStyledText().getComponent();
+        String messageStringWithoutFormatting = event.getStyledText().getStringWithoutFormatting();
 
-            SequoiaMod.debug("[CHAT] " + messageStringWithoutFormatting);
+        SequoiaMod.debug("[CHAT] " + messageStringWithoutFormatting);
 
-            if (SequoiaWebSocketClient.getInstance().isClosed()) {
-                try {
-                    SequoiaWebSocketClient.getInstance().connectBlocking();
-                } catch (Exception exception) {
-                    SequoiaMod.error("Failed to connect to WebSocket server", exception);
-                    return;
-                }
-            }
-
-            Matcher guildChatMatcher = GUILD_CHAT_PATTERN.matcher(messageStringWithoutFormatting);
-            Map<String, List<String>> nameMap = Maps.newHashMap();
-            String nickname = null;
-            String username = null;
-
-            createRealNameMap(messageComponent, nameMap);
-
+        if (SequoiaWebSocketClient.getInstance().isClosed()) {
             try {
-                if (guildChatMatcher.matches()) {
-                    nickname = guildChatMatcher.group(2);
-                    username = null;
-                }
-
-                if (nickname != null && nameMap.containsKey(nickname)) {
-                    username = nameMap.get(nickname).getFirst();
-                }
-
-                if (username == null) {
-                    username = nickname;
-                    nickname = null;
-                }
-
-                if (username == null && nickname == null) {
-                    return;
-                }
-            } catch (Exception ignored) {
+                SequoiaWebSocketClient.getInstance().connectBlocking();
+            } catch (Exception exception) {
+                SequoiaMod.error("Failed to connect to WebSocket server", exception);
                 return;
             }
+        }
 
-            GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
-                    username,
-                    nickname,
-                    messageStringWithoutFormatting,
-                    Instant.ofEpochMilli(System.currentTimeMillis())
-                            .atZone(ZoneId.systemDefault())
-                            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT)),
-                    McUtils.playerName()));
+        Matcher guildChatMatcher = GUILD_CHAT_PATTERN.matcher(messageStringWithoutFormatting);
+        Map<String, List<String>> nameMap = Maps.newHashMap();
+        String nickname = null;
+        String username = null;
 
-            SequoiaWebSocketClient.getInstance().sendAsJson(gChatMessageWSMessage);
-            SequoiaMod.debug("Sent guild chat message to Discord: " + gChatMessageWSMessage);
-        });
+        createRealNameMap(messageComponent, nameMap);
+
+        try {
+            if (guildChatMatcher.matches()) {
+                nickname = guildChatMatcher.group(2);
+                username = null;
+            }
+
+            if (nickname != null && nameMap.containsKey(nickname)) {
+                username = nameMap.get(nickname).getFirst();
+            }
+
+            if (username == null) {
+                username = nickname;
+                nickname = null;
+            }
+
+            if (username == null && nickname == null) {
+                return;
+            }
+        } catch (Exception ignored) {
+            return;
+        }
+
+        GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
+                username,
+                nickname,
+                messageStringWithoutFormatting,
+                Instant.ofEpochMilli(System.currentTimeMillis())
+                        .atZone(ZoneId.systemDefault())
+                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT)),
+                McUtils.playerName()));
+
+        SequoiaWebSocketClient.getInstance().sendAsJson(gChatMessageWSMessage);
+        SequoiaMod.debug("Sent guild chat message to Discord: " + gChatMessageWSMessage);
     }
 
     private static void createRealNameMap(Component message, Map<String, List<String>> nameMap) {
