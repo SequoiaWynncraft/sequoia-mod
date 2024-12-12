@@ -8,8 +8,6 @@ import com.wynntils.mc.event.ClientsideMessageEvent;
 import com.wynntils.mc.event.CommandsAddedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.feature.Category;
-import dev.lotnest.sequoia.feature.CategoryType;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
@@ -98,12 +96,6 @@ public final class FeatureManager extends Manager {
     }
 
     private void initializeFeature(Feature feature) {
-        Class<? extends Feature> featureClass = feature.getClass();
-
-        Category category = feature.getClass().getAnnotation(Category.class);
-        CategoryType categoryType = category != null ? category.value() : CategoryType.UNCATEGORIZED;
-        feature.setCategory(categoryType);
-
         commands.discoverCommands(feature);
 
         assert !feature.getTranslatedName().startsWith("sequoia.feature.")
