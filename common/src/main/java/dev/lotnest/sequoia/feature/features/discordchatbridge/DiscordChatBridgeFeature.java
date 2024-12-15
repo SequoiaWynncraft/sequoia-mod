@@ -20,8 +20,9 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 public class DiscordChatBridgeFeature extends Feature {
     private static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
-            "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}]*?([A-Za-z0-9_]+):\\s*((?:.+\\n?)*)$",
+            "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}]*?([^:]+):\\s*((?:.+\\n?)*)$",
             Pattern.MULTILINE);
+
     private static final Pattern NICKNAME_PATTERN =
             Pattern.compile("(.*?)'s? real username is (.*)", Pattern.MULTILINE);
 
@@ -48,9 +49,13 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
+        if (!containsUnicode(messageStringWithoutFormatting) || messageStringWithoutFormatting.startsWith("[Event]")) {
+            return;
+        }
+
         if (SequoiaWebSocketClient.getInstance().isClosed()) {
             try {
-                SequoiaWebSocketClient.getInstance().connectBlocking();
+                SequoiaWebSocketClient.getInstance().reconnect();
             } catch (Exception exception) {
                 SequoiaMod.error("Failed to connect to WebSocket server", exception);
                 return;
@@ -78,15 +83,11 @@ public class DiscordChatBridgeFeature extends Feature {
                         .trim();
 
                 if (nickname != null && nameMap.containsKey(nickname)) {
-                    username = nameMap.get(nickname).getFirst();
+                    username = nameMap.get(nickname).get(0);
                 }
 
                 if (username == null) {
-                    username = nickname;
-                    nickname = null;
-                }
-
-                if (username == null && nickname == null) {
+                    SequoiaMod.debug("No username found for nickname: " + nickname);
                     return;
                 }
 
@@ -99,6 +100,10 @@ public class DiscordChatBridgeFeature extends Feature {
         } catch (Exception ignored) {
             return;
         }
+    }
+
+    private static boolean containsUnicode(String message) {
+        return message.matches(".*[\\P{ASCII}].*");
     }
 
     private static void createRealNameMap(Component message, Map<String, List<String>> nameMap) {
@@ -125,12 +130,14 @@ public class DiscordChatBridgeFeature extends Feature {
             if (hover.getValue(hover.getAction()) instanceof Component hoverText) {
                 Matcher nicknameMatcher = NICKNAME_PATTERN.matcher(hoverText.getString());
                 if (!nicknameMatcher.matches()) {
+                    SequoiaMod.debug("No match for hover text: " + hoverText.getString());
                     return;
                 }
 
                 String nickname = nicknameMatcher.group(1);
                 String username = nicknameMatcher.group(2);
 
+                SequoiaMod.debug("Mapped nickname '" + nickname + "' to username '" + username + "'");
                 nameMap.computeIfAbsent(nickname, k -> new ArrayList<>()).add(username);
             }
         }
@@ -151,7 +158,9 @@ public class DiscordChatBridgeFeature extends Feature {
     private static boolean messageHasNickHover(Component message) {
         HoverEvent hover = message.getStyle().getHoverEvent();
         if (hover != null && hover.getValue(hover.getAction()) instanceof Component hoverText) {
-            return hoverText.getString().contains("real username");
+            String hoverString = hoverText.getString();
+            SequoiaMod.debug("Hover text found: " + hoverString);
+            return hoverString.contains("real username");
         }
         return false;
     }

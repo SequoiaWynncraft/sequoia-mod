@@ -36,6 +36,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     private static final ConcurrentLinkedQueue<String> MESSAGE_QUEUE = new ConcurrentLinkedQueue<>();
     private static SequoiaWebSocketClient instance;
     private static long lastDisconnectionTime = 0;
+    private static boolean isHashNotFoundResult = false;
 
     private SequoiaWebSocketClient(URI serverUri, Map<String, String> httpHeaders) {
         super(serverUri, httpHeaders);
@@ -56,6 +57,11 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     }
 
     public String sendAsJson(Object object) {
+        if (isHashNotFoundResult) {
+            SequoiaMod.debug("Ignoring sending WebSocket message due to hash mismatch: " + object);
+            return null;
+        }
+
         try {
             if (instance.isClosed()) {
                 SequoiaMod.debug("WebSocket is closed. Storing message for retry: " + object);
@@ -104,9 +110,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onCharacterUpdate(CharacterUpdateEvent event) {
-        if (instance == null || instance.isClosed()) {
-            instance.reconnect();
-        }
+        getInstance();
     }
 
     @Override
@@ -119,6 +123,11 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
     @Override
     public void onMessage(String message) {
+        if (isHashNotFoundResult) {
+            SequoiaMod.debug("Ignoring WebSocket message due to hash mismatch: " + message);
+            return;
+        }
+
         try {
             WSMessage wsMessage = GSON.fromJson(message, WSMessage.class);
 
@@ -145,8 +154,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             if (wsMessage.getType() == WSMessageType.SSessionIDResult.getValue()) {
                 SSessionIDResultWSMessage.Data sSessionIDResultWSMessageData =
                         GSON.fromJson(GSON.toJson(wsMessage.getData()), SSessionIDResultWSMessage.Data.class);
-                boolean isHashNotFoundResult =
-                        StringUtils.equals(sSessionIDResultWSMessageData.result(), "hash not found");
+                isHashNotFoundResult = StringUtils.equals(sSessionIDResultWSMessageData.result(), "hash not found");
                 if (sSessionIDResultWSMessageData.error() && !isHashNotFoundResult) {
                     new Thread(() -> {
                                 try {
@@ -162,9 +170,9 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
                 if (isHashNotFoundResult) {
                     SequoiaMod.error(
-                            "Failed to authenticate with WebSocket server, as the jar file hash on the server does not match the client's hash. If you believe this is an error, please let the developers know.");
+                            "Failed to authenticate you with WebSocket server due to hashes mismatch. If you believe this is an error, let the developers know.");
                     McUtils.sendMessageToClient(SequoiaMod.prefix(Component.literal(
-                                    "Failed to authenticate with WebSocket server, as the jar file hash on the server does not match the client's hash. If you believe this is an error, please let the developers know.")
+                                    "Failed to authenticate you with WebSocket server due to hashes mismatch. If you believe this is an error, let the developers know.")
                             .withStyle(ChatFormatting.RED)));
                     return;
                 }

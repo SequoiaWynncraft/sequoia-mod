@@ -1,5 +1,6 @@
 package dev.lotnest.sequoia.ws.session;
 
+import com.google.gson.annotations.SerializedName;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -20,7 +21,8 @@ public class GGetSessionIDWSMessage extends WSMessage {
         return new ToStringBuilder(this).append("data", getData()).toString();
     }
 
-    public record Data(String username, String uuid, String clientHash, String timestamp) {
+    public record Data(
+            String username, String uuid, @SerializedName("client_hash") String clientHash, String timestamp) {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;

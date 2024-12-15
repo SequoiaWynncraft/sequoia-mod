@@ -103,10 +103,11 @@ public final class SequoiaMod {
         }
     }
 
-    public static void init(ModLoader modLoader, String modVersion) {
+    public static void init(ModLoader modLoader, boolean isDevelopmentEnvironment, String modVersion) {
         // Note that at this point, no resources (including I18n) are available, so we postpone features until then
         SequoiaMod.modLoader = modLoader;
         isDevelopmentBuild = modVersion.contains("SNAPSHOT");
+        SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
 
         LOGGER.info(
@@ -122,6 +123,7 @@ public final class SequoiaMod {
                     .getLocation()
                     .toURI());
             jarFileHash = JarHasher.calculateHash(jarFile, "SHA-256");
+            debug("Computed jar hash: " + jarFileHash);
         } catch (Exception exception) {
             LOGGER.error("Failed to compute JAR file hash, the WebSocket will not function properly", exception);
         }
