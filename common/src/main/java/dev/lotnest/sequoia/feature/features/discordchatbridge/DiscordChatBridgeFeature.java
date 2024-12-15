@@ -5,13 +5,10 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
+import dev.lotnest.sequoia.utils.TimeUtils;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,13 +19,23 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class DiscordChatBridgeFeature extends Feature {
-    private static final Pattern GUILD_CHAT_PATTERN =
-            Pattern.compile("([^\\x00-\\x7F]+).*?([A-Za-z0-9_][A-Za-z0-9_ ]*?):\\s*(.+)", Pattern.MULTILINE);
+    private static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
+            "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}]*?([A-Za-z0-9_]+):\\s*((?:.+\\n?)*)$",
+            Pattern.MULTILINE);
     private static final Pattern NICKNAME_PATTERN =
             Pattern.compile("(.*?)'s? real username is (.*)", Pattern.MULTILINE);
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
+        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
+            return;
+        }
+
+        MutableComponent messageComponent = event.getStyledText().getComponent();
+        String messageStringWithoutFormatting = event.getStyledText().getStringWithoutFormatting();
+
+        SequoiaMod.debug("[CHAT] " + event.getStyledText().getString());
+
         if (!SequoiaMod.CONFIG.discordChatBridgeFeature.enabled()) {
             return;
         }
@@ -37,14 +44,9 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
+        if (!event.getStyledText().contains("§b") && !event.getStyledText().contains("§3")) {
             return;
         }
-
-        MutableComponent messageComponent = event.getStyledText().getComponent();
-        String messageStringWithoutFormatting = event.getStyledText().getStringWithoutFormatting();
-
-        SequoiaMod.debug("[CHAT] " + messageStringWithoutFormatting);
 
         if (SequoiaWebSocketClient.getInstance().isClosed()) {
             try {
@@ -57,44 +59,46 @@ public class DiscordChatBridgeFeature extends Feature {
 
         Matcher guildChatMatcher = GUILD_CHAT_PATTERN.matcher(messageStringWithoutFormatting);
         Map<String, List<String>> nameMap = Maps.newHashMap();
-        String nickname = null;
+        String nickname;
         String username = null;
 
         createRealNameMap(messageComponent, nameMap);
 
         try {
             if (guildChatMatcher.matches()) {
-                nickname = guildChatMatcher.group(2);
-                username = null;
-            }
+                nickname = guildChatMatcher
+                        .group(1)
+                        .replaceAll("[^\\x20-\\x7E]", "")
+                        .replace("\n", " ")
+                        .trim();
+                String message = guildChatMatcher
+                        .group(2)
+                        .replaceAll("[^\\x20-\\x7E]", "")
+                        .replace("\n", " ")
+                        .trim();
 
-            if (nickname != null && nameMap.containsKey(nickname)) {
-                username = nameMap.get(nickname).getFirst();
-            }
+                if (nickname != null && nameMap.containsKey(nickname)) {
+                    username = nameMap.get(nickname).getFirst();
+                }
 
-            if (username == null) {
-                username = nickname;
-                nickname = null;
-            }
+                if (username == null) {
+                    username = nickname;
+                    nickname = null;
+                }
 
-            if (username == null && nickname == null) {
-                return;
+                if (username == null && nickname == null) {
+                    return;
+                }
+
+                GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
+                        username, nickname, message, TimeUtils.wsTimestamp(), McUtils.playerName()));
+
+                SequoiaWebSocketClient.getInstance().sendAsJson(gChatMessageWSMessage);
+                SequoiaMod.debug("Sent guild chat message to Discord: " + gChatMessageWSMessage);
             }
         } catch (Exception ignored) {
             return;
         }
-
-        GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
-                username,
-                nickname,
-                messageStringWithoutFormatting,
-                Instant.ofEpochMilli(System.currentTimeMillis())
-                        .atZone(ZoneId.systemDefault())
-                        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.ROOT)),
-                McUtils.playerName()));
-
-        SequoiaWebSocketClient.getInstance().sendAsJson(gChatMessageWSMessage);
-        SequoiaMod.debug("Sent guild chat message to Discord: " + gChatMessageWSMessage);
     }
 
     private static void createRealNameMap(Component message, Map<String, List<String>> nameMap) {

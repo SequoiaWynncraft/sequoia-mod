@@ -9,10 +9,8 @@ import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
+import dev.lotnest.sequoia.utils.JarHasher;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -117,43 +115,16 @@ public final class SequoiaMod {
                 modLoader,
                 SharedConstants.getCurrentVersion().getName());
 
-        jarFileHash = getJarFileHash();
-    }
-
-    private static String getJarFileHash() {
-        if (jarFileHash == null) {
-            try {
-                File jarFile = new File(SequoiaMod.class
-                        .getProtectionDomain()
-                        .getCodeSource()
-                        .getLocation()
-                        .toURI());
-                if (!jarFile.exists()) {
-                    throw new IOException("JAR file not found at: " + jarFile.getAbsolutePath());
-                }
-
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                try (FileInputStream fis = new FileInputStream(jarFile)) {
-                    byte[] byteArray = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = fis.read(byteArray)) != -1) {
-                        digest.update(byteArray, 0, bytesRead);
-                    }
-                }
-
-                byte[] hashBytes = digest.digest();
-                StringBuilder hexString = new StringBuilder();
-                for (byte b : hashBytes) {
-                    hexString.append(String.format("%02x", b));
-                }
-
-                jarFileHash = hexString.toString();
-            } catch (Exception exception) {
-                LOGGER.error("Failed to compute JAR file hash", exception);
-                return null;
-            }
+        try {
+            File jarFile = new File(SequoiaMod.class
+                    .getProtectionDomain()
+                    .getCodeSource()
+                    .getLocation()
+                    .toURI());
+            jarFileHash = JarHasher.calculateHash(jarFile, "SHA-256");
+        } catch (Exception exception) {
+            LOGGER.error("Failed to compute JAR file hash, the WebSocket will not function properly", exception);
         }
-        return jarFileHash;
     }
 
     private static void registerComponents(Class<?> registryClass, Class<? extends CoreComponent> componentClass) {
@@ -212,6 +183,10 @@ public final class SequoiaMod {
 
     public static MutableComponent prefix(Component component) {
         return PREFIX.copy().append(component);
+    }
+
+    public static String getJarFileHash() {
+        return jarFileHash;
     }
 
     public enum ModLoader {

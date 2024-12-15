@@ -24,7 +24,7 @@ public enum WSMessageType {
     SRaidSubmission(18),
     SReserved2(19),
     SSessionIDResult(20),
-    SReserved4(21),
+    SMessage(21),
     SReserved5(22),
     SReserved6(23),
     SReserved7(24),

@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 
-public class WynnUtils {
+public final class WynnUtils {
     private static final UUID WC_LIST_ENTRY = UUID.fromString("16ff7452-714f-3752-b3cd-c3cb2068f6af");
 
     private WynnUtils() {}

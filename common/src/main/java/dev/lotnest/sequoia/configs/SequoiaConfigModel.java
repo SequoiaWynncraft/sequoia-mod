@@ -17,7 +17,7 @@ public class SequoiaConfigModel {
     @SectionHeader("general")
     public boolean verboseLogging = false;
 
-    public boolean showWebSocketDisconnectMessages = true;
+    public boolean showWebSocketMessages = true;
 
     @SectionHeader("features")
     @Nest

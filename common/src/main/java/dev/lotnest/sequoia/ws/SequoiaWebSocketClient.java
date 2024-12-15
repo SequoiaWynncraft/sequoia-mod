@@ -4,10 +4,14 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.SChannelMessageWSMessage;
 import dev.lotnest.sequoia.json.adapters.OffsetDateTimeAdapter;
+import dev.lotnest.sequoia.utils.TimeUtils;
+import dev.lotnest.sequoia.ws.session.GGetSessionIDWSMessage;
+import dev.lotnest.sequoia.ws.session.SSessionIDResultWSMessage;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -15,11 +19,15 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 public final class SequoiaWebSocketClient extends WebSocketClient {
-    private static final String WS_URL = "ws://64.225.107.161:8084/sequoia-tree/ws";
+    private static final String WS_DEV_URL = "ws://localhost:8080/sequoia-tree/ws";
+    private static final String WS_PROD_URL = "ws://lotnest.dev:8084/sequoia-tree/ws";
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter())
             .create();
@@ -36,9 +44,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     public static synchronized SequoiaWebSocketClient getInstance() {
         if (instance == null || instance.isClosed()) {
             instance = new SequoiaWebSocketClient(
-                    URI.create(WS_URL), Map.of("Authorization", "Bearer meowmeowAG6v92hc23LK5rqrSD278"));
+                    URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
+                    Map.of("Authoworization", "Bearer meowmeowAG6v92hc23LK5rqrSD278"));
             try {
-                instance.connectBlocking();
+                instance.connect();
             } catch (Exception exception) {
                 SequoiaMod.error("Failed to connect to WebSocket server", exception);
             }
@@ -57,8 +66,8 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             String payload = GSON.toJson(object);
             instance.send(payload);
             return payload;
-        } catch (Exception exception) {
-            SequoiaMod.error("Failed to send WebSocket message, storing for retry", exception);
+        } catch (Exception ignored) {
+            SequoiaMod.debug("Failed to send WebSocket message, storing for retry: " + object);
             storeFailedMessage(object);
             return null;
         }
@@ -83,9 +92,28 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
         }
     }
 
+    private void reauthenticate() {
+        GGetSessionIDWSMessage gGetSessionIDWSMessage = new GGetSessionIDWSMessage(new GGetSessionIDWSMessage.Data(
+                McUtils.playerName(),
+                McUtils.player().getStringUUID(),
+                SequoiaMod.getJarFileHash(),
+                TimeUtils.wsTimestamp()));
+        SequoiaMod.debug("Sending session ID request: " + gGetSessionIDWSMessage);
+        sendAsJson(gGetSessionIDWSMessage);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onCharacterUpdate(CharacterUpdateEvent event) {
+        if (instance == null || instance.isClosed()) {
+            instance.reconnect();
+        }
+    }
+
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
-        SequoiaMod.debug("Successfully connected to WebSocket server.");
+        SequoiaMod.debug("Received handshake from WebSocket server.");
+
+        reauthenticate();
         resendFailedMessages();
     }
 
@@ -113,6 +141,40 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                                     .withStyle(ChatFormatting.GRAY)));
                 }
             }
+
+            if (wsMessage.getType() == WSMessageType.SSessionIDResult.getValue()) {
+                SSessionIDResultWSMessage.Data sSessionIDResultWSMessageData =
+                        GSON.fromJson(GSON.toJson(wsMessage.getData()), SSessionIDResultWSMessage.Data.class);
+                boolean isHashNotFoundResult =
+                        StringUtils.equals(sSessionIDResultWSMessageData.result(), "hash not found");
+                if (sSessionIDResultWSMessageData.error() && !isHashNotFoundResult) {
+                    new Thread(() -> {
+                                try {
+                                    Thread.sleep(1000);
+                                    reauthenticate();
+                                } catch (InterruptedException exception) {
+                                    SequoiaMod.error("Failed to reconnect to WebSocket server", exception);
+                                }
+                            })
+                            .start();
+                    return;
+                }
+
+                if (isHashNotFoundResult) {
+                    SequoiaMod.error(
+                            "Failed to authenticate with WebSocket server, as the jar file hash on the server does not match the client's hash. If you believe this is an error, please let the developers know.");
+                    McUtils.sendMessageToClient(SequoiaMod.prefix(Component.literal(
+                                    "Failed to authenticate with WebSocket server, as the jar file hash on the server does not match the client's hash. If you believe this is an error, please let the developers know.")
+                            .withStyle(ChatFormatting.RED)));
+                    return;
+                }
+
+                if (SequoiaMod.CONFIG.showWebSocketMessages()) {
+                    McUtils.sendMessageToClient(SequoiaMod.prefix(
+                            Component.literal("Connected to WebSocket server.").withStyle(ChatFormatting.GREEN)));
+                }
+                return;
+            }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to parse WebSocket message: " + message, exception);
         }
@@ -126,7 +188,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
             SequoiaMod.debug("Disconnected from WebSocket server: " + reason);
 
-            if (SequoiaMod.CONFIG.showWebSocketDisconnectMessages()) {
+            if (SequoiaMod.CONFIG.showWebSocketMessages()) {
                 McUtils.sendMessageToClient(SequoiaMod.prefix(
                         Component.literal("Disconnected from WebSocket server. Will try to reconnect in one minute.")
                                 .withStyle(ChatFormatting.RED)));

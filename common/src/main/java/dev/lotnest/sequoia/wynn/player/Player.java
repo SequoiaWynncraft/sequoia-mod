@@ -1,5 +1,6 @@
 package dev.lotnest.sequoia.wynn.player;
 
+import java.util.List;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -27,6 +28,7 @@ public class Player {
     private Map<String, Integer> ranking;
     private Map<String, Integer> previousRanking;
     private boolean publicProfile;
+    private Map<String, Character> characters;
 
     public static class LegacyRankColour {
         private String main;
@@ -181,6 +183,27 @@ public class Player {
             public void setList(Map<String, Integer> list) {
                 this.list = list;
             }
+
+            public MutableComponent toPrettyMessage() {
+                MutableComponent result = Component.empty();
+
+                if (list == null || list.isEmpty()) {
+                    return result.append(
+                            Component.translatable("sequoia.command.playerDungeons.playerHasNoDungeonsCompleted"));
+                }
+
+                list.forEach((dungeonName, count) -> result.append(
+                                Component.literal(dungeonName).withStyle(ChatFormatting.DARK_GREEN))
+                        .append(Component.literal(": ").withStyle(ChatFormatting.GREEN))
+                        .append(Component.literal(count + " times").withStyle(ChatFormatting.GREEN))
+                        .append(Component.literal("\n")));
+
+                if (!result.getSiblings().isEmpty()) {
+                    result.getSiblings().removeLast();
+                }
+
+                return result;
+            }
         }
 
         public static class Raids {
@@ -244,6 +267,330 @@ public class Player {
             public void setDeaths(int deaths) {
                 this.deaths = deaths;
             }
+        }
+    }
+
+    public static class Character {
+        private String nickname;
+        private int level;
+        private int xp;
+        private int xpPercent;
+        private int totalLevel;
+        private int wars;
+        private float playtime;
+        private int mobsKilled;
+        private int chestsFound;
+        private int blocksWalked;
+        private int itemsIdentified;
+        private int logins;
+        private int deaths;
+        private int discoveries;
+        private PvP pvp;
+        private List<String> gamemode;
+        private SkillPoints skillPoints;
+        private Map<String, Profession> professions;
+        private Dungeons dungeons;
+        private Raids raids;
+        private List<String> quests;
+
+        public static class PvP {
+            private int kills;
+            private int deaths;
+
+            public int getKills() {
+                return kills;
+            }
+
+            public void setKills(int kills) {
+                this.kills = kills;
+            }
+
+            public int getDeaths() {
+                return deaths;
+            }
+
+            public void setDeaths(int deaths) {
+                this.deaths = deaths;
+            }
+        }
+
+        public static class SkillPoints {
+            private int strength;
+            private int dexterity;
+            private int intelligence;
+            private int defence;
+            private int agility;
+
+            public int getStrength() {
+                return strength;
+            }
+
+            public void setStrength(int strength) {
+                this.strength = strength;
+            }
+
+            public int getDexterity() {
+                return dexterity;
+            }
+
+            public void setDexterity(int dexterity) {
+                this.dexterity = dexterity;
+            }
+
+            public int getIntelligence() {
+                return intelligence;
+            }
+
+            public void setIntelligence(int intelligence) {
+                this.intelligence = intelligence;
+            }
+
+            public int getDefence() {
+                return defence;
+            }
+
+            public void setDefence(int defence) {
+                this.defence = defence;
+            }
+
+            public int getAgility() {
+                return agility;
+            }
+
+            public void setAgility(int agility) {
+                this.agility = agility;
+            }
+        }
+
+        public static class Profession {
+            private int level;
+            private int xpPercent;
+
+            public int getLevel() {
+                return level;
+            }
+
+            public void setLevel(int level) {
+                this.level = level;
+            }
+
+            public int getXpPercent() {
+                return xpPercent;
+            }
+
+            public void setXpPercent(int xpPercent) {
+                this.xpPercent = xpPercent;
+            }
+        }
+
+        public static class Dungeons {
+            private int total;
+            private Map<String, Integer> list;
+
+            public int getTotal() {
+                return total;
+            }
+
+            public void setTotal(int total) {
+                this.total = total;
+            }
+
+            public Map<String, Integer> getList() {
+                return list;
+            }
+
+            public void setList(Map<String, Integer> list) {
+                this.list = list;
+            }
+        }
+
+        public static class Raids {
+            private int total;
+            private Map<String, Integer> list;
+
+            public int getTotal() {
+                return total;
+            }
+
+            public void setTotal(int total) {
+                this.total = total;
+            }
+
+            public Map<String, Integer> getList() {
+                return list;
+            }
+
+            public void setList(Map<String, Integer> list) {
+                this.list = list;
+            }
+        }
+
+        public String getNickname() {
+            return nickname;
+        }
+
+        public void setNickname(String nickname) {
+            this.nickname = nickname;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+
+        public void setLevel(int level) {
+            this.level = level;
+        }
+
+        public int getXp() {
+            return xp;
+        }
+
+        public void setXp(int xp) {
+            this.xp = xp;
+        }
+
+        public int getXpPercent() {
+            return xpPercent;
+        }
+
+        public void setXpPercent(int xpPercent) {
+            this.xpPercent = xpPercent;
+        }
+
+        public int getTotalLevel() {
+            return totalLevel;
+        }
+
+        public void setTotalLevel(int totalLevel) {
+            this.totalLevel = totalLevel;
+        }
+
+        public int getWars() {
+            return wars;
+        }
+
+        public void setWars(int wars) {
+            this.wars = wars;
+        }
+
+        public float getPlaytime() {
+            return playtime;
+        }
+
+        public void setPlaytime(float playtime) {
+            this.playtime = playtime;
+        }
+
+        public int getMobsKilled() {
+            return mobsKilled;
+        }
+
+        public void setMobsKilled(int mobsKilled) {
+            this.mobsKilled = mobsKilled;
+        }
+
+        public int getChestsFound() {
+            return chestsFound;
+        }
+
+        public void setChestsFound(int chestsFound) {
+            this.chestsFound = chestsFound;
+        }
+
+        public int getBlocksWalked() {
+            return blocksWalked;
+        }
+
+        public void setBlocksWalked(int blocksWalked) {
+            this.blocksWalked = blocksWalked;
+        }
+
+        public int getItemsIdentified() {
+            return itemsIdentified;
+        }
+
+        public void setItemsIdentified(int itemsIdentified) {
+            this.itemsIdentified = itemsIdentified;
+        }
+
+        public int getLogins() {
+            return logins;
+        }
+
+        public void setLogins(int logins) {
+            this.logins = logins;
+        }
+
+        public int getDeaths() {
+            return deaths;
+        }
+
+        public void setDeaths(int deaths) {
+            this.deaths = deaths;
+        }
+
+        public int getDiscoveries() {
+            return discoveries;
+        }
+
+        public void setDiscoveries(int discoveries) {
+            this.discoveries = discoveries;
+        }
+
+        public PvP getPvp() {
+            return pvp;
+        }
+
+        public void setPvp(PvP pvp) {
+            this.pvp = pvp;
+        }
+
+        public List<String> getGamemode() {
+            return gamemode;
+        }
+
+        public void setGamemode(List<String> gamemode) {
+            this.gamemode = gamemode;
+        }
+
+        public SkillPoints getSkillPoints() {
+            return skillPoints;
+        }
+
+        public void setSkillPoints(SkillPoints skillPoints) {
+            this.skillPoints = skillPoints;
+        }
+
+        public Map<String, Profession> getProfessions() {
+            return professions;
+        }
+
+        public void setProfessions(Map<String, Profession> professions) {
+            this.professions = professions;
+        }
+
+        public Dungeons getDungeons() {
+            return dungeons;
+        }
+
+        public void setDungeons(Dungeons dungeons) {
+            this.dungeons = dungeons;
+        }
+
+        public Raids getRaids() {
+            return raids;
+        }
+
+        public void setRaids(Raids raids) {
+            this.raids = raids;
+        }
+
+        public List<String> getQuests() {
+            return quests;
+        }
+
+        public void setQuests(List<String> quests) {
+            this.quests = quests;
         }
     }
 
@@ -413,5 +760,13 @@ public class Player {
 
     public void setPublicProfile(boolean publicProfile) {
         this.publicProfile = publicProfile;
+    }
+
+    public Map<String, Character> getCharacters() {
+        return characters;
+    }
+
+    public void setCharacters(Map<String, Character> characters) {
+        this.characters = characters;
     }
 }

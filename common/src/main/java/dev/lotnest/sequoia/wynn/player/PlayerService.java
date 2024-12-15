@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 public final class PlayerService {
     private static final String BASE_URL = "https://api.wynncraft.com/v3/player/%s";
+    private static final String FULL_RESULT_URL = BASE_URL + "?fullResult";
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder().create();
 
@@ -32,6 +33,27 @@ public final class PlayerService {
                     } else if (response.statusCode() == 300) {
                         UUID uuid = MojangService.getUuid(username).join();
                         return getPlayer(uuid.toString()).join();
+                    } else {
+                        SequoiaMod.error("Failed to fetch player data: " + response.statusCode());
+                        return null;
+                    }
+                });
+    }
+
+    public static CompletableFuture<Player> getPlayerFullResult(String username) {
+        String url = String.format(FULL_RESULT_URL, username);
+        HttpRequest request =
+                HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+
+        return HTTP_CLIENT
+                .sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(response -> {
+                    if (response.statusCode() == 200 && response.body() != null) {
+                        SequoiaMod.debug("Fetched player data: " + response.body());
+                        return GSON.fromJson(response.body(), Player.class);
+                    } else if (response.statusCode() == 300) {
+                        UUID uuid = MojangService.getUuid(username).join();
+                        return getPlayerFullResult(uuid.toString()).join();
                     } else {
                         SequoiaMod.error("Failed to fetch player data: " + response.statusCode());
                         return null;
