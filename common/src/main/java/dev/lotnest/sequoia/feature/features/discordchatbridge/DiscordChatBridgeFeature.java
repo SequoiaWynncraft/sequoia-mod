@@ -1,6 +1,7 @@
 package dev.lotnest.sequoia.feature.features.discordchatbridge;
 
 import com.google.common.collect.Maps;
+import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
@@ -20,22 +21,27 @@ import net.neoforged.bus.api.SubscribeEvent;
 
 public class DiscordChatBridgeFeature extends Feature {
     private static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
-            "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}]*?([^:]+):\\s*((?:.+\\n?)*)$",
+            "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}§[0-9a-fk-or<]*]*?([^:]+):\\s*(.+)$",
             Pattern.MULTILINE);
-
     private static final Pattern NICKNAME_PATTERN =
             Pattern.compile("(.*?)'s? real username is (.*)", Pattern.MULTILINE);
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
+        StyledText messageTextWithoutNewLines =
+                event.getStyledText().replaceAll("\n", "").replaceAll("\uDAFF\uDFFC\uE001\uDB00\uDC06\\s", "");
+        MutableComponent messageComponent = messageTextWithoutNewLines.getComponent();
+
+        if (messageTextWithoutNewLines == null || messageTextWithoutNewLines.isBlank()) {
             return;
         }
 
-        MutableComponent messageComponent = event.getStyledText().getComponent();
-        String messageStringWithoutFormatting = event.getStyledText().getStringWithoutFormatting();
+        String messageStringWithoutFormatting = messageTextWithoutNewLines.getStringWithoutFormatting();
+        SequoiaMod.debug("[CHAT] " + messageTextWithoutNewLines);
 
-        SequoiaMod.debug("[CHAT] " + event.getStyledText().getString());
+        if (SequoiaWebSocketClient.getInstance() == null) {
+            return;
+        }
 
         if (!SequoiaMod.CONFIG.discordChatBridgeFeature.enabled()) {
             return;
@@ -45,7 +51,7 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        if (!event.getStyledText().contains("§b") && !event.getStyledText().contains("§3")) {
+        if (!messageTextWithoutNewLines.contains("§b") && !messageTextWithoutNewLines.contains("§3")) {
             return;
         }
 
@@ -74,21 +80,19 @@ public class DiscordChatBridgeFeature extends Feature {
                 nickname = guildChatMatcher
                         .group(1)
                         .replaceAll("[^\\x20-\\x7E]", "")
-                        .replace("\n", " ")
                         .trim();
                 String message = guildChatMatcher
                         .group(2)
                         .replaceAll("[^\\x20-\\x7E]", "")
-                        .replace("\n", " ")
                         .trim();
 
                 if (nickname != null && nameMap.containsKey(nickname)) {
-                    username = nameMap.get(nickname).get(0);
+                    username = nameMap.get(nickname).getFirst();
                 }
 
                 if (username == null) {
-                    SequoiaMod.debug("No username found for nickname: " + nickname);
-                    return;
+                    username = nickname;
+                    nickname = null;
                 }
 
                 GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
@@ -97,7 +101,8 @@ public class DiscordChatBridgeFeature extends Feature {
                 SequoiaWebSocketClient.getInstance().sendAsJson(gChatMessageWSMessage);
                 SequoiaMod.debug("Sent guild chat message to Discord: " + gChatMessageWSMessage);
             }
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
+            SequoiaMod.error("Failed to send guild chat message to Discord", exception);
             return;
         }
     }

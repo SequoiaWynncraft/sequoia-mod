@@ -52,10 +52,19 @@ public class Player {
     }
 
     public static class Guild {
+        private String uuid;
         private String name;
         private String prefix;
         private String rank;
         private String rankStars;
+
+        public String getUuid() {
+            return uuid;
+        }
+
+        public void setUuid(String uuid) {
+            this.uuid = uuid;
+        }
 
         public String getName() {
             return name;

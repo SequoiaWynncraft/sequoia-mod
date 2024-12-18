@@ -40,6 +40,10 @@ public class GuildRaidTrackerFeature extends Feature {
             return;
         }
 
+        if (SequoiaWebSocketClient.getInstance() == null) {
+            return;
+        }
+
         Component message = event.getStyledText().getComponent();
         String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
         Matcher guildRaidCompletionMatcher = GUILD_RAID_COMPLETION_PATTERN.matcher(unformattedMessage);

@@ -12,6 +12,7 @@ import dev.lotnest.sequoia.json.adapters.OffsetDateTimeAdapter;
 import dev.lotnest.sequoia.utils.TimeUtils;
 import dev.lotnest.sequoia.ws.session.GGetSessionIDWSMessage;
 import dev.lotnest.sequoia.ws.session.SSessionIDResultWSMessage;
+import dev.lotnest.sequoia.wynn.guild.GuildService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -43,6 +44,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     }
 
     public static synchronized SequoiaWebSocketClient getInstance() {
+        if (!GuildService.isSequoiaGuildMember()) {
+            return null;
+        }
+
         if (instance == null || instance.isClosed()) {
             instance = new SequoiaWebSocketClient(
                     URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
@@ -57,6 +62,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     }
 
     public String sendAsJson(Object object) {
+        if (instance == null) {
+            return null;
+        }
+
         if (isHashNotFoundResult) {
             SequoiaMod.debug("Ignoring sending WebSocket message due to hash mismatch: " + object);
             return null;
@@ -207,7 +216,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             new Thread(() -> {
                         try {
                             Thread.sleep(60000);
-                            instance = getInstance();
+                            reconnect();
                         } catch (InterruptedException exception) {
                             SequoiaMod.error("Failed to reconnect to WebSocket server", exception);
                         }

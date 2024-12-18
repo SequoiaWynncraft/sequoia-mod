@@ -15,6 +15,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import org.apache.commons.lang3.StringUtils;
 
 public class LastSeenCommand extends Command {
     @Override
@@ -37,51 +38,55 @@ public class LastSeenCommand extends Command {
 
     private int lookupPlayerLastSeen(CommandContext<CommandSourceStack> context) {
         String username = context.getArgument("username", String.class);
-        CompletableFuture<Player> playerCompletableFuture = PlayerService.getPlayer(username);
-
-        playerCompletableFuture.whenComplete((player, throwable) -> {
-            if (throwable != null) {
-                context.getSource()
-                        .sendFailure(SequoiaMod.prefix(
-                                Component.translatable("sequoia.command.lastSeen.errorLookingUpPlayer", username)));
-            } else {
-                if (player == null) {
+        if (StringUtils.isBlank(username) || !username.matches("^[a-zA-Z0-9_]+$")) {
+            context.getSource()
+                    .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidPlayerName")));
+        } else {
+            CompletableFuture<Player> playerCompletableFuture = PlayerService.getPlayer(username);
+            playerCompletableFuture.whenComplete((player, throwable) -> {
+                if (throwable != null) {
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(
-                                    Component.translatable("sequoia.command.lastSeen.playerNotFound", username)));
+                                    Component.translatable("sequoia.command.lastSeen.errorLookingUpPlayer", username)));
                 } else {
-                    if (player.isOnline()) {
+                    if (player == null) {
                         context.getSource()
-                                .sendSuccess(
-                                        () -> SequoiaMod.prefix(Component.translatable(
-                                                        "sequoia.command.lastSeen.showingPlayerLastSeenOnline",
-                                                        player.getUsername(),
-                                                        player.getServer())
-                                                .withStyle(style -> style.withHoverEvent(new HoverEvent(
-                                                                HoverEvent.Action.SHOW_TEXT,
-                                                                Component.translatable(
-                                                                        "sequoia.tooltip.clickToPrivateMessage",
-                                                                        player.getUsername())))
-                                                        .withClickEvent(new ClickEvent(
-                                                                ClickEvent.Action.SUGGEST_COMMAND,
-                                                                "/msg " + player.getUsername() + " ")))),
-                                        false);
+                                .sendFailure(SequoiaMod.prefix(
+                                        Component.translatable("sequoia.command.lastSeen.playerNotFound", username)));
                     } else {
-                        context.getSource()
-                                .sendSuccess(
-                                        () -> SequoiaMod.prefix(Component.translatable(
-                                                "sequoia.command.lastSeen.showingPlayerLastSeenOffline",
-                                                player.getUsername(),
-                                                TimeUtils.toPrettyTimeSince(player.getLastJoin()))),
-                                        false);
+                        if (player.isOnline()) {
+                            context.getSource()
+                                    .sendSuccess(
+                                            () -> SequoiaMod.prefix(Component.translatable(
+                                                            "sequoia.command.lastSeen.showingPlayerLastSeenOnline",
+                                                            player.getUsername(),
+                                                            player.getServer())
+                                                    .withStyle(style -> style.withHoverEvent(new HoverEvent(
+                                                                    HoverEvent.Action.SHOW_TEXT,
+                                                                    Component.translatable(
+                                                                            "sequoia.tooltip.clickToPrivateMessage",
+                                                                            player.getUsername())))
+                                                            .withClickEvent(new ClickEvent(
+                                                                    ClickEvent.Action.SUGGEST_COMMAND,
+                                                                    "/msg " + player.getUsername() + " ")))),
+                                            false);
+                        } else {
+                            context.getSource()
+                                    .sendSuccess(
+                                            () -> SequoiaMod.prefix(Component.translatable(
+                                                    "sequoia.command.lastSeen.showingPlayerLastSeenOffline",
+                                                    player.getUsername(),
+                                                    TimeUtils.toPrettyTimeSince(player.getLastJoin()))),
+                                            false);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        context.getSource()
-                .sendSystemMessage(SequoiaMod.prefix(
-                        Component.translatable("sequoia.command.lastSeen.lookingUpPlayer", username)));
+            context.getSource()
+                    .sendSystemMessage(SequoiaMod.prefix(
+                            Component.translatable("sequoia.command.lastSeen.lookingUpPlayer", username)));
+        }
         return 1;
     }
 }

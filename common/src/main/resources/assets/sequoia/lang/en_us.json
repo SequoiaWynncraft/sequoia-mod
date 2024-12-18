@@ -1,4 +1,5 @@
 {
+  "sequoia.command.invalidPlayerName": "§cInvalid player name provided, check the username and try again.",
   "sequoia.command.lastSeen.errorLookingUpPlayer": "§cAn error occurred while looking up §e%s§c's last seen time, check the logs for more information.",
   "sequoia.command.lastSeen.lookingUpPlayer": "§aLooking up §2%s§a's last seen time...",
   "sequoia.command.lastSeen.playerNotFound": "§cPlayer §e%s §cwas not found, check the username and try again.",
@@ -6,6 +7,7 @@
   "sequoia.command.lastSeen.showingPlayerLastSeenOnline": "§2%s §ais online on §e%s.",
   "sequoia.command.onlineMembers.errorLookingUpGuildMembers": "§cAn error occurred while looking up §e%s§c's §cguild members, check the logs for more information.",
   "sequoia.command.onlineMembers.guildNotFound": "§cGuild §e%s §cwas not found, check the guild's name and try again.",
+  "sequoia.command.onlineMembers.invalidGuildName": "§cInvalid guild name provided, check the guild's name and try again.",
   "sequoia.command.onlineMembers.lookingUpGuildMembers": "§aLooking up §2%s§a's §aguild members...",
   "sequoia.command.onlineMembers.noGuildMembersFound": "§cNo guild members were found.",
   "sequoia.command.onlineMembers.showingOnlineGuildMembers": "§2%s [%s] §ahas §e%s §aout of §e%s §amembers online.",
