@@ -4,13 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.wynn.player.Player;
 import dev.lotnest.sequoia.wynn.player.PlayerService;
+import org.apache.commons.lang3.StringUtils;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
-import org.apache.commons.lang3.StringUtils;
 
 public final class GuildService {
     private static final String BASE_URL = "https://api.wynncraft.com/v3/guild/%s";
@@ -19,7 +21,8 @@ public final class GuildService {
 
     private static Boolean isSequoiaGuildMember = null;
 
-    private GuildService() {}
+    private GuildService() {
+    }
 
     public static CompletableFuture<Guild> getGuild(String guildName) {
         String normalUrl = String.format(BASE_URL, guildName.replace(" ", "%20"));
@@ -54,12 +57,16 @@ public final class GuildService {
 
     public static boolean isSequoiaGuildMember() {
         if (isSequoiaGuildMember == null) {
-            isSequoiaGuildMember = StringUtils.equals(
-                    PlayerService.getPlayer(McUtils.playerName())
-                            .join()
-                            .getGuild()
-                            .getUuid(),
-                    "ee860b7c-9a1d-49cf-9f19-ab673ba0f23b");
+            Player.Guild playerGuild = PlayerService.getPlayer(McUtils.playerName())
+                    .join()
+                    .getGuild();
+            if (playerGuild == null) {
+                isSequoiaGuildMember = false;
+            } else {
+                isSequoiaGuildMember = StringUtils.equals(
+                        playerGuild.getUuid(),
+                        "ee860b7c-9a1d-49cf-9f19-ab673ba0f23b");
+            }
         }
         return isSequoiaGuildMember;
     }

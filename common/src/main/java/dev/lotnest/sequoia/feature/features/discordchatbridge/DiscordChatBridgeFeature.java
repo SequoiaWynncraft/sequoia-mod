@@ -28,8 +28,10 @@ public class DiscordChatBridgeFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        StyledText messageTextWithoutNewLines =
-                event.getStyledText().replaceAll("\n", "").replaceAll("\uDAFF\uDFFC\uE001\uDB00\uDC06\\s", "");
+        StyledText messageTextWithoutNewLines = event.getStyledText()
+                .replaceAll("\n", "")
+                .replaceAll("\uDAFF\uDFFC\uE001\uDB00\uDC06\\s+", "")
+                .replaceAll("\\s{2,}", " ");
         MutableComponent messageComponent = messageTextWithoutNewLines.getComponent();
 
         if (messageTextWithoutNewLines == null || messageTextWithoutNewLines.isBlank()) {
