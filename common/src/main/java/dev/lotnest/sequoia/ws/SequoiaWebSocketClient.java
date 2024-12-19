@@ -157,14 +157,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                     SChannelMessageWSMessage sChannelMessageWSMessage =
                             new SChannelMessageWSMessage(sChannelMessageWSMessageData);
 
-                    McUtils.sendMessageToClient(Component.literal("[DISCORD]")
-                            .withStyle(style -> style.withColor(0x5865F2))
-                            .append(Component.literal(" "
-                                            + sChannelMessageWSMessage.getData().displayName() + " ➤ ")
-                                    .withStyle(style -> style.withColor(0x5865F2)))
-                            .append(Component.literal(
-                                            sChannelMessageWSMessage.getData().message())
-                                    .withStyle(ChatFormatting.GRAY)));
+                    McUtils.sendMessageToClient(Component.literal("[DISCORD] "
+                                    + sChannelMessageWSMessage.getData().displayName() + " ➤ "
+                                    + sChannelMessageWSMessage.getData().message())
+                            .withStyle(style -> style.withColor(0x5865F2)));
                 }
             }
 
