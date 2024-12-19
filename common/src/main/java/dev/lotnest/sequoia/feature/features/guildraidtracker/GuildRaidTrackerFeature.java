@@ -22,6 +22,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 
 public class GuildRaidTrackerFeature extends Feature {
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
@@ -101,10 +102,16 @@ public class GuildRaidTrackerFeature extends Feature {
     }
 
     private void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
+        if (guildRaid == null) {
+            return;
+        }
+
         try {
             WSMessage guildRaidWSMessage = new GuildRaidWSMessage(guildRaid);
             String payload = SequoiaWebSocketClient.getInstance().sendAsJson(guildRaidWSMessage);
-            SequoiaMod.debug("Sent Guild Raid completion: " + payload);
+            if (StringUtils.isNotBlank(payload)) {
+                SequoiaMod.debug("Sent Guild Raid completion: " + payload);
+            }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to send Guild Raid completion report", exception);
             McUtils.sendMessageToClient(

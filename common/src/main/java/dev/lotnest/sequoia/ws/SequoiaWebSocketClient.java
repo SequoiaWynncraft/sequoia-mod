@@ -38,6 +38,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     private static SequoiaWebSocketClient instance;
     private static long lastDisconnectionTime = 0;
     private static boolean isHashNotFoundResult = false;
+    private static long lastUpdateEventTime = 0;
 
     private SequoiaWebSocketClient(URI serverUri, Map<String, String> httpHeaders) {
         super(serverUri, httpHeaders);
@@ -49,13 +50,17 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
         }
 
         if (instance == null || instance.isClosed()) {
-            instance = new SequoiaWebSocketClient(
-                    URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
-                    Map.of("Authoworization", "Bearer meowmeowAG6v92hc23LK5rqrSD278"));
-            try {
-                instance.connect();
-            } catch (Exception exception) {
-                SequoiaMod.error("Failed to connect to WebSocket server", exception);
+            synchronized (SequoiaWebSocketClient.class) {
+                if (instance == null || instance.isClosed()) {
+                    instance = new SequoiaWebSocketClient(
+                            URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
+                            Map.of("Authoworization", "Bearer meowmeowAG6v92hc23LK5rqrSD278"));
+                    try {
+                        instance.connect();
+                    } catch (Exception exception) {
+                        SequoiaMod.error("Failed to connect to WebSocket server", exception);
+                    }
+                }
             }
         }
         return instance;
@@ -119,7 +124,11 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onCharacterUpdate(CharacterUpdateEvent event) {
-        getInstance();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastUpdateEventTime > 5000) {
+            lastUpdateEventTime = currentTime;
+            getInstance();
+        }
     }
 
     @Override
@@ -139,7 +148,6 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
         try {
             WSMessage wsMessage = GSON.fromJson(message, WSMessage.class);
-
             SequoiaMod.debug("Received WebSocket message: " + wsMessage);
 
             if (SequoiaMod.CONFIG.discordChatBridgeFeature.sendDiscordMessagesToInGameChat()) {

@@ -57,6 +57,10 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
+        if (messageTextWithoutNewLines.contains("§d") || messageTextWithoutNewLines.contains("§5")) {
+            return;
+        }
+
         if (!containsUnicode(messageStringWithoutFormatting) || messageStringWithoutFormatting.startsWith("[Event]")) {
             return;
         }

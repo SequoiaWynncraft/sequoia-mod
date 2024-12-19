@@ -53,7 +53,7 @@ public class OnlineMembersCommand extends Command {
                         context.getSource()
                                 .sendSuccess(
                                         () -> SequoiaMod.prefix(Component.translatable(
-                                                "sequoia.command.onlineMembers.showingOnlineGuildMembers",
+                                                "sequoia.command.onlineMembers.showingGuildMembers",
                                                 guild.getName(),
                                                 guild.getPrefix(),
                                                 guild.getOnline(),
