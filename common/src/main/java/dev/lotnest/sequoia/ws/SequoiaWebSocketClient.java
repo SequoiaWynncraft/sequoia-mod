@@ -28,6 +28,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -42,7 +43,6 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     private static final ConcurrentLinkedQueue<String> MESSAGE_QUEUE = new ConcurrentLinkedQueue<>();
     private static SequoiaWebSocketClient instance;
-    private static long lastDisconnectionTime = 0;
     private static long lastUpdateEventTime = 0;
     private static boolean isReconnecting = false;
 
@@ -57,6 +57,11 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
         if (instance == null || instance.isClosed()) {
             synchronized (SequoiaWebSocketClient.class) {
+                if (isReconnecting) {
+                    SequoiaMod.debug("Reconnection already in progress. Skipping redundant attempt.");
+                    return instance;
+                }
+
                 if (instance != null && !instance.isClosed()) {
                     try {
                         instance.close();
@@ -65,6 +70,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                     }
                 }
 
+                isReconnecting = true;
                 instance = new SequoiaWebSocketClient(
                         URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
                         Map.of(
@@ -74,9 +80,11 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                                 McUtils.player().getStringUUID()));
                 try {
                     instance.connect();
-                    instance.reauthenticate();
+                    instance.reauthenticate(false);
                 } catch (Exception exception) {
                     SequoiaMod.error("Failed to connect to WebSocket server", exception);
+                } finally {
+                    isReconnecting = false;
                 }
             }
         }
@@ -125,7 +133,11 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
         }
     }
 
-    private void reauthenticate() {
+    private void reauthenticate(boolean isInvalidateToken) {
+        if (isInvalidateToken) {
+            AccessTokenManager.invalidateAccessToken();
+        }
+
         GIdentifyWSMessage gIdentifyWSMessage = new GIdentifyWSMessage(new GIdentifyWSMessage.Data(
                 AccessTokenManager.retrieveAccessToken(), McUtils.player().getStringUUID()));
         SequoiaMod.debug("Sending GIdentify request: " + gIdentifyWSMessage);
@@ -175,7 +187,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                     new Thread(() -> {
                                 try {
                                     Thread.sleep(120000);
-                                    reauthenticate();
+                                    reauthenticate(false);
                                 } catch (Exception exception) {
                                     SequoiaMod.debug("Failed to reconnect to WebSocket server: "
                                             + exception.getMessage() + " - " + sSessionResultWSMessageData.result());
@@ -225,6 +237,12 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                             SequoiaMod.prefix(Component.literal("Server message ➤ " + sMessageWSMessageData))
                                     .withStyle(style -> style.withColor(0x19A775)));
                 }
+            } else if (wsMessage.getType() == 19
+                    && StringUtils.equals("Invalid token", wsMessage.getData().getAsString())) {
+                SequoiaMod.debug("Received invalid token response. Stopping retries and requesting a new token.");
+                isReconnecting = false;
+                reauthenticate(true);
+                return;
             }
         } catch (Exception exception) {
             SequoiaMod.debug("Failed to parse WebSocket message: " + message + " - " + exception.getMessage());
@@ -232,32 +250,13 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     }
 
     @Override
-    public void onClose(int code, String reason, boolean isRemote) {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastDisconnectionTime > 120000) {
-            lastDisconnectionTime = currentTime;
-            SequoiaMod.debug("Disconnected from WebSocket server: " + reason);
-        }
-
-        if (isRemote && !isReconnecting) {
-            isReconnecting = true;
-            new Thread(() -> {
-                        try {
-                            Thread.sleep(120000);
-                            getInstance();
-                        } catch (InterruptedException exception) {
-                            SequoiaMod.debug("Failed to reconnect to WebSocket server: " + reason + " - "
-                                    + exception.getMessage());
-                        } finally {
-                            isReconnecting = false;
-                        }
-                    })
-                    .start();
-        }
+    public void onClose(int code, String reason, boolean remote) {
+        isReconnecting = true;
+        SequoiaMod.debug("WebSocket connection closed. Code: " + code + ", Reason: " + reason);
     }
 
     @Override
     public void onError(Exception exception) {
-        SequoiaMod.debug("WebSocket client encountered an error: " + exception.getMessage());
+        SequoiaMod.error("WebSocket error: ", exception);
     }
 }

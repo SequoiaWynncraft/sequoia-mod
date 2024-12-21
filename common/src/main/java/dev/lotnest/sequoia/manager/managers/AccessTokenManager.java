@@ -126,4 +126,12 @@ public final class AccessTokenManager {
         }
         return StringUtils.EMPTY;
     }
+
+    public static void invalidateAccessToken() {
+        File tokenFile = new File(ACCESS_TOKEN_FILE_PATH);
+        if (tokenFile.exists()) {
+            tokenFile.delete();
+        }
+        SequoiaMod.debug("Access token was invalidated.");
+    }
 }
