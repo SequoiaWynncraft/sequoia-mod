@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.wynntils.core.mod.event.WynncraftConnectionEvent;
 import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
@@ -150,6 +151,17 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
         if (currentTime - lastUpdateEventTime > 5000) {
             lastUpdateEventTime = currentTime;
             getInstance();
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onWynncraftDisconnected(WynncraftConnectionEvent.Disconnected event) {
+        if (instance != null && !instance.isClosed()) {
+            try {
+                instance.close();
+            } catch (Exception exception) {
+                SequoiaMod.debug("Failed to close WebSocket instance: " + exception.getMessage());
+            }
         }
     }
 
