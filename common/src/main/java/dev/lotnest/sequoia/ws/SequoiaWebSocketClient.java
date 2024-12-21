@@ -32,7 +32,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
 public final class SequoiaWebSocketClient extends WebSocketClient {
-    private static final String WS_DEV_URL = "ws://localhost:8080/sequoia-tree/ws";
+    private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
     private static final String WS_PROD_URL = "ws://lotnest.dev:8085/sequoia-tree/ws";
     private static final Pattern URL_PATTERN = Pattern.compile("(https?://\\S+)", Pattern.CASE_INSENSITIVE);
     public static final Gson GSON = new GsonBuilder()
@@ -44,6 +44,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     private static SequoiaWebSocketClient instance;
     private static long lastDisconnectionTime = 0;
     private static long lastUpdateEventTime = 0;
+    private static boolean isReconnecting = false;
 
     private SequoiaWebSocketClient(URI serverUri, Map<String, String> httpHeaders) {
         super(serverUri, httpHeaders);
@@ -56,20 +57,26 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
         if (instance == null || instance.isClosed()) {
             synchronized (SequoiaWebSocketClient.class) {
-                if (instance == null || instance.isClosed()) {
-                    instance = new SequoiaWebSocketClient(
-                            URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
-                            Map.of(
-                                    "Authoworization",
-                                    "Bearer meowmeowAG6v92hc23LK5rqrSD279",
-                                    "X-UUID",
-                                    McUtils.player().getStringUUID()));
+                if (instance != null && !instance.isClosed()) {
                     try {
-                        instance.connect();
-                        instance.reauthenticate();
+                        instance.close();
                     } catch (Exception exception) {
-                        SequoiaMod.error("Failed to connect to WebSocket server", exception);
+                        SequoiaMod.debug("Failed to close existing WebSocket instance: " + exception.getMessage());
                     }
+                }
+
+                instance = new SequoiaWebSocketClient(
+                        URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
+                        Map.of(
+                                "Authoworization",
+                                "Bearer meowmeowAG6v92hc23LK5rqrSD279",
+                                "X-UUID",
+                                McUtils.player().getStringUUID()));
+                try {
+                    instance.connect();
+                    instance.reauthenticate();
+                } catch (Exception exception) {
+                    SequoiaMod.error("Failed to connect to WebSocket server", exception);
                 }
             }
         }
@@ -137,7 +144,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
         SequoiaMod.debug("Received handshake from WebSocket server.");
-
+        isReconnecting = false;
         resendFailedMessages();
     }
 
@@ -232,14 +239,17 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             SequoiaMod.debug("Disconnected from WebSocket server: " + reason);
         }
 
-        if (isRemote) {
+        if (isRemote && !isReconnecting) {
+            isReconnecting = true;
             new Thread(() -> {
                         try {
                             Thread.sleep(120000);
-                            reconnect();
+                            getInstance();
                         } catch (InterruptedException exception) {
                             SequoiaMod.debug("Failed to reconnect to WebSocket server: " + reason + " - "
                                     + exception.getMessage());
+                        } finally {
+                            isReconnecting = false;
                         }
                     })
                     .start();
