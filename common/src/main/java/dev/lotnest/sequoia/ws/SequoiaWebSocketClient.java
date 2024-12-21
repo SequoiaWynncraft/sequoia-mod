@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,46 +47,54 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     private static final Cache<Long, String> FAILED_MESSAGES_CACHE =
             CacheBuilder.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).build();
     private static final ConcurrentLinkedQueue<String> MESSAGE_QUEUE = new ConcurrentLinkedQueue<>();
-    private static SequoiaWebSocketClient instance;
+    private static SequoiaWebSocketClient instance = null;
     private static long lastUpdateEventTime = 0;
     private static boolean isReconnecting = false;
+    private static final Lock connectionLock = new ReentrantLock();
 
     private SequoiaWebSocketClient(URI serverUri, Map<String, String> httpHeaders) {
         super(serverUri, httpHeaders);
     }
 
-    public static synchronized SequoiaWebSocketClient getInstance() {
-        if (!GuildService.isSequoiaGuildMember()) {
-            return null;
-        }
-
-        if (instance == null || !instance.isOpen()) {
-            if (isReconnecting) {
-                SequoiaMod.debug("Reconnection already in progress. Skipping redundant attempt.");
-                return instance;
+    public static SequoiaWebSocketClient getInstance() {
+        connectionLock.lock();
+        try {
+            if (!GuildService.isSequoiaGuildMember()) {
+                return null;
             }
 
-            isReconnecting = true;
-
-            try {
-                if (instance != null && instance.isOpen()) {
+            if (instance == null || !instance.isOpen()) {
+                if (isReconnecting) {
+                    SequoiaMod.debug("Reconnection already in progress. Skipping redundant attempt.");
                     return instance;
                 }
 
-                instance = new SequoiaWebSocketClient(
-                        URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
-                        Map.of(
-                                "Authorization", "Bearer meowmeowAG6v92hc23LK5rqrSD279",
-                                "X-UUID", McUtils.player().getStringUUID()));
-                instance.connect();
-                instance.authenticate(false);
-            } catch (Exception exception) {
-                SequoiaMod.error("Failed to connect to WebSocket server", exception);
-            } finally {
-                isReconnecting = false;
+                isReconnecting = true;
+
+                try {
+                    if (instance != null && instance.isOpen()) {
+                        return instance;
+                    }
+
+                    instance = new SequoiaWebSocketClient(
+                            URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
+                            Map.of(
+                                    "Authorization",
+                                    "Bearer meowmeowAG6v92hc23LK5rqrSD279",
+                                    "X-UUID",
+                                    McUtils.player().getStringUUID()));
+                    instance.connect();
+                    instance.authenticate(false);
+                } catch (Exception exception) {
+                    SequoiaMod.error("Failed to connect to WebSocket server", exception);
+                } finally {
+                    isReconnecting = false;
+                }
             }
+            return instance;
+        } finally {
+            connectionLock.unlock();
         }
-        return instance;
     }
 
     public String sendAsJson(Object object) {
@@ -169,7 +179,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onWynncraftDisconnected(WynncraftConnectionEvent.Disconnected event) {
-        if (instance != null && !instance.isClosed()) {
+        if (instance != null && instance.isOpen()) {
             try {
                 instance.close();
             } catch (Exception exception) {
