@@ -92,7 +92,7 @@ public final class AccessTokenManager {
             properties.setProperty(ACCESS_TOKEN_KEY, encodedToken);
 
             try (FileOutputStream fileOutputStream = new FileOutputStream(tokenFile)) {
-                properties.store(fileOutputStream, "access_token");
+                properties.store(fileOutputStream, "Make sure to NEVER share this token with anyone!");
             }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to store access token", exception);
