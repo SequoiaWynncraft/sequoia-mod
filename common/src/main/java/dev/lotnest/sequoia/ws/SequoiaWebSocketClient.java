@@ -13,15 +13,6 @@ import dev.lotnest.sequoia.ws.messages.SMessageWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.SSessionResultWSMessage;
 import dev.lotnest.sequoia.wynn.guild.GuildService;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -33,6 +24,16 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.exceptions.WebsocketNotConnectedException;
 import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SequoiaWebSocketClient extends WebSocketClient {
     private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
@@ -65,7 +66,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     }
 
     private static final class InstanceHolder {
-        private static final SequoiaWebSocketClient instance = new SequoiaWebSocketClient(
+        private static SequoiaWebSocketClient instance = new SequoiaWebSocketClient(
                 URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
                 Map.of(
                         "Authoworization",
@@ -82,10 +83,20 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             }
 
             SequoiaWebSocketClient instance = InstanceHolder.instance;
-            if (!instance.isOpen()) {
+
+            if (instance.isClosed() || instance.getReadyState() == ReadyState.CLOSED) {
+                SequoiaMod.debug("WebSocket instance closed. Creating a new instance.");
+                InstanceHolder.instance = new SequoiaWebSocketClient(
+                        URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
+                        Map.of(
+                                "Authorization", "Bearer meowmeowAG6v92hc23LK5rqrSD279",
+                                "X-UUID", McUtils.player().getStringUUID()));
+                CompletableFuture.runAsync(InstanceHolder.instance::connect);
+            } else if (!instance.isOpen()) {
                 CompletableFuture.runAsync(instance::connect);
             }
-            return instance;
+
+            return InstanceHolder.instance;
         } finally {
             connectionLock.unlock();
         }
@@ -222,6 +233,12 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
                     if (sMessageWSMessageData.isJsonPrimitive()) {
                         String serverMessageText = sMessageWSMessageData.getAsString();
+                        if (StringUtils.equals(serverMessageText, "Authentication required.")) {
+                            SequoiaMod.debug("Received authentication required message, reauthenticating.");
+                            authenticate(false);
+                            return;
+                        }
+
                         Matcher matcher = URL_PATTERN.matcher(serverMessageText);
                         MutableComponent messageComponent = Component.literal("Server message ➤ ");
                         int lastMatchEnd = 0;
