@@ -16,14 +16,6 @@ import dev.lotnest.sequoia.ws.messages.SMessageWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.SSessionResultWSMessage;
 import dev.lotnest.sequoia.wynn.guild.GuildService;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -33,6 +25,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SequoiaWebSocketClient extends WebSocketClient {
     private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
@@ -111,12 +112,12 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             String payload = GSON.toJson(object);
             instance.send(payload);
             return payload;
-        } catch (Exception ignored) {
+        } catch (Exception exception) {
             if (object instanceof GIdentifyWSMessage) {
                 return null;
             }
 
-            SequoiaMod.debug("Failed to send WebSocket message, storing for retry: " + object);
+            SequoiaMod.error("Failed to send WebSocket message, storing for retry: " + object, exception);
             storeFailedMessage(object);
             return null;
         }
@@ -128,8 +129,8 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             FAILED_MESSAGES_CACHE.put(System.currentTimeMillis(), payload);
             MESSAGE_QUEUE.add(payload);
         } catch (Exception exception) {
-            SequoiaMod.debug(
-                    "Failed to serialize WebSocket message for storage: " + object + " - " + exception.getMessage());
+            SequoiaMod.error(
+                    "Failed to serialize WebSocket message for storage: " + object, exception);
         }
     }
 
@@ -142,7 +143,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                             SequoiaMod.debug("Resent failed message: " + message);
                         })
                         .exceptionally(exception -> {
-                            SequoiaMod.debug("Failed to resend message: " + exception.getMessage());
+                            SequoiaMod.error("Failed to resend message: " + message, exception);
                             return null;
                         });
             }
@@ -159,7 +160,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
         SequoiaMod.debug("Sending GIdentify request: " + gIdentifyWSMessage);
 
         CompletableFuture.runAsync(() -> sendAsJson(gIdentifyWSMessage)).exceptionally(exception -> {
-            SequoiaMod.debug("Failed to send GIdentify request: " + exception.getMessage());
+            SequoiaMod.error("Failed to send GIdentify request", exception);
             return null;
         });
     }
@@ -179,7 +180,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             try {
                 instance.close();
             } catch (Exception exception) {
-                SequoiaMod.debug("Failed to close WebSocket instance: " + exception.getMessage());
+                SequoiaMod.error("Failed to close WebSocket instance", exception);
             }
         }
     }
@@ -214,28 +215,21 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                     }
                 }
                 case SSessionResult -> {
-                    SSessionResultWSMessage sSessionResultWSMessage =
-                            GSON.fromJson(message, SSessionResultWSMessage.class);
-                    SSessionResultWSMessage.Data sSessionResultWSMessageData =
-                            sSessionResultWSMessage.getSessionResultData();
+                    SSessionResultWSMessage sSessionResultWSMessage = GSON.fromJson(message, SSessionResultWSMessage.class);
+                    SSessionResultWSMessage.Data sSessionResultWSMessageData = sSessionResultWSMessage.getSessionResultData();
 
-                    if (sSessionResultWSMessageData.error()) {
-                        new Thread(() -> {
-                                    try {
-                                        Thread.sleep(120000);
-                                        authenticate(false);
-                                    } catch (Exception exception) {
-                                        SequoiaMod.debug(
-                                                "Failed to reconnect to WebSocket server: " + exception.getMessage()
-                                                        + " - " + sSessionResultWSMessageData.result());
-                                    }
-                                })
-                                .start();
+                    if (StringUtils.equals(sSessionResultWSMessageData.result(), "Authentication pending.")) {
+                        SequoiaMod.debug("Authentication pending, waiting for successful authentication.");
                         return;
                     }
 
-                    AccessTokenManager.storeAccessToken(sSessionResultWSMessageData.result());
+                    if (!sSessionResultWSMessageData.error()) {
+                        AccessTokenManager.storeAccessToken(sSessionResultWSMessageData.result());
+                    } else {
+                        SequoiaMod.error("Failed to authenticate with WebSocket server: " + sSessionResultWSMessageData.result());
+                    }
                 }
+
                 case SMessage -> {
                     SMessageWSMessage sMessageWSMessage = GSON.fromJson(message, SMessageWSMessage.class);
                     JsonElement sMessageWSMessageData = sMessageWSMessage.getData();
@@ -279,14 +273,14 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                 }
             }
         } catch (Exception exception) {
-            SequoiaMod.debug("Failed to parse WebSocket message: " + message + " - " + exception.getMessage());
+            SequoiaMod.error("Failed to parse WebSocket message: " + message, exception);
         }
     }
 
     @Override
     public void onClose(int code, String reason, boolean remote) {
         isReconnecting = true;
-        SequoiaMod.debug("WebSocket connection closed. Code: " + code + ", Reason: " + reason);
+        SequoiaMod.debug("WebSocket connection closed. Code: " + code + (StringUtils.isNotBlank(reason) ? ", Reason: " + reason : ""));
     }
 
     @Override
