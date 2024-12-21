@@ -16,16 +16,6 @@ import dev.lotnest.sequoia.ws.messages.SMessageWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.SSessionResultWSMessage;
 import dev.lotnest.sequoia.wynn.guild.GuildService;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import org.apache.commons.lang3.StringUtils;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
-
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -36,6 +26,15 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
 
 public final class SequoiaWebSocketClient extends WebSocketClient {
     private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
