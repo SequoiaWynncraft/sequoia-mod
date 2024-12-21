@@ -16,6 +16,14 @@ import dev.lotnest.sequoia.ws.messages.SMessageWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.SSessionResultWSMessage;
 import dev.lotnest.sequoia.wynn.guild.GuildService;
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -25,15 +33,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public final class SequoiaWebSocketClient extends WebSocketClient {
     private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
@@ -129,8 +128,7 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             FAILED_MESSAGES_CACHE.put(System.currentTimeMillis(), payload);
             MESSAGE_QUEUE.add(payload);
         } catch (Exception exception) {
-            SequoiaMod.error(
-                    "Failed to serialize WebSocket message for storage: " + object, exception);
+            SequoiaMod.error("Failed to serialize WebSocket message for storage: " + object, exception);
         }
     }
 
@@ -215,8 +213,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                     }
                 }
                 case SSessionResult -> {
-                    SSessionResultWSMessage sSessionResultWSMessage = GSON.fromJson(message, SSessionResultWSMessage.class);
-                    SSessionResultWSMessage.Data sSessionResultWSMessageData = sSessionResultWSMessage.getSessionResultData();
+                    SSessionResultWSMessage sSessionResultWSMessage =
+                            GSON.fromJson(message, SSessionResultWSMessage.class);
+                    SSessionResultWSMessage.Data sSessionResultWSMessageData =
+                            sSessionResultWSMessage.getSessionResultData();
 
                     if (StringUtils.equals(sSessionResultWSMessageData.result(), "Authentication pending.")) {
                         SequoiaMod.debug("Authentication pending, waiting for successful authentication.");
@@ -226,10 +226,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                     if (!sSessionResultWSMessageData.error()) {
                         AccessTokenManager.storeAccessToken(sSessionResultWSMessageData.result());
                     } else {
-                        SequoiaMod.error("Failed to authenticate with WebSocket server: " + sSessionResultWSMessageData.result());
+                        SequoiaMod.error("Failed to authenticate with WebSocket server: "
+                                + sSessionResultWSMessageData.result());
                     }
                 }
-
                 case SMessage -> {
                     SMessageWSMessage sMessageWSMessage = GSON.fromJson(message, SMessageWSMessage.class);
                     JsonElement sMessageWSMessageData = sMessageWSMessage.getData();
@@ -280,7 +280,8 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     @Override
     public void onClose(int code, String reason, boolean remote) {
         isReconnecting = true;
-        SequoiaMod.debug("WebSocket connection closed. Code: " + code + (StringUtils.isNotBlank(reason) ? ", Reason: " + reason : ""));
+        SequoiaMod.debug("WebSocket connection closed. Code: " + code
+                + (StringUtils.isNotBlank(reason) ? ", Reason: " + reason : ""));
     }
 
     @Override
