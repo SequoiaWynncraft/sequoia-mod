@@ -16,14 +16,6 @@ import dev.lotnest.sequoia.ws.messages.SMessageWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
 import dev.lotnest.sequoia.ws.messages.session.SSessionResultWSMessage;
 import dev.lotnest.sequoia.wynn.guild.GuildService;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -33,6 +25,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class SequoiaWebSocketClient extends WebSocketClient {
     private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
@@ -81,8 +82,8 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
                                         McUtils.player().getStringUUID()));
                         instance.connect();
                         instance.authenticate(false);
-                    } catch (Exception e) {
-                        SequoiaMod.error("Failed to connect to WebSocket server", e);
+                    } catch (Exception exception) {
+                        SequoiaMod.error("Failed to connect to WebSocket server", exception);
                     } finally {
                         isReconnecting = false;
                     }
@@ -187,85 +188,85 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
     public void onMessage(String message) {
         try {
             WSMessage wsMessage = GSON.fromJson(message, WSMessage.class);
+            WSMessageType wsMessageType = WSMessageType.fromValue(wsMessage.getType());
+
             SequoiaMod.debug("Received WebSocket message: " + wsMessage);
 
-            if (wsMessage.getType() == WSMessageType.SChannelMessage.getValue()) {
-                if (SequoiaMod.CONFIG.discordChatBridgeFeature.sendDiscordMessagesToInGameChat()) {
-                    SChannelMessageWSMessage sChannelMessageWSMessage =
-                            GSON.fromJson(message, SChannelMessageWSMessage.class);
-                    SChannelMessageWSMessage.Data sChannelMessageWSMessageData =
-                            sChannelMessageWSMessage.getChannelMessageData();
+            switch (wsMessageType) {
+                case SChannelMessage -> {
+                    if (SequoiaMod.CONFIG.discordChatBridgeFeature.sendDiscordMessagesToInGameChat()) {
+                        SChannelMessageWSMessage sChannelMessageWSMessage =
+                                GSON.fromJson(message, SChannelMessageWSMessage.class);
+                        SChannelMessageWSMessage.Data sChannelMessageWSMessageData =
+                                sChannelMessageWSMessage.getChannelMessageData();
 
-                    McUtils.sendMessageToClient(
-                            Component.literal("[DISCORD] " + sChannelMessageWSMessageData.displayName() + " ➤ "
-                                            + sChannelMessageWSMessageData.message())
-                                    .withStyle(style -> style.withColor(0x5865F2)));
+                        McUtils.sendMessageToClient(
+                                Component.literal("[DISCORD] " + sChannelMessageWSMessageData.displayName() + " ➤ "
+                                                + sChannelMessageWSMessageData.message())
+                                        .withStyle(style -> style.withColor(0x5865F2)));
+                    }
                 }
-            } else if (wsMessage.getType() == WSMessageType.SSessionResult.getValue()) {
-                SSessionResultWSMessage sSessionResultWSMessage = GSON.fromJson(message, SSessionResultWSMessage.class);
-                SSessionResultWSMessage.Data sSessionResultWSMessageData =
-                        sSessionResultWSMessage.getSessionResultData();
+                case SSessionResult -> {
+                    SSessionResultWSMessage sSessionResultWSMessage = GSON.fromJson(message, SSessionResultWSMessage.class);
+                    SSessionResultWSMessage.Data sSessionResultWSMessageData =
+                            sSessionResultWSMessage.getSessionResultData();
 
-                if (sSessionResultWSMessageData.error()) {
-                    new Thread(() -> {
-                                try {
-                                    Thread.sleep(120000);
-                                    authenticate(false);
-                                } catch (Exception exception) {
-                                    SequoiaMod.debug("Failed to reconnect to WebSocket server: "
-                                            + exception.getMessage() + " - " + sSessionResultWSMessageData.result());
-                                }
-                            })
-                            .start();
-                    return;
+                    if (sSessionResultWSMessageData.error()) {
+                        new Thread(() -> {
+                            try {
+                                Thread.sleep(120000);
+                                authenticate(false);
+                            } catch (Exception exception) {
+                                SequoiaMod.debug("Failed to reconnect to WebSocket server: "
+                                        + exception.getMessage() + " - " + sSessionResultWSMessageData.result());
+                            }
+                        })
+                                .start();
+                        return;
+                    }
+
+                    AccessTokenManager.storeAccessToken(sSessionResultWSMessageData.result());
                 }
+                case SMessage -> {
+                    SMessageWSMessage sMessageWSMessage = GSON.fromJson(message, SMessageWSMessage.class);
+                    JsonElement sMessageWSMessageData = sMessageWSMessage.getData();
 
-                AccessTokenManager.storeAccessToken(sSessionResultWSMessageData.result());
-            } else if (wsMessage.getType() == WSMessageType.SMessage.getValue()) {
-                SMessageWSMessage sMessageWSMessage = GSON.fromJson(message, SMessageWSMessage.class);
-                JsonElement sMessageWSMessageData = sMessageWSMessage.getData();
+                    if (sMessageWSMessageData.isJsonPrimitive()) {
+                        String serverMessageText = sMessageWSMessageData.getAsString();
+                        Matcher matcher = URL_PATTERN.matcher(serverMessageText);
+                        MutableComponent messageComponent = Component.literal("Server message ➤ ");
+                        int lastMatchEnd = 0;
 
-                if (sMessageWSMessageData.isJsonPrimitive()) {
-                    String serverMessageText = sMessageWSMessageData.getAsString();
-                    Matcher matcher = URL_PATTERN.matcher(serverMessageText);
-                    MutableComponent messageComponent = Component.literal("Server message ➤ ");
+                        while (matcher.find()) {
+                            if (matcher.start() > lastMatchEnd) {
+                                messageComponent = messageComponent.append(
+                                        Component.literal(serverMessageText.substring(lastMatchEnd, matcher.start()))
+                                                .withStyle(style -> style.withColor(0x19A775)));
+                            }
 
-                    int lastMatchEnd = 0;
-                    while (matcher.find()) {
-                        if (matcher.start() > lastMatchEnd) {
+                            String url = matcher.group();
                             messageComponent = messageComponent.append(
-                                    Component.literal(serverMessageText.substring(lastMatchEnd, matcher.start()))
+                                    Component.literal(url).withStyle(style -> style.withColor(0x1DA1F2)
+                                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+                                            .withHoverEvent(new HoverEvent(
+                                                    HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open URL")))));
+
+                            lastMatchEnd = matcher.end();
+                        }
+
+                        if (lastMatchEnd < serverMessageText.length()) {
+                            messageComponent =
+                                    messageComponent.append(Component.literal(serverMessageText.substring(lastMatchEnd))
                                             .withStyle(style -> style.withColor(0x19A775)));
                         }
 
-                        String url = matcher.group();
-                        messageComponent = messageComponent.append(
-                                Component.literal(url).withStyle(style -> style.withColor(0x1DA1F2)
-                                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
-                                        .withHoverEvent(new HoverEvent(
-                                                HoverEvent.Action.SHOW_TEXT, Component.literal("Click to open URL")))));
-
-                        lastMatchEnd = matcher.end();
-                    }
-
-                    if (lastMatchEnd < serverMessageText.length()) {
-                        messageComponent =
-                                messageComponent.append(Component.literal(serverMessageText.substring(lastMatchEnd))
+                        McUtils.sendMessageToClient(SequoiaMod.prefix(messageComponent));
+                    } else {
+                        McUtils.sendMessageToClient(
+                                SequoiaMod.prefix(Component.literal("Server message ➤ " + sMessageWSMessageData))
                                         .withStyle(style -> style.withColor(0x19A775)));
                     }
-
-                    McUtils.sendMessageToClient(SequoiaMod.prefix(messageComponent));
-                } else {
-                    McUtils.sendMessageToClient(
-                            SequoiaMod.prefix(Component.literal("Server message ➤ " + sMessageWSMessageData))
-                                    .withStyle(style -> style.withColor(0x19A775)));
                 }
-            } else if (wsMessage.getType() == 19
-                    && StringUtils.equals("Invalid token", wsMessage.getData().getAsString())) {
-                SequoiaMod.debug("Received invalid token response. Stopping retries and requesting a new token.");
-                isReconnecting = false;
-                authenticate(true);
-                return;
             }
         } catch (Exception exception) {
             SequoiaMod.debug("Failed to parse WebSocket message: " + message + " - " + exception.getMessage());
