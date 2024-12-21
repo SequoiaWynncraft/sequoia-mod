@@ -27,6 +27,8 @@
   "sequoia.command.playerRaids.playerNotFound": "§cPlayer §e%s §cwas not found, check the username and try again.",
   "sequoia.command.playerRaids.showingPlayerRaids": "§2%s §ahas completed a total of §e%s §araids.",
   "sequoia.command.syntaxError": "§cInvalid arguments, please check the syntax and try again.",
+  "sequoia.feature.commands.description": "Provides commands for managing the mod",
+  "sequoia.feature.commands.name": "Commands",
   "sequoia.feature.discordChatBridge.description": "Bridges the in-game chat with the Discord server",
   "sequoia.feature.discordChatBridge.name": "Discord Chat Bridge (SEQ member exclusive)",
   "sequoia.feature.guildMessageFilter.description": "Filters out specified guild messages from the chat",

@@ -45,6 +45,10 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
+        if (SequoiaWebSocketClient.getInstance().isIsAuthenticationPending()) {
+            return;
+        }
+
         if (!SequoiaMod.CONFIG.discordChatBridgeFeature.enabled()) {
             return;
         }
@@ -103,7 +107,6 @@ public class DiscordChatBridgeFeature extends Feature {
 
                 GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
                         username, nickname, message, TimeUtils.wsTimestamp(), McUtils.playerName()));
-
                 SequoiaWebSocketClient.getInstance().sendAsJson(gChatMessageWSMessage);
                 SequoiaMod.debug("Sent guild chat message to Discord: " + gChatMessageWSMessage);
             }
