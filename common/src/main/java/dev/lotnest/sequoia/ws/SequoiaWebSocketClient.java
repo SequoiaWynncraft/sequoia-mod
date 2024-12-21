@@ -99,6 +99,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
 
         try {
             if (instance.isClosed()) {
+                if (object instanceof GIdentifyWSMessage) {
+                    return null;
+                }
+
                 SequoiaMod.debug("WebSocket is closed. Storing message for retry: " + object);
                 storeFailedMessage(object);
                 return null;
@@ -108,6 +112,10 @@ public final class SequoiaWebSocketClient extends WebSocketClient {
             instance.send(payload);
             return payload;
         } catch (Exception ignored) {
+            if (object instanceof GIdentifyWSMessage) {
+                return null;
+            }
+
             SequoiaMod.debug("Failed to send WebSocket message, storing for retry: " + object);
             storeFailedMessage(object);
             return null;
