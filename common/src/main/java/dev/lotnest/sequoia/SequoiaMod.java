@@ -9,8 +9,6 @@ import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
-import dev.lotnest.sequoia.utils.JarHasher;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +38,6 @@ public final class SequoiaMod {
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-    private static String jarFileHash = null;
     private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
 
     public static String getVersion() {
@@ -115,18 +112,6 @@ public final class SequoiaMod {
                 version,
                 modLoader,
                 SharedConstants.getCurrentVersion().getName());
-
-        try {
-            File jarFile = new File(SequoiaMod.class
-                    .getProtectionDomain()
-                    .getCodeSource()
-                    .getLocation()
-                    .toURI());
-            jarFileHash = JarHasher.calculateHash(jarFile, "SHA-256");
-            debug("Computed jar hash: " + jarFileHash);
-        } catch (Exception exception) {
-            LOGGER.error("Failed to compute JAR file hash, the WebSocket will not function properly", exception);
-        }
     }
 
     private static void registerComponents(Class<?> registryClass, Class<? extends CoreComponent> componentClass) {
@@ -185,10 +170,6 @@ public final class SequoiaMod {
 
     public static MutableComponent prefix(Component component) {
         return PREFIX.copy().append(component);
-    }
-
-    public static String getJarFileHash() {
-        return jarFileHash;
     }
 
     public enum ModLoader {

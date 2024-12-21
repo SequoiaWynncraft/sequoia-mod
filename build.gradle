@@ -13,7 +13,7 @@ architectury {
 // or ~/.gradle/gradle.properties on Linux/MacOS.
 def usingHotswapAgent = project.hasProperty("sequoia.hotswap") ? project.getProperty("sequoia.hotswap") == "true" : false
 
-version = "0.4.0"
+version = "0.4.1"
 
 subprojects {
     apply plugin: "dev.architectury.loom"

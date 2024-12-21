@@ -61,8 +61,6 @@
   "text.config.sequoia.option.playerIgnoreFeature.enabled": "Status",
   "text.config.sequoia.option.playerIgnoreFeature.ignoredPlayers": "Ignored players",
   "text.config.sequoia.option.sequoiaOSTFeature.enabled": "Status",
-  "text.config.sequoia.option.showWebSocketMessages": "Show WebSocket messages",
-  "text.config.sequoia.option.showWebSocketMessages.tooltip": "Can get spammy if experiencing frequent disconnects,\nas it tries to reconnect every minute.",
   "text.config.sequoia.option.verboseLogging": "Verbose logging",
   "text.config.sequoia.option.verboseLogging.tooltip": "Useful for debugging purposes, you should only\nenable this if asked by the developer.",
   "text.config.sequoia.section.features": "Features ",

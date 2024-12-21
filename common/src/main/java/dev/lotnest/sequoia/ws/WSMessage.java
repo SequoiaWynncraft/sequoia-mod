@@ -1,14 +1,15 @@
 package dev.lotnest.sequoia.ws;
 
+import com.google.gson.JsonElement;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class WSMessage {
     private final int type;
-    private final Object data;
+    private final JsonElement data;
 
-    public WSMessage(int type, Object data) {
+    public WSMessage(int type, JsonElement data) {
         this.type = type;
         this.data = data;
     }
@@ -17,7 +18,7 @@ public class WSMessage {
         return type;
     }
 
-    public Object getData() {
+    public JsonElement getData() {
         return data;
     }
 

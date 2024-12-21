@@ -21,22 +21,19 @@ configurations {
 }
 
 dependencies {
+    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:${devauth_version}"
     modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
-    include(modImplementation(fabricApi.module("fabric-resource-loader-v0", fabric_version)))
 
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
-
     shadowImplementation("net.neoforged:bus:${neoforge_eventbus_version}") {
         exclude group: "org.ow2.asm"
         exclude group: "org.apache.logging.log4j"
         exclude group: "cpw.mods", module: "modlauncher"
     }
 
+    include(modImplementation(fabricApi.module("fabric-resource-loader-v0", fabric_version)))
     include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:${mixinextras_version}")))
     include(implementation("org.java-websocket:Java-WebSocket:${java_websocket_version}"))
-
-    modRuntimeOnly "me.djtheredstoner:DevAuth-fabric:${devauth_version}"
-
     include(modImplementation(annotationProcessor("io.wispforest:owo-lib:${project.owo_lib_version}")))
 
     testImplementation(common(project(path: ":common", configuration: "namedElements"))) { transitive false }

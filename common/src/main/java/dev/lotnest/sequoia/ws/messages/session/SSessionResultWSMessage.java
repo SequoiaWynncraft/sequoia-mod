@@ -1,25 +1,20 @@
-package dev.lotnest.sequoia.ws.session;
+package dev.lotnest.sequoia.ws.messages.session;
 
 import com.google.gson.annotations.SerializedName;
+import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
 import java.time.OffsetDateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class SSessionIDResultWSMessage extends WSMessage {
-    public SSessionIDResultWSMessage(Data data) {
-        super(WSMessageType.SSessionIDResult.getValue(), data);
+public class SSessionResultWSMessage extends WSMessage {
+    public SSessionResultWSMessage(Data data) {
+        super(WSMessageType.SSessionResult.getValue(), SequoiaWebSocketClient.GSON.toJsonTree(data));
     }
 
-    public Data getData() {
-        return (Data) super.getData();
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", getData()).toString();
+    public Data getSessionResultData() {
+        return SequoiaWebSocketClient.GSON.fromJson(getData(), Data.class);
     }
 
     public record Data(boolean error, String result, @SerializedName("expire_at") OffsetDateTime expireAt) {
@@ -29,7 +24,7 @@ public class SSessionIDResultWSMessage extends WSMessage {
 
             if (o == null || getClass() != o.getClass()) return false;
 
-            SSessionIDResultWSMessage.Data data = (SSessionIDResultWSMessage.Data) o;
+            Data data = (Data) o;
 
             return new EqualsBuilder()
                     .append(error, data.error)
@@ -45,15 +40,6 @@ public class SSessionIDResultWSMessage extends WSMessage {
                     .append(result)
                     .append(expireAt)
                     .toHashCode();
-        }
-
-        @Override
-        public String toString() {
-            return new ToStringBuilder(this)
-                    .append("error", error)
-                    .append("result", result)
-                    .append("expireAt", expireAt)
-                    .toString();
         }
     }
 }

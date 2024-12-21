@@ -24,13 +24,12 @@ def wynntilsFabric = {
 }
 
 dependencies {
+    modCompileOnly wynntilsFabric()
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
-    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
-
     compileOnly("net.neoforged:bus:${neoforge_eventbus_version}")
-    modCompileOnly wynntilsFabric()
 
+    implementation(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
     implementation(annotationProcessor("io.wispforest:owo-lib:${project.owo_lib_version}"))
     implementation("org.java-websocket:Java-WebSocket:${java_websocket_version}")
 }
