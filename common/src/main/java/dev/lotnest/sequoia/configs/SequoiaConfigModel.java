@@ -17,13 +17,7 @@ public class SequoiaConfigModel {
     @SectionHeader("general")
     public boolean verboseLogging = false;
 
-    public boolean showWebSocketDisconnectMessages = true;
-
     @SectionHeader("features")
-    @Nest
-    @Expanded
-    public CommandsFeature commandsFeature = new CommandsFeature();
-
     @Nest
     @Expanded
     public GuildMessageFilterFeature guildMessageFilterFeature = new GuildMessageFilterFeature();
@@ -43,10 +37,6 @@ public class SequoiaConfigModel {
     @Nest
     @Expanded
     public DiscordChatBridgeFeature discordChatBridgeFeature = new DiscordChatBridgeFeature();
-
-    public static class CommandsFeature {
-        public boolean enabled = true;
-    }
 
     public static class GuildMessageFilterFeature {
         public boolean enabled = false;

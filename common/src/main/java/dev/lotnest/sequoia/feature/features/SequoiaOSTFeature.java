@@ -61,10 +61,12 @@ public class SequoiaOSTFeature extends Feature {
     public void playNextTrack() {
         stopCurrentTrack();
 
-        SoundInstance nextTrack = getNextTrack();
-        currentTrack = nextTrack;
+        if (SequoiaMod.CONFIG.sequoiaOSTFeature.enabled()) {
+            SoundInstance nextTrack = getNextTrack();
+            currentTrack = nextTrack;
 
-        Minecraft.getInstance().getSoundManager().play(nextTrack);
+            Minecraft.getInstance().getSoundManager().play(nextTrack);
+        }
     }
 
     public void stopCurrentTrack() {

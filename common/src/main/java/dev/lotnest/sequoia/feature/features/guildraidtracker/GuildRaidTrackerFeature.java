@@ -6,16 +6,8 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.IntegerUtils;
-import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.wynn.WynnUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,6 +15,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 
 public class GuildRaidTrackerFeature extends Feature {
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
@@ -38,6 +37,14 @@ public class GuildRaidTrackerFeature extends Feature {
         }
 
         if (event.getStyledText().isBlank()) {
+            return;
+        }
+
+        if (SequoiaMod.getWebSocketClient() == null) {
+            return;
+        }
+
+        if (SequoiaMod.getWebSocketClient().isAuthenticating()) {
             return;
         }
 
@@ -98,10 +105,16 @@ public class GuildRaidTrackerFeature extends Feature {
     }
 
     private void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
+        if (guildRaid == null) {
+            return;
+        }
+
         try {
             WSMessage guildRaidWSMessage = new GuildRaidWSMessage(guildRaid);
-            String payload = SequoiaWebSocketClient.getInstance().sendAsJson(guildRaidWSMessage);
-            SequoiaMod.debug("Sent Guild Raid completion: " + payload);
+            String payload = SequoiaMod.getWebSocketClient().sendAsJson(guildRaidWSMessage);
+            if (StringUtils.isNotBlank(payload)) {
+                SequoiaMod.debug("Sending Guild Raid completion: " + payload);
+            }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to send Guild Raid completion report", exception);
             McUtils.sendMessageToClient(

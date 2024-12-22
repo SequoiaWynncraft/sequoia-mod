@@ -18,7 +18,6 @@ public abstract class CrashReportMixin {
                             target =
                                     "Lnet/minecraft/SystemReport;appendToCrashReportString(Ljava/lang/StringBuilder;)V"))
     private void addSequoiaDetails(StringBuilder builder, CallbackInfo ci) {
-        // This needs to go directly to CrashReportManager and not through Managers
         CrashReportCategory sequoiaCrashDetails = CrashReportManager.generateDetails();
         sequoiaCrashDetails.getDetails(builder);
         builder.append("\n\n");

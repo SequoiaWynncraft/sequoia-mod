@@ -8,7 +8,6 @@ public interface Translatable {
     String getTypeName();
 
     default String getTranslation(String keySuffix) {
-        // This needed to force Java to select the varargs overload
         return getTranslation(keySuffix, new Object[0]);
     }
 

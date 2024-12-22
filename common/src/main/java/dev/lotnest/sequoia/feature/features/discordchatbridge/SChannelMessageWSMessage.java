@@ -1,6 +1,7 @@
 package dev.lotnest.sequoia.feature.features.discordchatbridge;
 
 import com.google.gson.annotations.SerializedName;
+import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
 import java.time.OffsetDateTime;
@@ -10,11 +11,11 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SChannelMessageWSMessage extends WSMessage {
     public SChannelMessageWSMessage(Data data) {
-        super(WSMessageType.SChannelMessage.getValue(), data);
+        super(WSMessageType.SChannelMessage.getValue(), SequoiaWebSocketClient.GSON.toJsonTree(data));
     }
 
-    public Data getData() {
-        return (Data) super.getData();
+    public Data getChannelMessageData() {
+        return SequoiaWebSocketClient.GSON.fromJson(getData(), Data.class);
     }
 
     @Override

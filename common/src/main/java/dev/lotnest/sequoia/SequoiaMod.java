@@ -9,10 +9,7 @@ import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.security.MessageDigest;
+import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,13 +34,13 @@ public final class SequoiaMod {
                     .withStyle(style -> style.withColor(ChatFormatting.GRAY).withBold(false)))
             .append(Component.empty().withStyle(ChatFormatting.YELLOW));
 
+    private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
     private static ModLoader modLoader;
     private static String version = "";
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-    private static String jarFileHash = null;
-    private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
+    private static SequoiaWebSocketClient webSocketClient = null;
 
     public static String getVersion() {
         return version;
@@ -105,10 +102,11 @@ public final class SequoiaMod {
         }
     }
 
-    public static void init(ModLoader modLoader, String modVersion) {
+    public static void init(ModLoader modLoader, boolean isDevelopmentEnvironment, String modVersion) {
         // Note that at this point, no resources (including I18n) are available, so we postpone features until then
         SequoiaMod.modLoader = modLoader;
         isDevelopmentBuild = modVersion.contains("SNAPSHOT");
+        SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
 
         LOGGER.info(
@@ -116,44 +114,6 @@ public final class SequoiaMod {
                 version,
                 modLoader,
                 SharedConstants.getCurrentVersion().getName());
-
-        jarFileHash = getJarFileHash();
-    }
-
-    private static String getJarFileHash() {
-        if (jarFileHash == null) {
-            try {
-                File jarFile = new File(SequoiaMod.class
-                        .getProtectionDomain()
-                        .getCodeSource()
-                        .getLocation()
-                        .toURI());
-                if (!jarFile.exists()) {
-                    throw new IOException("JAR file not found at: " + jarFile.getAbsolutePath());
-                }
-
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                try (FileInputStream fis = new FileInputStream(jarFile)) {
-                    byte[] byteArray = new byte[1024];
-                    int bytesRead;
-                    while ((bytesRead = fis.read(byteArray)) != -1) {
-                        digest.update(byteArray, 0, bytesRead);
-                    }
-                }
-
-                byte[] hashBytes = digest.digest();
-                StringBuilder hexString = new StringBuilder();
-                for (byte b : hashBytes) {
-                    hexString.append(String.format("%02x", b));
-                }
-
-                jarFileHash = hexString.toString();
-            } catch (Exception exception) {
-                LOGGER.error("Failed to compute JAR file hash", exception);
-                return null;
-            }
-        }
-        return jarFileHash;
     }
 
     private static void registerComponents(Class<?> registryClass, Class<? extends CoreComponent> componentClass) {
@@ -212,6 +172,14 @@ public final class SequoiaMod {
 
     public static MutableComponent prefix(Component component) {
         return PREFIX.copy().append(component);
+    }
+
+    public static SequoiaWebSocketClient getWebSocketClient() {
+        return webSocketClient;
+    }
+
+    public static void setWebSocketClient(SequoiaWebSocketClient webSocketClient) {
+        SequoiaMod.webSocketClient = webSocketClient;
     }
 
     public enum ModLoader {

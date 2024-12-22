@@ -12,26 +12,26 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
 
-public class PlayerGuildCommand extends Command {
+public class PlayerDungeonsCommand extends Command {
     @Override
     public String getCommandName() {
-        return "playerguild";
+        return "playerdungeons";
     }
 
     @Override
     public List<String> getAliases() {
-        return List.of("pg");
+        return List.of("pd");
     }
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
         return base.then(Commands.argument("username", StringArgumentType.greedyString())
-                        .executes(this::lookupPlayerGuild))
+                        .executes(this::lookupPlayerDungeons))
                 .executes(this::syntaxError);
     }
 
-    private int lookupPlayerGuild(CommandContext<CommandSourceStack> context) {
+    private int lookupPlayerDungeons(CommandContext<CommandSourceStack> context) {
         String username = context.getArgument("username", String.class);
         if (StringUtils.isBlank(username) || !username.matches("^[a-zA-Z0-9_]+$")) {
             context.getSource()
@@ -41,39 +41,37 @@ public class PlayerGuildCommand extends Command {
                 if (throwable != null) {
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(Component.translatable(
-                                    "sequoia.command.playerGuild.errorLookingUpPlayer", username)));
+                                    "sequoia.command.playerDungeons.errorLookingUpPlayer", username)));
                 } else {
-                    if (player == null) {
+                    if (player == null
+                            || player.getGlobalData() == null
+                            || player.getGlobalData().getDungeons() == null) {
                         context.getSource()
                                 .sendFailure(SequoiaMod.prefix(Component.translatable(
-                                        "sequoia.command.playerGuild.playerNotFound", username)));
+                                        "sequoia.command.playerDungeons.playerNotFound", username)));
                     } else {
-                        if (player.getGuild() != null
-                                && !StringUtils.isBlank(player.getGuild().getName())) {
-                            context.getSource()
-                                    .sendSuccess(
-                                            () -> SequoiaMod.prefix(Component.translatable(
-                                                    "sequoia.command.playerGuild.showingPlayerGuild",
-                                                    player.getUsername(),
-                                                    player.getGuild().getRank(),
-                                                    player.getGuild().getName(),
-                                                    player.getGuild().getPrefix())),
-                                            false);
-                        } else {
-                            context.getSource()
-                                    .sendSuccess(
-                                            () -> SequoiaMod.prefix(Component.translatable(
-                                                    "sequoia.command.playerGuild.playerNotInGuild",
-                                                    player.getUsername())),
-                                            false);
-                        }
+                        context.getSource()
+                                .sendSuccess(
+                                        () -> SequoiaMod.prefix(Component.translatable(
+                                                "sequoia.command.playerDungeons.showingPlayerDungeons",
+                                                player.getUsername(),
+                                                player.getGlobalData()
+                                                        .getDungeons()
+                                                        .getTotal())),
+                                        false);
+                        context.getSource()
+                                .sendSuccess(
+                                        () -> player.getGlobalData()
+                                                .getDungeons()
+                                                .toPrettyMessage(),
+                                        false);
                     }
                 }
             });
 
             context.getSource()
                     .sendSystemMessage(SequoiaMod.prefix(
-                            Component.translatable("sequoia.command.playerGuild.lookingUpPlayer", username)));
+                            Component.translatable("sequoia.command.playerDungeons.lookingUpPlayer", username)));
         }
         return 1;
     }
