@@ -33,7 +33,8 @@ public class ConfigCommand extends Command {
                     (Function<Object, ConfigScreen>) getMethod.invoke(null, SequoiaMod.MOD_ID);
 
             if (configScreenProvider == null) {
-                SequoiaMod.error("No ConfigScreenProvider found for mod ID: " + SequoiaMod.MOD_ID);
+                SequoiaMod.error("No ConfigScreenProvider found for mod ID: " + SequoiaMod.MOD_ID
+                        + ", do you have owo-lib installed?");
                 return 1;
             }
 

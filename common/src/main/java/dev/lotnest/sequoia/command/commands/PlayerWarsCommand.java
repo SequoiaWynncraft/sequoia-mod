@@ -13,26 +13,26 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.StringUtils;
 
-public class PlayerGuildCommand extends Command {
+public class PlayerWarsCommand extends Command {
     @Override
     public String getCommandName() {
-        return "playerguild";
+        return "playerwars";
     }
 
     @Override
     public List<String> getAliases() {
-        return List.of("pg");
+        return List.of("pw");
     }
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
         return base.then(
-                        Commands.argument("username", StringArgumentType.word()).executes(this::lookupPlayerGuild))
+                        Commands.argument("username", StringArgumentType.word()).executes(this::lookupPlayerWars))
                 .executes(this::syntaxError);
     }
 
-    private int lookupPlayerGuild(CommandContext<CommandSourceStack> context) {
+    private int lookupPlayerWars(CommandContext<CommandSourceStack> context) {
         String username = context.getArgument("username", String.class);
         if (StringUtils.isBlank(username) || !MinecraftUtils.isValidUsername(username)) {
             context.getSource()
@@ -42,29 +42,28 @@ public class PlayerGuildCommand extends Command {
                 if (throwable != null) {
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(Component.translatable(
-                                    "sequoia.command.playerGuild.errorLookingUpPlayer", username)));
+                                    "sequoia.command.playerWars.errorLookingUpPlayer", username)));
                 } else {
                     if (player == null) {
                         context.getSource()
-                                .sendFailure(SequoiaMod.prefix(Component.translatable(
-                                        "sequoia.command.playerGuild.playerNotFound", username)));
+                                .sendFailure(SequoiaMod.prefix(
+                                        Component.translatable("sequoia.command.playerWars.playerNotFound", username)));
                     } else {
                         if (player.getGuild() != null
                                 && !StringUtils.isBlank(player.getGuild().getName())) {
                             context.getSource()
                                     .sendSuccess(
                                             () -> SequoiaMod.prefix(Component.translatable(
-                                                    "sequoia.command.playerGuild.showingPlayerGuild",
+                                                    "sequoia.command.playerWars.showingPlayerWars",
                                                     player.getUsername(),
-                                                    player.getGuild().getRank(),
-                                                    player.getGuild().getName(),
-                                                    player.getGuild().getPrefix())),
+                                                    player.getGlobalData().getWars(),
+                                                    player.getRanking().get("warsCompletion"))),
                                             false);
                         } else {
                             context.getSource()
                                     .sendSuccess(
                                             () -> SequoiaMod.prefix(Component.translatable(
-                                                    "sequoia.command.playerGuild.playerNotInGuild",
+                                                    "sequoia.command.playerWars.playerHasNoWars",
                                                     player.getUsername())),
                                             false);
                         }
@@ -74,7 +73,7 @@ public class PlayerGuildCommand extends Command {
 
             context.getSource()
                     .sendSystemMessage(SequoiaMod.prefix(
-                            Component.translatable("sequoia.command.playerGuild.lookingUpPlayer", username)));
+                            Component.translatable("sequoia.command.playerWars.lookingUpPlayer", username)));
         }
         return 1;
     }

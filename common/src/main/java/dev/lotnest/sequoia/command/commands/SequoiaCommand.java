@@ -78,9 +78,13 @@ public class SequoiaCommand extends Command {
         describeSequoiaSubcommand(helpMessage, "meow", "Meow!");
         describeSequoiaSubcommand(helpMessage, "lastseen", "Checks when a player was last seen online.");
         describeSequoiaSubcommand(helpMessage, "playerguild", "Checks the guild of a player.");
-        describeSequoiaSubcommand(helpMessage, "playerraids", "Checks the raids of a player.");
-        describeSequoiaSubcommand(helpMessage, "playerdungeons", "Checks the dungeons of a player.");
+        describeSequoiaSubcommand(
+                helpMessage, "playerraids", "Checks the raids of a player and their leaderboard position.");
+        describeSequoiaSubcommand(
+                helpMessage, "playerdungeons", "Checks the dungeons of a player and their leaderboard position.");
         describeSequoiaSubcommand(helpMessage, "test", "Tests various components of the mod.");
+        describeSequoiaSubcommand(
+                helpMessage, "playerwars", "Checks the wars of a player and their leaderboard position.");
 
         List<Command> otherCommands = Managers.Command.getCommandInstanceSet().stream()
                 .filter(command -> !(command instanceof SequoiaCommand))

@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
+import dev.lotnest.sequoia.mojang.MinecraftUtils;
 import dev.lotnest.sequoia.wynn.player.PlayerService;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
@@ -33,9 +34,9 @@ public class PlayerRaidsCommand extends Command {
 
     private int lookupPlayerRaids(CommandContext<CommandSourceStack> context) {
         String username = context.getArgument("username", String.class);
-        if (StringUtils.isBlank(username) || !username.matches("^[a-zA-Z0-9_]+$")) {
+        if (StringUtils.isBlank(username) || !MinecraftUtils.isValidUsername(username)) {
             context.getSource()
-                    .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidPlayerName")));
+                    .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidUsername")));
         } else {
             PlayerService.getPlayer(username).whenComplete((player, throwable) -> {
                 if (throwable != null) {

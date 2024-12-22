@@ -20,6 +20,7 @@ import dev.lotnest.sequoia.command.commands.OnlineMembersCommand;
 import dev.lotnest.sequoia.command.commands.PlayerDungeonsCommand;
 import dev.lotnest.sequoia.command.commands.PlayerGuildCommand;
 import dev.lotnest.sequoia.command.commands.PlayerRaidsCommand;
+import dev.lotnest.sequoia.command.commands.PlayerWarsCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.command.commands.TestCommand;
 import dev.lotnest.sequoia.manager.Manager;
@@ -173,6 +174,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new PlayerRaidsCommand());
         registerCommand(new PlayerDungeonsCommand());
         registerCommand(new TestCommand());
+        registerCommand(new PlayerWarsCommand());
 
         // The SequoiaCommand must be registered last, since it
         // need the above commands as aliases
