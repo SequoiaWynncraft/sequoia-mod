@@ -9,6 +9,7 @@ import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
+import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -33,12 +34,13 @@ public final class SequoiaMod {
                     .withStyle(style -> style.withColor(ChatFormatting.GRAY).withBold(false)))
             .append(Component.empty().withStyle(ChatFormatting.YELLOW));
 
+    private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
     private static ModLoader modLoader;
     private static String version = "";
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-    private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
+    private static SequoiaWebSocketClient webSocketClient = null;
 
     public static String getVersion() {
         return version;
@@ -170,6 +172,14 @@ public final class SequoiaMod {
 
     public static MutableComponent prefix(Component component) {
         return PREFIX.copy().append(component);
+    }
+
+    public static SequoiaWebSocketClient getWebSocketClient() {
+        return webSocketClient;
+    }
+
+    public static void setWebSocketClient(SequoiaWebSocketClient webSocketClient) {
+        SequoiaMod.webSocketClient = webSocketClient;
     }
 
     public enum ModLoader {

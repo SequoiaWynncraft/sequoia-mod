@@ -6,7 +6,6 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.IntegerUtils;
-import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.wynn.WynnUtils;
 import java.util.ArrayList;
@@ -41,11 +40,11 @@ public class GuildRaidTrackerFeature extends Feature {
             return;
         }
 
-        if (SequoiaWebSocketClient.getInstance() == null) {
+        if (SequoiaMod.getWebSocketClient() == null) {
             return;
         }
 
-        if (SequoiaWebSocketClient.getInstance().isIsAuthenticationPending()) {
+        if (SequoiaMod.getWebSocketClient().isAuthenticating()) {
             return;
         }
 
@@ -112,9 +111,9 @@ public class GuildRaidTrackerFeature extends Feature {
 
         try {
             WSMessage guildRaidWSMessage = new GuildRaidWSMessage(guildRaid);
-            String payload = SequoiaWebSocketClient.getInstance().sendAsJson(guildRaidWSMessage);
+            String payload = SequoiaMod.getWebSocketClient().sendAsJson(guildRaidWSMessage);
             if (StringUtils.isNotBlank(payload)) {
-                SequoiaMod.debug("Sent Guild Raid completion: " + payload);
+                SequoiaMod.debug("Sending Guild Raid completion: " + payload);
             }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to send Guild Raid completion report", exception);
