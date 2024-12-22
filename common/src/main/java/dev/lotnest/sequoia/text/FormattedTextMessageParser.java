@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 public final class FormattedTextMessageParser {
-    private static final Pattern COLOUR_TAG_PATTERN = Pattern.compile(
+    private static final Pattern FORMATTED_TEXT_MESSAGE_PATTERN = Pattern.compile(
             "<FormattedTextMessage(?:\\s+colour=\"(#[0-9A-Fa-f]{6}|0x[0-9A-Fa-f]{6})\")?(?:\\s+bold=\"(.*?)\")?(?:\\s+italic=\"(.*?)\")?(?:\\s+underline=\"(.*?)\")?(?:\\s+strikethrough=\"(.*?)\")?(?:\\s+obfuscated=\"(.*?)\")?(?:\\s+reset=\"(true)\")?\\s*>(.*?)</FormattedTextMessage>");
     private static final Pattern NEW_LINE_PATTERN = Pattern.compile("\\\\n");
 
@@ -19,7 +19,7 @@ public final class FormattedTextMessageParser {
 
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i];
-            Matcher colourTagMatcher = COLOUR_TAG_PATTERN.matcher(line);
+            Matcher colourTagMatcher = FORMATTED_TEXT_MESSAGE_PATTERN.matcher(line);
             int lastMatchEnd = 0;
 
             while (colourTagMatcher.find()) {
