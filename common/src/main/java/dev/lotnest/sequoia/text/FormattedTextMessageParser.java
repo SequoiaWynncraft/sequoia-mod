@@ -13,7 +13,7 @@ public final class FormattedTextMessageParser {
 
     private FormattedTextMessageParser() {}
 
-    public static MutableComponent buildFromString(String input) {
+    public static MutableComponent parseString(String input) {
         MutableComponent result = Component.empty();
         String[] lines = NEW_LINE_PATTERN.split(input);
 

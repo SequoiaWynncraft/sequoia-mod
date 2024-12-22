@@ -25,7 +25,7 @@ public class TestCommand extends Command {
 
     private int testFormattedTextMessageParser(CommandContext<CommandSourceStack> context) {
         String message = context.getArgument("message", String.class);
-        context.getSource().sendSuccess(() -> FormattedTextMessageParser.buildFromString(message), false);
+        context.getSource().sendSuccess(() -> FormattedTextMessageParser.parseString(message), false);
         return 1;
     }
 }
