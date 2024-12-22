@@ -26,8 +26,8 @@ public class PlayerGuildCommand extends Command {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
-        return base.then(Commands.argument("username", StringArgumentType.greedyString())
-                        .executes(this::lookupPlayerGuild))
+        return base.then(
+                        Commands.argument("username", StringArgumentType.word()).executes(this::lookupPlayerGuild))
                 .executes(this::syntaxError);
     }
 

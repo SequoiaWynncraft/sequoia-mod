@@ -80,6 +80,7 @@ public class SequoiaCommand extends Command {
         describeSequoiaSubcommand(helpMessage, "playerguild", "Checks the guild of a player.");
         describeSequoiaSubcommand(helpMessage, "playerraids", "Checks the raids of a player.");
         describeSequoiaSubcommand(helpMessage, "playerdungeons", "Checks the dungeons of a player.");
+        describeSequoiaSubcommand(helpMessage, "test", "Tests various components of the mod.");
 
         List<Command> otherCommands = Managers.Command.getCommandInstanceSet().stream()
                 .filter(command -> !(command instanceof SequoiaCommand))

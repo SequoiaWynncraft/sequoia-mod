@@ -21,6 +21,7 @@ import dev.lotnest.sequoia.command.commands.PlayerDungeonsCommand;
 import dev.lotnest.sequoia.command.commands.PlayerGuildCommand;
 import dev.lotnest.sequoia.command.commands.PlayerRaidsCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
+import dev.lotnest.sequoia.command.commands.TestCommand;
 import dev.lotnest.sequoia.manager.Manager;
 import java.util.ArrayList;
 import java.util.List;
@@ -171,6 +172,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new PlayerGuildCommand());
         registerCommand(new PlayerRaidsCommand());
         registerCommand(new PlayerDungeonsCommand());
+        registerCommand(new TestCommand());
 
         // The SequoiaCommand must be registered last, since it
         // need the above commands as aliases

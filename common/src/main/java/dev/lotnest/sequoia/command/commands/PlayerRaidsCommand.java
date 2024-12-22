@@ -26,8 +26,8 @@ public class PlayerRaidsCommand extends Command {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
-        return base.then(Commands.argument("username", StringArgumentType.greedyString())
-                        .executes(this::lookupPlayerRaids))
+        return base.then(
+                        Commands.argument("username", StringArgumentType.word()).executes(this::lookupPlayerRaids))
                 .executes(this::syntaxError);
     }
 

@@ -38,6 +38,10 @@ public class SequoiaConfigModel {
     @Expanded
     public DiscordChatBridgeFeature discordChatBridgeFeature = new DiscordChatBridgeFeature();
 
+    @Nest
+    @Expanded
+    public LootPoolFeature lootPoolFeature = new LootPoolFeature();
+
     public static class GuildMessageFilterFeature {
         public boolean enabled = false;
         public dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature.GuildMessageFilterDecisionType
@@ -72,5 +76,9 @@ public class SequoiaConfigModel {
         public boolean enabled = true;
         public boolean sendInGameGuildChatMessagesToDiscord = true;
         public boolean sendDiscordMessagesToInGameChat = true;
+    }
+
+    public static class LootPoolFeature {
+        public boolean enabled = true;
     }
 }

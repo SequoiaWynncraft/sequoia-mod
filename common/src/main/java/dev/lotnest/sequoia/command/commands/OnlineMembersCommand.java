@@ -26,7 +26,7 @@ public class OnlineMembersCommand extends Command {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
-        return base.then(Commands.argument("guildName", StringArgumentType.greedyString())
+        return base.then(Commands.argument("guildName", StringArgumentType.word())
                         .executes(this::lookupGuild))
                 .executes(this::syntaxError);
     }

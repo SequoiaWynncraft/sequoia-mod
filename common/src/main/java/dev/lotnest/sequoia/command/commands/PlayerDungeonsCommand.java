@@ -26,8 +26,8 @@ public class PlayerDungeonsCommand extends Command {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
-        return base.then(Commands.argument("username", StringArgumentType.greedyString())
-                        .executes(this::lookupPlayerDungeons))
+        return base.then(
+                        Commands.argument("username", StringArgumentType.word()).executes(this::lookupPlayerDungeons))
                 .executes(this::syntaxError);
     }
 
