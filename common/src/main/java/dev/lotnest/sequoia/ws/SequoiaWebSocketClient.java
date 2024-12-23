@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
 
 public class SequoiaWebSocketClient extends WebSocketClient {
@@ -72,6 +73,20 @@ public class SequoiaWebSocketClient extends WebSocketClient {
 
     public void setAuthenticating(boolean isAuthenticating) {
         this.isAuthenticating = isAuthenticating;
+    }
+
+    public void connectIfNeeded() {
+        if (SequoiaMod.getWebSocketClient().getReadyState() == ReadyState.NOT_YET_CONNECTED) {
+            SequoiaMod.getWebSocketClient().connect();
+        } else if (isClosed()) {
+            SequoiaMod.getWebSocketClient().reconnect();
+        }
+    }
+
+    public void closeIfNeeded() {
+        if (isOpen()) {
+            SequoiaMod.getWebSocketClient().close();
+        }
     }
 
     @Override

@@ -25,9 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class GuildRaidTrackerFeature extends Feature {
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
-            "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and "
-                    + "([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, .(.+?m)"
-                    + " Guild Experience, and \\+(\\d+) Seasonal Rating",
+            "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and ([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, (and )?(\\+\\d+m Guild Experience)(, and \\+(\\d+) Seasonal Rating?)?",
             Pattern.MULTILINE);
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -50,13 +48,14 @@ public class GuildRaidTrackerFeature extends Feature {
 
         Component message = event.getStyledText().getComponent();
         String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
-        Matcher guildRaidCompletionMatcher = GUILD_RAID_COMPLETION_PATTERN.matcher(unformattedMessage);
         Map<String, List<String>> nameMap = Maps.newHashMap();
 
-        createRealNameMap(message, nameMap);
+        Matcher guildRaidCompletionMatcher = GUILD_RAID_COMPLETION_PATTERN.matcher(unformattedMessage);
         if (!guildRaidCompletionMatcher.matches()) {
             return;
         }
+
+        createRealNameMap(message, nameMap);
 
         String player1 = guildRaidCompletionMatcher.group(1);
         if (nameMap.containsKey(player1)) {
@@ -82,7 +81,7 @@ public class GuildRaidTrackerFeature extends Feature {
         String aspects = guildRaidCompletionMatcher.group(6);
         String emeralds = guildRaidCompletionMatcher.group(7);
         String xp = guildRaidCompletionMatcher.group(8);
-        String sr = guildRaidCompletionMatcher.group(9);
+        String sr = guildRaidCompletionMatcher.groupCount() >= 9 ? guildRaidCompletionMatcher.group(9) : "0";
         RaidType raidType = RaidType.getRaidType(raidString);
         UUID reporterID = Minecraft.getInstance().player.getUUID();
 

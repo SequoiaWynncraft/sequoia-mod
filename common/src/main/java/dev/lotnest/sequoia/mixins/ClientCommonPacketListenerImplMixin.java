@@ -22,8 +22,10 @@ public abstract class ClientCommonPacketListenerImplMixin {
             method = "handleDisconnect(Lnet/minecraft/network/protocol/common/ClientboundDisconnectPacket;)V",
             at = @At("HEAD"))
     private void handleDisconnect(ClientboundDisconnectPacket packet, CallbackInfo ci) {
-        if (serverData != null && WynnUtils.isWynncraftServer(serverData.ip)) {
-            SequoiaMod.getWebSocketClient().close();
+        if (SequoiaMod.getWebSocketClient() != null
+                && serverData != null
+                && WynnUtils.isWynncraftServer(serverData.ip)) {
+            SequoiaMod.getWebSocketClient().closeIfNeeded();
         }
     }
 }
