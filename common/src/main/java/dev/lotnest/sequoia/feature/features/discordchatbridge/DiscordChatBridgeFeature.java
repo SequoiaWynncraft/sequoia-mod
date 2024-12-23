@@ -19,7 +19,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class DiscordChatBridgeFeature extends Feature {
-    private static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
+    public static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
             "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}§[0-9a-fk-or<]*]*?([^:]+):\\s*(.+)$",
             Pattern.MULTILINE);
     private static final Pattern NICKNAME_PATTERN =
@@ -38,7 +38,7 @@ public class DiscordChatBridgeFeature extends Feature {
         }
 
         String messageStringWithoutFormatting = messageTextWithoutNewLines.getStringWithoutFormatting();
-        SequoiaMod.debug("[CHAT] " + messageTextWithoutNewLines);
+        SequoiaMod.debug("[CHAT] " + messageTextWithoutNewLines.getString());
 
         if (SequoiaMod.getWebSocketClient() == null) {
             return;
@@ -70,7 +70,7 @@ public class DiscordChatBridgeFeature extends Feature {
 
         if (!SequoiaMod.getWebSocketClient().isOpen()) {
             try {
-                SequoiaMod.getWebSocketClient().connect();
+                SequoiaMod.getWebSocketClient().reconnect();
             } catch (Exception exception) {
                 SequoiaMod.error("Failed to connect to WebSocket server", exception);
                 return;
@@ -88,11 +88,11 @@ public class DiscordChatBridgeFeature extends Feature {
             if (guildChatMatcher.matches()) {
                 nickname = guildChatMatcher
                         .group(1)
-                        .replaceAll("[^\\x20-\\x7E]", "")
+                        .replaceAll("[^\\p{Print}]", "")
                         .trim();
                 String message = guildChatMatcher
                         .group(2)
-                        .replaceAll("[^\\x20-\\x7E]", "")
+                        .replaceAll("[^\\p{Print}]", "")
                         .trim();
 
                 if (nickname != null && nameMap.containsKey(nickname)) {

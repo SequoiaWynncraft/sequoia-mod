@@ -44,10 +44,12 @@ public class SequoiaConfigModel {
 
     public static class GuildMessageFilterFeature {
         public boolean enabled = false;
-        public dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature.GuildMessageFilterDecisionType
-                decisionType =
-                        dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature.GuildMessageFilterDecisionType
-                                .KEEP_ALL;
+        //        public
+        // dev.lotnest.sequoia.feature.features.guildmessagefilter.GuildMessageFilterFeature.GuildMessageFilterDecisionType
+        //                decisionType =
+        //
+        // dev.lotnest.sequoia.feature.features.guildmessagefilter.GuildMessageFilterFeature.GuildMessageFilterDecisionType
+        //                                .KEEP_ALL;
     }
 
     public static class PlayerIgnoreFeature {

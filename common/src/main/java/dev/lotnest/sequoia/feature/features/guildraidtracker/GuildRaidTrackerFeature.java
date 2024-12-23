@@ -25,9 +25,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class GuildRaidTrackerFeature extends Feature {
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
-            "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and "
-                    + "([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, .(.+?m)"
-                    + " Guild Experience, and \\+(\\d+) Seasonal Rating",
+            "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and ([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, .(.+?m) Guild Experience(?:, and \\+(\\d+) Seasonal Rating)?",
             Pattern.MULTILINE);
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

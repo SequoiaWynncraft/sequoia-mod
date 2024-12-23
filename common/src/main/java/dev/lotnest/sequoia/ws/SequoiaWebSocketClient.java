@@ -86,6 +86,11 @@ public class SequoiaWebSocketClient extends WebSocketClient {
             WSMessage wsMessage = GSON.fromJson(s, WSMessage.class);
             WSMessageType wsMessageType = WSMessageType.fromValue(wsMessage.getType());
 
+            if (isAuthenticating() && wsMessageType != WSMessageType.SSessionResult) {
+                SequoiaMod.debug("Ignoring WebSocket message while authenticating: " + wsMessage);
+                return;
+            }
+
             SequoiaMod.debug("Received WebSocket message: " + wsMessage);
 
             switch (wsMessageType) {
