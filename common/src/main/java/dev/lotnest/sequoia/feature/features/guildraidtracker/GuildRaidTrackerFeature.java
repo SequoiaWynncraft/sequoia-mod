@@ -9,7 +9,6 @@ import dev.lotnest.sequoia.utils.IntegerUtils;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.wynn.WynnUtils;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -25,24 +24,19 @@ import org.apache.commons.lang3.StringUtils;
 
 public class GuildRaidTrackerFeature extends Feature {
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
-            "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and ([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, (and )?(\\+\\d+m Guild Experience)(, and \\+(\\d+) Seasonal Rating?)?",
+            "([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), ([A-Za-z0-9_ ]+?), and "
+                    + "([A-Za-z0-9_ ]+?) finished (.+?) and claimed (\\d+)x Aspects, (\\d+)x Emeralds, (.+?m)"
+                    + " Guild Experience(?:, and \\+(\\d+) Seasonal Rating)?",
             Pattern.MULTILINE);
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGuildRaidCompletion(ChatMessageReceivedEvent event) {
-        if (event.getStyledText() == null) {
+        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
             return;
         }
 
-        if (event.getStyledText().isBlank()) {
-            return;
-        }
-
-        if (SequoiaMod.getWebSocketClient() == null) {
-            return;
-        }
-
-        if (SequoiaMod.getWebSocketClient().isAuthenticating()) {
+        if (SequoiaMod.getWebSocketClient() == null
+                || SequoiaMod.getWebSocketClient().isAuthenticating()) {
             return;
         }
 
@@ -57,32 +51,19 @@ public class GuildRaidTrackerFeature extends Feature {
 
         createRealNameMap(message, nameMap);
 
-        String player1 = guildRaidCompletionMatcher.group(1);
-        if (nameMap.containsKey(player1)) {
-            player1 = nameMap.get(player1).removeLast();
-        }
-
-        String player2 = guildRaidCompletionMatcher.group(2);
-        if (nameMap.containsKey(player2)) {
-            player2 = nameMap.get(player2).removeLast();
-        }
-
-        String player3 = guildRaidCompletionMatcher.group(3);
-        if (nameMap.containsKey(player3)) {
-            player3 = nameMap.get(player3).removeLast();
-        }
-
-        String player4 = guildRaidCompletionMatcher.group(4);
-        if (nameMap.containsKey(player4)) {
-            player4 = nameMap.get(player4).removeLast();
-        }
+        String player1 = extractRealName(guildRaidCompletionMatcher.group(1), nameMap);
+        String player2 = extractRealName(guildRaidCompletionMatcher.group(2), nameMap);
+        String player3 = extractRealName(guildRaidCompletionMatcher.group(3), nameMap);
+        String player4 = extractRealName(guildRaidCompletionMatcher.group(4), nameMap);
 
         String raidString = guildRaidCompletionMatcher.group(5);
+        RaidType raidType = RaidType.getRaidType(raidString);
         String aspects = guildRaidCompletionMatcher.group(6);
         String emeralds = guildRaidCompletionMatcher.group(7);
-        String xp = guildRaidCompletionMatcher.group(8);
-        String sr = guildRaidCompletionMatcher.groupCount() >= 9 ? guildRaidCompletionMatcher.group(9) : "0";
-        RaidType raidType = RaidType.getRaidType(raidString);
+        String xp = guildRaidCompletionMatcher.group(8).replaceAll("[^0-9km]", "");
+        String sr = guildRaidCompletionMatcher.groupCount() >= 9 && guildRaidCompletionMatcher.group(9) != null
+                ? guildRaidCompletionMatcher.group(9)
+                : "0";
         UUID reporterID = Minecraft.getInstance().player.getUUID();
 
         if (raidType == null) {
@@ -101,6 +82,13 @@ public class GuildRaidTrackerFeature extends Feature {
                 Integer.parseInt(emeralds),
                 IntegerUtils.convertToInt(xp),
                 Integer.parseInt(sr)));
+    }
+
+    private String extractRealName(String nickname, Map<String, List<String>> nameMap) {
+        if (nameMap.containsKey(nickname)) {
+            return nameMap.get(nickname).remove(nameMap.get(nickname).size() - 1);
+        }
+        return nickname;
     }
 
     private void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
@@ -154,25 +142,20 @@ public class GuildRaidTrackerFeature extends Feature {
                 String realName = matcher.group(2);
                 String nickname = matcher.group(1);
 
-                if (nameMap.containsKey(nickname)) {
-                    nameMap.get(nickname).add(realName);
-                } else {
-                    nameMap.put(nickname, new ArrayList<>(Collections.singletonList(realName)));
-                }
+                nameMap.computeIfAbsent(nickname, k -> new ArrayList<>()).add(realName);
             }
         }
     }
 
     private static boolean messageHasNickHoverDeep(Component message) {
-        boolean hasNick = false;
         if (!message.getSiblings().isEmpty()) {
             for (Component messageSibling : message.getSiblings()) {
-                hasNick = hasNick || messageHasNickHoverDeep(messageSibling);
+                if (messageHasNickHoverDeep(messageSibling)) {
+                    return true;
+                }
             }
-        } else {
-            return messageHasNickHover(message);
         }
-        return hasNick;
+        return messageHasNickHover(message);
     }
 
     private static boolean messageHasNickHover(Component message) {
