@@ -11,12 +11,14 @@ import dev.lotnest.sequoia.ws.handlers.SCommandPipeHandler;
 import dev.lotnest.sequoia.ws.handlers.SMessageHandler;
 import dev.lotnest.sequoia.ws.handlers.SSessionResultHandler;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
+import dev.lotnest.sequoia.wynn.guild.GuildService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
 
 public class SequoiaWebSocketClient extends WebSocketClient {
@@ -50,6 +52,10 @@ public class SequoiaWebSocketClient extends WebSocketClient {
     }
 
     public void authenticate(boolean receivedInvalidTokenResult) {
+        if (!GuildService.isSequoiaGuildMember()) {
+            return;
+        }
+
         if (isAuthenticating()) {
             SequoiaMod.debug("Already authenticating with WebSocket server.");
             return;
@@ -72,6 +78,20 @@ public class SequoiaWebSocketClient extends WebSocketClient {
 
     public void setAuthenticating(boolean isAuthenticating) {
         this.isAuthenticating = isAuthenticating;
+    }
+
+    public void connectIfNeeded() {
+        if (SequoiaMod.getWebSocketClient().getReadyState() == ReadyState.NOT_YET_CONNECTED) {
+            SequoiaMod.getWebSocketClient().connect();
+        } else if (isClosed()) {
+            SequoiaMod.getWebSocketClient().reconnect();
+        }
+    }
+
+    public void closeIfNeeded() {
+        if (isOpen()) {
+            SequoiaMod.getWebSocketClient().close();
+        }
     }
 
     @Override

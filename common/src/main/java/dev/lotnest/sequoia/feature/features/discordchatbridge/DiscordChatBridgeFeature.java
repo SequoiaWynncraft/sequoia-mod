@@ -37,7 +37,6 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        String messageStringWithoutFormatting = messageTextWithoutNewLines.getStringWithoutFormatting();
         SequoiaMod.debug("[CHAT] " + messageTextWithoutNewLines.getString());
 
         if (SequoiaMod.getWebSocketClient() == null) {
@@ -64,17 +63,9 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
+        String messageStringWithoutFormatting = messageTextWithoutNewLines.getStringWithoutFormatting();
         if (!containsUnicode(messageStringWithoutFormatting) || messageStringWithoutFormatting.startsWith("[Event]")) {
             return;
-        }
-
-        if (!SequoiaMod.getWebSocketClient().isOpen()) {
-            try {
-                SequoiaMod.getWebSocketClient().reconnect();
-            } catch (Exception exception) {
-                SequoiaMod.error("Failed to connect to WebSocket server", exception);
-                return;
-            }
         }
 
         Matcher guildChatMatcher = GUILD_CHAT_PATTERN.matcher(messageStringWithoutFormatting);

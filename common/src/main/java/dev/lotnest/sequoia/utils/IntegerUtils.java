@@ -1,6 +1,6 @@
 package dev.lotnest.sequoia.utils;
 
-public class IntegerUtils {
+public final class IntegerUtils {
     private IntegerUtils() {}
 
     public static int convertToInt(String input) {

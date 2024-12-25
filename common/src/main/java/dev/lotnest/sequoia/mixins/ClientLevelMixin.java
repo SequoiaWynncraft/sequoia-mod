@@ -19,8 +19,10 @@ public abstract class ClientLevelMixin {
 
     @Inject(method = "disconnect()V", at = @At("HEAD"))
     private void disconnect(CallbackInfo ci) {
-        if (connection.getServerData() != null && WynnUtils.isWynncraftServer(connection.getServerData().ip)) {
-            SequoiaMod.getWebSocketClient().close();
+        if (SequoiaMod.getWebSocketClient() != null
+                && connection.getServerData() != null
+                && WynnUtils.isWynncraftServer(connection.getServerData().ip)) {
+            SequoiaMod.getWebSocketClient().closeIfNeeded();
         }
     }
 }

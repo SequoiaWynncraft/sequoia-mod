@@ -5,6 +5,7 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.wynn.WynnUtils;
+import dev.lotnest.sequoia.wynn.guild.GuildService;
 import java.net.URI;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
@@ -13,7 +14,6 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.CommonListenerCookie;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import org.java_websocket.enums.ReadyState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -30,11 +30,11 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
             method = "handlePlayerInfoUpdate(Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket;)V",
             at = @At("RETURN"))
     private void handlePlayerInfoUpdatePost(ClientboundPlayerInfoUpdatePacket packet, CallbackInfo ci) {
-        if (!McUtils.mc().isSameThread()) {
+        if (!Models.WorldState.onWorld()) {
             return;
         }
 
-        if (!Models.WorldState.onWorld()) {
+        if (!GuildService.isSequoiaGuildMember()) {
             return;
         }
 
@@ -60,11 +60,7 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
                                                 McUtils.player().getStringUUID())));
                             }
 
-                            if (SequoiaMod.getWebSocketClient().getReadyState() == ReadyState.NOT_YET_CONNECTED) {
-                                SequoiaMod.getWebSocketClient().connect();
-                            } else if (SequoiaMod.getWebSocketClient().getReadyState() == ReadyState.CLOSED) {
-                                SequoiaMod.getWebSocketClient().reconnect();
-                            }
+                            SequoiaMod.getWebSocketClient().connectIfNeeded();
                         } catch (Exception exception) {
                             SequoiaMod.error("Failed to connect to WebSocket server: " + exception.getMessage());
                         }
