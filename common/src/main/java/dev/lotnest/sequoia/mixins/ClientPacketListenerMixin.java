@@ -5,6 +5,7 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.wynn.WynnUtils;
+import dev.lotnest.sequoia.wynn.guild.GuildService;
 import java.net.URI;
 import java.util.Map;
 import net.minecraft.client.Minecraft;
@@ -30,6 +31,10 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
             at = @At("RETURN"))
     private void handlePlayerInfoUpdatePost(ClientboundPlayerInfoUpdatePacket packet, CallbackInfo ci) {
         if (!Models.WorldState.onWorld()) {
+            return;
+        }
+
+        if (!GuildService.isSequoiaGuildMember()) {
             return;
         }
 
