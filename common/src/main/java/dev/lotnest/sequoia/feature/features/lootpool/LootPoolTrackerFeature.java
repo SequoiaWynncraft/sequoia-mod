@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
-public class LootPoolFeature extends Feature {
+public class LootPoolTrackerFeature extends Feature {
     private static final Pattern SELECTED_CAMP_PATTERN = Pattern.compile("§6- §f.*");
 
     private static final int CHANGE_CAMP_ITEM_SLOT = 4;

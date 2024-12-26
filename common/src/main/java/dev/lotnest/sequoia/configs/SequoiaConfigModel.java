@@ -7,9 +7,10 @@ import io.wispforest.owo.config.annotation.Modmenu;
 import io.wispforest.owo.config.annotation.Nest;
 import io.wispforest.owo.config.annotation.PredicateConstraint;
 import io.wispforest.owo.config.annotation.SectionHeader;
+import org.apache.commons.compress.utils.Lists;
+
 import java.util.List;
 import java.util.regex.Pattern;
-import org.apache.commons.compress.utils.Lists;
 
 @Modmenu(modId = SequoiaMod.MOD_ID)
 @Config(name = "sequoia", wrapperName = "SequoiaConfig")
@@ -40,7 +41,7 @@ public class SequoiaConfigModel {
 
     @Nest
     @Expanded
-    public LootPoolFeature lootPoolFeature = new LootPoolFeature();
+    public LootPoolTrackerFeature lootPoolTrackerFeature = new LootPoolTrackerFeature();
 
     public static class GuildMessageFilterFeature {
         public boolean enabled = false;
@@ -80,7 +81,7 @@ public class SequoiaConfigModel {
         public boolean sendDiscordMessagesToInGameChat = true;
     }
 
-    public static class LootPoolFeature {
+    public static class LootPoolTrackerFeature {
         public boolean enabled = true;
     }
 }

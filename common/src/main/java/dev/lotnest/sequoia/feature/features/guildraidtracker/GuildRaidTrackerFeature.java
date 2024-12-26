@@ -8,12 +8,6 @@ import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.IntegerUtils;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.wynn.WynnUtils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
@@ -21,6 +15,13 @@ import net.minecraft.network.chat.HoverEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GuildRaidTrackerFeature extends Feature {
     private static final Pattern GUILD_RAID_COMPLETION_PATTERN = Pattern.compile(
@@ -61,9 +62,7 @@ public class GuildRaidTrackerFeature extends Feature {
         String aspects = guildRaidCompletionMatcher.group(6);
         String emeralds = guildRaidCompletionMatcher.group(7);
         String xp = guildRaidCompletionMatcher.group(8).replaceAll("[^0-9km]", "");
-        String sr = guildRaidCompletionMatcher.groupCount() >= 9 && guildRaidCompletionMatcher.group(9) != null
-                ? guildRaidCompletionMatcher.group(9)
-                : "0";
+        String sr = guildRaidCompletionMatcher.groupCount() >= 9 ? guildRaidCompletionMatcher.group(9) : "0";
         UUID reporterID = Minecraft.getInstance().player.getUUID();
 
         if (raidType == null) {
