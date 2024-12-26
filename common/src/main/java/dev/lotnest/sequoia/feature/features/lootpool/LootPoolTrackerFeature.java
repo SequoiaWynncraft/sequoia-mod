@@ -24,7 +24,7 @@ public class LootPoolTrackerFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onContainerSetContentPost(ContainerSetContentEvent.Post event) {
-        if (!SequoiaMod.CONFIG.lootPoolFeature.enabled()) {
+        if (!SequoiaMod.CONFIG.lootPoolTrackerFeature.enabled()) {
             return;
         }
 

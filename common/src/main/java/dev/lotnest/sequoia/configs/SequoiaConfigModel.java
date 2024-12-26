@@ -7,10 +7,9 @@ import io.wispforest.owo.config.annotation.Modmenu;
 import io.wispforest.owo.config.annotation.Nest;
 import io.wispforest.owo.config.annotation.PredicateConstraint;
 import io.wispforest.owo.config.annotation.SectionHeader;
-import org.apache.commons.compress.utils.Lists;
-
 import java.util.List;
 import java.util.regex.Pattern;
+import org.apache.commons.compress.utils.Lists;
 
 @Modmenu(modId = SequoiaMod.MOD_ID)
 @Config(name = "sequoia", wrapperName = "SequoiaConfig")

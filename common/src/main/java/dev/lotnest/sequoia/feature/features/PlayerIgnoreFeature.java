@@ -21,6 +21,10 @@ public class PlayerIgnoreFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onMessage(ChatMessageReceivedEvent event) {
+        if (!SequoiaMod.CONFIG.playerIgnoreFeature.enabled()) {
+            return;
+        }
+
         Matcher guildChatMatcher = event.getStyledText().getMatcher(GUILD_CHAT_PATTERN);
         if (guildChatMatcher.matches()) {
             String nicknameOrUsername = guildChatMatcher.group("nicknameOrUsername");

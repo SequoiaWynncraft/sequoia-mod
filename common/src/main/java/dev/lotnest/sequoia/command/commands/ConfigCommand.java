@@ -2,6 +2,7 @@ package dev.lotnest.sequoia.command.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
+import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import io.wispforest.owo.config.ui.ConfigScreen;
@@ -12,6 +13,7 @@ import java.util.function.Function;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 
 public class ConfigCommand extends Command {
     @Override
@@ -22,10 +24,10 @@ public class ConfigCommand extends Command {
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
-        return base.executes(this::openConfigGUI);
+        return base.executes(this::tryOpenConfigGUI);
     }
 
-    private int openConfigGUI(CommandContext<CommandSourceStack> context) {
+    private int tryOpenConfigGUI(CommandContext<CommandSourceStack> context) {
         try {
             Class<?> configScreenProvidersClass = Class.forName("io.wispforest.owo.config.ui.ConfigScreenProviders");
             Method getMethod = configScreenProvidersClass.getMethod("get", String.class);
@@ -35,6 +37,8 @@ public class ConfigCommand extends Command {
             if (configScreenProvider == null) {
                 SequoiaMod.error("No ConfigScreenProvider found for mod ID: " + SequoiaMod.MOD_ID
                         + ", do you have owo-lib installed?");
+                McUtils.sendMessageToClient(
+                        SequoiaMod.prefix(Component.translatable("sequoia.command.config.installOwOLib")));
                 return 1;
             }
 
@@ -51,12 +55,15 @@ public class ConfigCommand extends Command {
                 } else {
                     SequoiaMod.error("ConfigScreenProvider returned unexpected Screen type: "
                             + screen.getClass().getName());
+                    McUtils.sendMessageToClient(
+                            SequoiaMod.prefix(Component.translatable("sequoia.command.config.errorOpeningConfig")));
                 }
             }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to open ConfigScreen", exception);
+            McUtils.sendMessageToClient(
+                    SequoiaMod.prefix(Component.translatable("sequoia.command.config.errorOpeningConfig")));
         }
-
         return 1;
     }
 }

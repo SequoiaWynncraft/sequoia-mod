@@ -1,4 +1,7 @@
 {
+  "sequoia.command.config.errorOpeningConfig": "&cAn error occurred while opening the config, check the logs for more information.",
+  "sequoia.command.config.installOwOLib": "&cIt seems like you don't have owo-lib installed, please download it from &ehttps://modrinth.com/mod/owo-lib/version/0.12.15+1.21 &cfirst and try this command again.",
+  "sequoia.command.discord.message": "§aJoin our Discord server to apply for the guild, report mod bugs and chat to us! §2https://discord.com/invite/seq",
   "sequoia.command.invalidUsername": "§cInvalid username provided, check the username and try again.",
   "sequoia.command.lastSeen.errorLookingUpPlayer": "§cAn error occurred while looking up §e%s§c's last seen time, check the logs for more information.",
   "sequoia.command.lastSeen.lookingUpPlayer": "§eLooking up §2%s§e's last seen time...",
