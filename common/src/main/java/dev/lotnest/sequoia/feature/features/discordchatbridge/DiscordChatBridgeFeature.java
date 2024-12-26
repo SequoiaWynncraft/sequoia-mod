@@ -19,7 +19,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class DiscordChatBridgeFeature extends Feature {
-    public static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
+    protected static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
             "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}§[0-9a-fk-or<]*]*?([^:]+):\\s*(.+)$",
             Pattern.MULTILINE);
     private static final Pattern NICKNAME_PATTERN =

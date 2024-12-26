@@ -18,9 +18,10 @@ import javax.crypto.SecretKey;
 import org.apache.commons.lang3.StringUtils;
 
 public final class AccessTokenManager {
-    private static final String ACCESS_TOKEN_FILE_PATH = "sequoia" + File.separator + "access_token.properties";
+    private static final String BASE_FOLDER_PATH = "sequoia";
+    private static final String ACCESS_TOKEN_FILE_PATH = BASE_FOLDER_PATH + File.separator + "access_token.properties";
     private static final String ACCESS_TOKEN_KEY = "SequoiaModAccessToken";
-    private static final String ENV_FILE_PATH = "sequoia" + File.separator + ".env";
+    private static final String ENV_FILE_PATH = BASE_FOLDER_PATH + File.separator + ".env";
     private static final String ENCRYPTION_KEY_PROPERTY = "SEQUOIA_MOD_ENCRYPTION_KEY";
 
     private AccessTokenManager() {}

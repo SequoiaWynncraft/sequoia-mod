@@ -79,7 +79,7 @@ public class GuildRaidTrackerFeature extends Feature {
                 Integer.parseInt(aspects),
                 Integer.parseInt(emeralds),
                 IntegerUtils.convertToInt(xp),
-                Integer.parseInt(sr)));
+                StringUtils.isNotBlank(sr) ? Integer.parseInt(sr) : 0));
     }
 
     private String extractRealName(String nickname, Map<String, List<String>> nameMap) {

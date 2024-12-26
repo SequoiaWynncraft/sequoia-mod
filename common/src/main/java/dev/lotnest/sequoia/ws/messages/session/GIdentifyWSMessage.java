@@ -12,11 +12,14 @@ public class GIdentifyWSMessage extends WSMessage {
         super(WSMessageType.GIdentify.getValue(), SequoiaWebSocketClient.GSON.toJsonTree(data));
     }
 
-    public Data getIdentifyData() {
+    public Data getGIdentifyData() {
         return SequoiaWebSocketClient.GSON.fromJson(getData(), Data.class);
     }
 
-    public record Data(@SerializedName("access_token") String accessToken, String uuid) {
+    public record Data(
+            @SerializedName("access_token") String accessToken,
+            String uuid,
+            @SerializedName("mod_version") String modVersion) {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -28,12 +31,17 @@ public class GIdentifyWSMessage extends WSMessage {
             return new EqualsBuilder()
                     .append(accessToken, data.accessToken)
                     .append(uuid, data.uuid)
+                    .append(modVersion, data.modVersion)
                     .isEquals();
         }
 
         @Override
         public int hashCode() {
-            return new HashCodeBuilder(17, 37).append(accessToken).append(uuid).toHashCode();
+            return new HashCodeBuilder(17, 37)
+                    .append(accessToken)
+                    .append(uuid)
+                    .append(modVersion)
+                    .toHashCode();
         }
     }
 }

@@ -3,7 +3,7 @@ package dev.lotnest.sequoia.feature.features.discordchatbridge;
 import static dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature.GUILD_CHAT_PATTERN;
 import static dev.lotnest.sequoia.utils.Asserter.assertMatches;
 
-public class DiscordChatBridgeFeaturePatternAsserter {
+public final class DiscordChatBridgeFeaturePatternAsserter {
     private DiscordChatBridgeFeaturePatternAsserter() {
         assertMatches(
                 GUILD_CHAT_PATTERN,

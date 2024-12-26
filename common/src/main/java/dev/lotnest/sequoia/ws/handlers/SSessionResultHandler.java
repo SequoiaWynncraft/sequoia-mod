@@ -16,7 +16,7 @@ public class SSessionResultHandler extends WSMessageHandler {
     @Override
     public void handle() {
         SSessionResultWSMessage sSessionResultWSMessage = GSON.fromJson(message, SSessionResultWSMessage.class);
-        SSessionResultWSMessage.Data sSessionResultWSMessageData = sSessionResultWSMessage.getSessionResultData();
+        SSessionResultWSMessage.Data sSessionResultWSMessageData = sSessionResultWSMessage.getSSessionResultData();
 
         if (StringUtils.equals(sSessionResultWSMessageData.result(), "Authentication pending.")) {
             SequoiaMod.getWebSocketClient().setAuthenticating(true);

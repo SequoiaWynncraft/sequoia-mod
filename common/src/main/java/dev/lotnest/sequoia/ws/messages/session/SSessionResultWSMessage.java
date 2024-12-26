@@ -13,7 +13,7 @@ public class SSessionResultWSMessage extends WSMessage {
         super(WSMessageType.SSessionResult.getValue(), SequoiaWebSocketClient.GSON.toJsonTree(data));
     }
 
-    public Data getSessionResultData() {
+    public Data getSSessionResultData() {
         return SequoiaWebSocketClient.GSON.fromJson(getData(), Data.class);
     }
 

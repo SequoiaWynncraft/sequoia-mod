@@ -6,6 +6,7 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.SChannelMessageWSMessage;
 import dev.lotnest.sequoia.ws.WSMessageHandler;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 public class SChannelMessageHandler extends WSMessageHandler {
@@ -15,14 +16,18 @@ public class SChannelMessageHandler extends WSMessageHandler {
 
     @Override
     public void handle() {
-        if (SequoiaMod.CONFIG.discordChatBridgeFeature.sendDiscordMessagesToInGameChat()) {
+        if (SequoiaMod.CONFIG.discordChatBridgeFeature.enabled()
+                && SequoiaMod.CONFIG.discordChatBridgeFeature.sendDiscordMessagesToInGameChat()) {
             SChannelMessageWSMessage sChannelMessageWSMessage = (SChannelMessageWSMessage) wsMessage;
             SChannelMessageWSMessage.Data sChannelMessageWSMessageData =
                     sChannelMessageWSMessage.getChannelMessageData();
 
-            McUtils.sendMessageToClient(Component.literal("[DISCORD] " + sChannelMessageWSMessageData.displayName()
-                            + " ➤ " + sChannelMessageWSMessageData.message())
-                    .withStyle(style -> style.withColor(0x5865F2)));
+            McUtils.sendMessageToClient(Component.literal("[DISCORD] ")
+                    .withStyle(ChatFormatting.AQUA)
+                    .append(Component.literal(sChannelMessageWSMessageData.displayName() + ": ")
+                            .withStyle(ChatFormatting.DARK_AQUA))
+                    .append(Component.literal(sChannelMessageWSMessageData.message())
+                            .withStyle(ChatFormatting.AQUA)));
         }
     }
 }
