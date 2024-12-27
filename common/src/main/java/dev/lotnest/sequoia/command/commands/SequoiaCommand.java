@@ -60,7 +60,7 @@ public class SequoiaCommand extends Command {
         } else {
             versionMessage = SequoiaMod.prefix(Component.literal("You are running Sequoia " + SequoiaMod.getVersion())
                     .append(SequoiaMod.isDevelopmentBuild() ? " (Development build)" : "")
-                    .append(" by Lotnest (Credits to dotJJ for development and to OwORawr for Sequoia OST).")
+                    .append(" by Lotnest (Credits to dotJJ for server development and to OwORawr for Sequoia OST).")
                     .withStyle(ChatFormatting.GREEN));
         }
 

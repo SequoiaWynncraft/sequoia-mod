@@ -6,14 +6,14 @@ license = "LGPL-3.0-only"
     modId = "${mod_id}"
     version = "${mod_version}"
     displayName = "Sequoia"
-    authors = "Lotnest (Mod Developer), dotJJ (Developer), OwORawr (Sequoia OST composer)"
+    authors = "Lotnest (Mod Developer), dotJJ (Server Developer), OwORawr (Sequoia OST composer)"
     description = "Guild mod for Sequoia [SEQ]."
     logoFile = "assets/sequoia/logo.png"
 
 [[dependencies.sequoia]]
     modId = "minecraft"
     mandatory = true
-    versionRange = "[${minecraft_version}]"
+    versionRange = "${minecraft_version}"
 
 [[dependencies.sequoia]]
     modId = "forge"
