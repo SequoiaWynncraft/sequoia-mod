@@ -11,6 +11,7 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import org.apache.commons.lang3.StringUtils;
 
 public class Guild {
     private String uuid;
@@ -36,19 +37,19 @@ public class Guild {
         private Map<String, MemberDetails> recruit;
 
         public static class MemberDetails {
-            private String username;
+            private String uuid;
             private boolean online;
             private String server;
             private long contributed;
             private int guildRank;
             private String joined;
 
-            public String getUsername() {
-                return username;
+            public String getUuid() {
+                return uuid;
             }
 
-            public void setUsername(String username) {
-                this.username = username;
+            public void setUuid(String uuid) {
+                this.uuid = uuid;
             }
 
             public boolean isOnline() {
@@ -98,21 +99,20 @@ public class Guild {
                 return isOnline() == that.isOnline()
                         && getContributed() == that.getContributed()
                         && getGuildRank() == that.getGuildRank()
-                        && Objects.equals(getUsername(), that.getUsername())
+                        && Objects.equals(getUuid(), that.getUuid())
                         && Objects.equals(getServer(), that.getServer())
                         && Objects.equals(getJoined(), that.getJoined());
             }
 
             @Override
             public int hashCode() {
-                return Objects.hash(
-                        getUsername(), isOnline(), getServer(), getContributed(), getGuildRank(), getJoined());
+                return Objects.hash(getUuid(), isOnline(), getServer(), getContributed(), getGuildRank(), getJoined());
             }
 
             @Override
             public String toString() {
                 return "MemberDetails{" + "username='"
-                        + username + '\'' + ", online="
+                        + uuid + '\'' + ", online="
                         + online + ", server='"
                         + server + '\'' + ", contributed="
                         + contributed + ", guildRank="
@@ -175,6 +175,20 @@ public class Guild {
 
         public void setRecruit(Map<String, MemberDetails> recruit) {
             this.recruit = recruit;
+        }
+
+        public String getJoined(String username) {
+            if (StringUtils.isBlank(username)) {
+                return null;
+            }
+            for (Map<String, MemberDetails> rank : List.of(owner, chief, strategist, captain, recruiter, recruit)) {
+                if (rank.containsKey(username)) {
+                    String result = rank.get(username).getJoined();
+                    SequoiaMod.debug("Guild joined date for " + username + ": " + result);
+                    return result;
+                }
+            }
+            return null;
         }
 
         public MutableComponent toPrettyMessage() {

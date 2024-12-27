@@ -12,14 +12,15 @@ import dev.lotnest.sequoia.ws.handlers.SMessageHandler;
 import dev.lotnest.sequoia.ws.handlers.SSessionResultHandler;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
 import dev.lotnest.sequoia.wynn.guild.GuildService;
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.Map;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.time.OffsetDateTime;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class SequoiaWebSocketClient extends WebSocketClient {
     public static final Gson GSON = new GsonBuilder()

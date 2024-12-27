@@ -10,10 +10,10 @@ import dev.lotnest.sequoia.feature.Feature;
 import java.util.List;
 import java.util.regex.Pattern;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.compress.utils.Lists;
 
 public class LootPoolTrackerFeature extends Feature {
     private static final Pattern SELECTED_CAMP_PATTERN = Pattern.compile("§6- §f.*");
@@ -49,19 +49,23 @@ public class LootPoolTrackerFeature extends Feature {
             return;
         }
 
-        McUtils.sendMessageToClient(Component.literal(selectedCampLoreLineText
+        String selectedCampName = selectedCampLoreLineText
                 .getStringWithoutFormatting()
                 .replace("-", "")
-                .trim()));
+                .trim();
+        List<LootPoolItem> lootPoolItems = Lists.newArrayList();
 
         for (int i = LOOT_POOL_CHEST_REWARD_STARTING_SLOT; i <= LOOT_POOL_CHEST_REWARD_ENDING_SLOT; i++) {
             ItemStack itemStack = containerScreen.getMenu().getContainer().getItem(i);
             if (itemStack == null || itemStack.isEmpty()) {
                 continue;
             }
-            Models.Item.getWynnItem(itemStack)
-                    .ifPresent(wynnItem -> McUtils.sendMessageToClient(itemStack.getDisplayName()));
+
+            Models.Item.getWynnItem(itemStack).ifPresent(wynnItem -> lootPoolItems.add(new LootPoolItem(wynnItem)));
         }
+
+        SequoiaMod.debug("[LootPoolTrackerFeature] "
+                + new GLootPoolWSMessage(new GLootPoolWSMessage.Data(selectedCampName, lootPoolItems)));
     }
 
     @Override

@@ -21,6 +21,7 @@
   "sequoia.command.playerDungeons.showingPlayerDungeons": "§2%s §ahas completed a total of §e%s §adungeons.",
   "sequoia.command.playerGuild.errorLookingUpPlayer": "§cAn error occurred while looking up §e%s§c's guild, check the logs for more information.",
   "sequoia.command.playerGuild.lookingUpPlayer": "§eLooking up §2%s§e's guild...",
+  "sequoia.command.playerGuild.partOfTheGuildFor": "§2They have been a part of the guild for §e%s.",
   "sequoia.command.playerGuild.playerNotFound": "§e%s §cwas not found, check the username and try again.",
   "sequoia.command.playerGuild.playerNotInGuild": "§2%s §cis not in a guild.",
   "sequoia.command.playerGuild.showingPlayerGuild": "§2%s §ais a §e%s §ain §b%s [%s].",

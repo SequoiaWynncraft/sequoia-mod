@@ -7,6 +7,7 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import io.wispforest.owo.config.ui.ConfigScreen;
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
@@ -19,6 +20,11 @@ public class ConfigCommand extends Command {
     @Override
     public String getCommandName() {
         return "config";
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("cf");
     }
 
     @Override
