@@ -4,8 +4,8 @@ import static dev.lotnest.sequoia.ws.SequoiaWebSocketClient.GSON;
 
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.feature.features.discordchatbridge.SChannelMessageWSMessage;
 import dev.lotnest.sequoia.ws.WSMessageHandler;
+import dev.lotnest.sequoia.ws.messages.discordchatbridge.SChannelMessageWSMessage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 

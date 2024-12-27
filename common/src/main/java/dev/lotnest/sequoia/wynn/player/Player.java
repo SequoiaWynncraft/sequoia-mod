@@ -216,6 +216,12 @@ public class Player {
         }
 
         public static class Raids {
+            private static final Map<String, String> RAID_NAME_TO_RAID_LEADERBOARD_MAP = Map.of(
+                    "The Canyon Colossus", "colossusCompletion",
+                    "Orphion's Nexus of Light", "orphionCompletion",
+                    "The Nameless Anomaly", "namelessCompletion",
+                    "Nest of the Grootslangs", "grootslangCompletion");
+
             private int total;
             private Map<String, Integer> list;
 
@@ -235,7 +241,7 @@ public class Player {
                 this.list = list;
             }
 
-            public MutableComponent toPrettyMessage() {
+            public MutableComponent toPrettyMessage(Map<String, Integer> ranking) {
                 MutableComponent result = Component.empty();
 
                 if (list == null || list.isEmpty()) {
@@ -243,11 +249,22 @@ public class Player {
                             Component.translatable("sequoia.command.playerRaids.playerHasNoRaidsCompleted"));
                 }
 
-                list.forEach((raidName, count) -> result.append(
-                                Component.literal(raidName).withStyle(ChatFormatting.DARK_GREEN))
-                        .append(Component.literal(": ").withStyle(ChatFormatting.GREEN))
-                        .append(Component.literal(count + " times").withStyle(ChatFormatting.GREEN))
-                        .append(Component.literal("\n")));
+                list.forEach((raidName, count) -> {
+                    boolean raidHasCompletionLeaderboard = RAID_NAME_TO_RAID_LEADERBOARD_MAP.containsKey(raidName);
+                    result.append(Component.literal(raidName).withStyle(ChatFormatting.DARK_GREEN))
+                            .append(Component.literal(": ").withStyle(ChatFormatting.YELLOW))
+                            .append(Component.literal(count + " completions").withStyle(ChatFormatting.YELLOW))
+                            .append(Component.literal(raidHasCompletionLeaderboard ? " (" : "")
+                                    .withStyle(ChatFormatting.YELLOW))
+                            .append(Component.literal(
+                                            raidHasCompletionLeaderboard
+                                                    ? "#" + ranking.get(RAID_NAME_TO_RAID_LEADERBOARD_MAP.get(raidName))
+                                                    : "")
+                                    .withStyle(ChatFormatting.AQUA))
+                            .append(Component.literal(raidHasCompletionLeaderboard ? ")" : "")
+                                    .withStyle(ChatFormatting.YELLOW))
+                            .append(Component.literal("\n"));
+                });
 
                 if (!result.getSiblings().isEmpty()) {
                     result.getSiblings().removeLast();

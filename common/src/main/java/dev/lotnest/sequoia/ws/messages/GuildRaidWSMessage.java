@@ -1,5 +1,6 @@
-package dev.lotnest.sequoia.feature.features.guildraidtracker;
+package dev.lotnest.sequoia.ws.messages;
 
+import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaid;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;

@@ -62,7 +62,8 @@ public class PlayerRaidsCommand extends Command {
                                         false);
                         context.getSource()
                                 .sendSuccess(
-                                        () -> player.getGlobalData().getRaids().toPrettyMessage(), false);
+                                        () -> player.getGlobalData().getRaids().toPrettyMessage(player.getRanking()),
+                                        false);
                     }
                 }
             });

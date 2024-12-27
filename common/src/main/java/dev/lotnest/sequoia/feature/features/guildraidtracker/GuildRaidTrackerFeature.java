@@ -7,6 +7,7 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.IntegerUtils;
 import dev.lotnest.sequoia.ws.WSMessage;
+import dev.lotnest.sequoia.ws.messages.GuildRaidWSMessage;
 import dev.lotnest.sequoia.wynn.WynnUtils;
 import java.util.ArrayList;
 import java.util.List;

@@ -7,6 +7,7 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.TimeUtils;
+import dev.lotnest.sequoia.ws.messages.discordchatbridge.GChatMessageWSMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
