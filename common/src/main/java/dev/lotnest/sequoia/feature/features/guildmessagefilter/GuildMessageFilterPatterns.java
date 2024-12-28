@@ -14,10 +14,10 @@ public final class GuildMessageFilterPatterns {
     public static final Pattern TERRITORY_DEFENSE =
             Pattern.compile("(?<player>.*?): (?<territory>.*?) defense is (?<defense>.*?)");
     public static final Pattern WAR_STARTING =
-            Pattern.compile("The war for (?<territory>.*?) will start in (?<time>.*?).");
+            Pattern.compile("The war for (?<territory>.*?) will start in (?<time>.*?)\\.");
     public static final Pattern BATTLE_BEGUN = Pattern.compile("The battle has begun!");
     public static final Pattern TERRITORY_CAPTURED_BY_OUR_GUILD = Pattern.compile(
-            "You have taken control of (?<territory>.*?) from (?<guild>.*?)! Use /guild territory to defend this territory.");
+            "You have taken control of (?<territory>.*?) from (?<guild>.*?)! Use /guild territory to defend this territory\\.");
     public static final Pattern TERRITORY_CAPTURED_BY_OTHER_GUILD =
             Pattern.compile("(?<guild>.*?) has taken control of (?<territory>.*?)!");
     public static final Pattern OTHER_GUILD_LOST_WAR = Pattern.compile("(?<guild>.*?) has lost the war!");
