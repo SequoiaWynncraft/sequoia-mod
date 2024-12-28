@@ -22,14 +22,15 @@ public final class WynnUtils {
     }
 
     public static String getUnformattedString(String string) {
-        return string.replaceAll("\udaff\udffc\ue006\udaff\udfff\ue002\udaff\udffe", "")
-                .replaceAll("\udaff\udffc\ue001\udb00\udc06", "")
+        return string.replaceAll("\uDAFF\uDFFC\uE006\uDAFF\uDFFF\uE002\uDAFF\uDFFE", "")
+                .replaceAll("\uDAFF\uDFFC\uE001\uDB00\uDC06", "")
                 .replaceAll("§.", "")
                 .replaceAll("&.", "")
                 .replaceAll("\\[[0-9:]+]", "")
                 .replaceAll("\\s+", " ")
                 .replaceAll("\\n", "")
                 .replaceAll("[^\\x20-\\x7E]", "")
+                .replaceAll("\u00A0", " ")
                 .trim();
     }
 
