@@ -73,7 +73,7 @@ public record ItemResponse(
             @SerializedName("defence") Integer defence,
             @SerializedName("agility") Integer agility,
             @SerializedName("quest") String quest,
-            @SerializedName("class_requirement") String classRequirement,
+            @SerializedName("classRequirement") String classRequirement,
             @SerializedName("skills") List<String> skills) {
         public record LevelRange(@SerializedName("min") Integer min, @SerializedName("max") Integer max) {}
     }
