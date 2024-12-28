@@ -44,18 +44,15 @@ public class SequoiaConfigModel {
 
     public static class GuildMessageFilterFeature {
         public boolean enabled = false;
-        //        public
-        // dev.lotnest.sequoia.feature.features.guildmessagefilter.GuildMessageFilterFeature.GuildMessageFilterDecisionType
-        //                decisionType =
-        //
-        // dev.lotnest.sequoia.feature.features.guildmessagefilter.GuildMessageFilterFeature.GuildMessageFilterDecisionType
-        //                                .KEEP_ALL;
     }
 
     public static class PlayerIgnoreFeature {
         private static final Pattern MINECRAFT_NAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,16}");
 
         public boolean enabled = false;
+        public boolean allowGuildChatMessagesFromIgnoredPlayers = false;
+        public boolean allowPartyChatMessagesFromIgnoredPlayers = false;
+        public boolean allowShoutsFromIgnoredPlayers = false;
 
         @PredicateConstraint("minecraftNameValidator")
         public List<String> ignoredPlayers = Lists.newArrayList();

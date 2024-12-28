@@ -135,7 +135,6 @@ public class DiscordChatBridgeFeature extends Feature {
             if (hover.getValue(hover.getAction()) instanceof Component hoverText) {
                 Matcher nicknameMatcher = NICKNAME_PATTERN.matcher(hoverText.getString());
                 if (!nicknameMatcher.matches()) {
-                    SequoiaMod.debug("No match for hover text: " + hoverText.getString());
                     return;
                 }
 
@@ -164,7 +163,6 @@ public class DiscordChatBridgeFeature extends Feature {
         HoverEvent hover = message.getStyle().getHoverEvent();
         if (hover != null && hover.getValue(hover.getAction()) instanceof Component hoverText) {
             String hoverString = hoverText.getString();
-            SequoiaMod.debug("Hover text found: " + hoverString);
             return hoverString.contains("real username");
         }
         return false;
