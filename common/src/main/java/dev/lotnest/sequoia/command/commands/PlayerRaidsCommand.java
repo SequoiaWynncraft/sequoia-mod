@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.mojang.MinecraftUtils;
-import dev.lotnest.sequoia.wynn.player.PlayerService;
+import dev.lotnest.sequoia.wynn.api.player.PlayerService;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -38,15 +38,16 @@ public class PlayerRaidsCommand extends Command {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidUsername")));
         } else {
-            PlayerService.getPlayer(username).whenComplete((player, throwable) -> {
+            PlayerService.getPlayer(username).whenComplete((playerResponse, throwable) -> {
                 if (throwable != null) {
+                    SequoiaMod.error("Error looking up player: " + username, throwable);
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(Component.translatable(
                                     "sequoia.command.playerRaids.errorLookingUpPlayer", username)));
                 } else {
-                    if (player == null
-                            || player.getGlobalData() == null
-                            || player.getGlobalData().getRaids() == null) {
+                    if (playerResponse == null
+                            || playerResponse.getGlobalData() == null
+                            || playerResponse.getGlobalData().getRaids() == null) {
                         context.getSource()
                                 .sendFailure(SequoiaMod.prefix(Component.translatable(
                                         "sequoia.command.playerRaids.playerNotFound", username)));
@@ -55,14 +56,18 @@ public class PlayerRaidsCommand extends Command {
                                 .sendSuccess(
                                         () -> SequoiaMod.prefix(Component.translatable(
                                                 "sequoia.command.playerRaids.showingPlayerRaids",
-                                                player.getUsername(),
-                                                player.getGlobalData()
+                                                playerResponse.getUsername(),
+                                                playerResponse
+                                                        .getGlobalData()
                                                         .getRaids()
                                                         .getTotal())),
                                         false);
                         context.getSource()
                                 .sendSuccess(
-                                        () -> player.getGlobalData().getRaids().toPrettyMessage(player.getRanking()),
+                                        () -> playerResponse
+                                                .getGlobalData()
+                                                .getRaids()
+                                                .toPrettyMessage(playerResponse.getRanking()),
                                         false);
                     }
                 }

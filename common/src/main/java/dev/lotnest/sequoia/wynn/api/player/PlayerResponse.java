@@ -1,4 +1,4 @@
-package dev.lotnest.sequoia.wynn.player;
+package dev.lotnest.sequoia.wynn.api.player;
 
 import java.util.List;
 import java.util.Map;
@@ -6,7 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
-public class Player {
+public class PlayerResponse {
     private String username;
     private boolean online;
     private String server;

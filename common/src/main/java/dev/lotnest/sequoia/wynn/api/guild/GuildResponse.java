@@ -1,4 +1,4 @@
-package dev.lotnest.sequoia.wynn.guild;
+package dev.lotnest.sequoia.wynn.api.guild;
 
 import dev.lotnest.sequoia.SequoiaMod;
 import java.util.List;
@@ -13,7 +13,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.StringUtils;
 
-public class Guild {
+public class GuildResponse {
     private String uuid;
     private String name;
     private String prefix;
@@ -550,19 +550,19 @@ public class Guild {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Guild guild = (Guild) o;
-        return getLevel() == guild.getLevel()
-                && getXpPercent() == guild.getXpPercent()
-                && getTerritories() == guild.getTerritories()
-                && getWars() == guild.getWars()
-                && getOnline() == guild.getOnline()
-                && Objects.equals(getUuid(), guild.getUuid())
-                && Objects.equals(getName(), guild.getName())
-                && Objects.equals(getPrefix(), guild.getPrefix())
-                && Objects.equals(getCreated(), guild.getCreated())
-                && Objects.equals(getMembers(), guild.getMembers())
-                && Objects.equals(getBanner(), guild.getBanner())
-                && Objects.equals(getSeasonRanks(), guild.getSeasonRanks());
+        GuildResponse guildResponse = (GuildResponse) o;
+        return getLevel() == guildResponse.getLevel()
+                && getXpPercent() == guildResponse.getXpPercent()
+                && getTerritories() == guildResponse.getTerritories()
+                && getWars() == guildResponse.getWars()
+                && getOnline() == guildResponse.getOnline()
+                && Objects.equals(getUuid(), guildResponse.getUuid())
+                && Objects.equals(getName(), guildResponse.getName())
+                && Objects.equals(getPrefix(), guildResponse.getPrefix())
+                && Objects.equals(getCreated(), guildResponse.getCreated())
+                && Objects.equals(getMembers(), guildResponse.getMembers())
+                && Objects.equals(getBanner(), guildResponse.getBanner())
+                && Objects.equals(getSeasonRanks(), guildResponse.getSeasonRanks());
     }
 
     @Override

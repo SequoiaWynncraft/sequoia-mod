@@ -7,8 +7,8 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.mojang.MinecraftUtils;
 import dev.lotnest.sequoia.utils.TimeUtils;
-import dev.lotnest.sequoia.wynn.guild.GuildService;
-import dev.lotnest.sequoia.wynn.player.PlayerService;
+import dev.lotnest.sequoia.wynn.api.guild.GuildService;
+import dev.lotnest.sequoia.wynn.api.player.PlayerService;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -40,59 +40,70 @@ public class PlayerGuildCommand extends Command {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidUsername")));
         } else {
-            PlayerService.getPlayer(username).whenComplete((player, playerThrowable) -> {
+            PlayerService.getPlayer(username).whenComplete((playerResponse, playerThrowable) -> {
                 if (playerThrowable != null) {
+                    SequoiaMod.error("Error looking up player: " + playerThrowable.getMessage());
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(Component.translatable(
                                     "sequoia.command.playerGuild.errorLookingUpPlayer", username)));
                 } else {
-                    if (player == null) {
+                    if (playerResponse == null) {
                         context.getSource()
                                 .sendFailure(SequoiaMod.prefix(Component.translatable(
                                         "sequoia.command.playerGuild.playerNotFound", username)));
                     } else {
-                        if (player.getGuild() != null
-                                && !StringUtils.isBlank(player.getGuild().getName())) {
-                            GuildService.getGuild(player.getGuild().getName()).whenComplete((guild, guildThrowable) -> {
-                                if (guildThrowable != null) {
-                                    context.getSource()
-                                            .sendFailure(SequoiaMod.prefix(Component.translatable(
-                                                    "sequoia.command.playerGuild.errorLookingUpGuild",
-                                                    player.getGuild().getName())));
-                                } else {
-                                    if (guild == null) {
-                                        context.getSource()
-                                                .sendFailure(SequoiaMod.prefix(Component.translatable(
-                                                        "sequoia.command.playerGuild.guildNotFound",
-                                                        player.getGuild().getName())));
-                                    } else {
-                                        String prettyTimeSinceJoin = TimeUtils.toPrettyTimeSince(
-                                                guild.getMembers().getJoined(player.getUsername()));
-                                        context.getSource()
-                                                .sendSuccess(
-                                                        () -> SequoiaMod.prefix(Component.translatable(
-                                                                        "sequoia.command.playerGuild.showingPlayerGuild",
-                                                                        player.getUsername(),
-                                                                        player.getGuild()
-                                                                                .getRank(),
-                                                                        player.getGuild()
-                                                                                .getName(),
-                                                                        player.getGuild()
-                                                                                .getPrefix()))
-                                                                .append(Component.literal("\n"))
-                                                                .append(SequoiaMod.prefix(Component.translatable(
-                                                                        "sequoia.command.playerGuild.partOfTheGuildFor",
-                                                                        prettyTimeSinceJoin))),
-                                                        false);
-                                    }
-                                }
-                            });
+                        if (playerResponse.getGuild() != null
+                                && !StringUtils.isBlank(
+                                        playerResponse.getGuild().getName())) {
+                            GuildService.getGuild(playerResponse.getGuild().getName())
+                                    .whenComplete((guild, guildThrowable) -> {
+                                        if (guildThrowable != null) {
+                                            context.getSource()
+                                                    .sendFailure(SequoiaMod.prefix(Component.translatable(
+                                                            "sequoia.command.playerGuild.errorLookingUpGuild",
+                                                            playerResponse
+                                                                    .getGuild()
+                                                                    .getName())));
+                                        } else {
+                                            if (guild == null) {
+                                                context.getSource()
+                                                        .sendFailure(SequoiaMod.prefix(Component.translatable(
+                                                                "sequoia.command.playerGuild.guildNotFound",
+                                                                playerResponse
+                                                                        .getGuild()
+                                                                        .getName())));
+                                            } else {
+                                                String prettyTimeSinceJoin = TimeUtils.toPrettyTimeSince(
+                                                        guild.getMembers().getJoined(playerResponse.getUsername()));
+                                                context.getSource()
+                                                        .sendSuccess(
+                                                                () -> SequoiaMod.prefix(Component.translatable(
+                                                                                "sequoia.command.playerGuild.showingPlayerGuild",
+                                                                                playerResponse.getUsername(),
+                                                                                playerResponse
+                                                                                        .getGuild()
+                                                                                        .getRank(),
+                                                                                playerResponse
+                                                                                        .getGuild()
+                                                                                        .getName(),
+                                                                                playerResponse
+                                                                                        .getGuild()
+                                                                                        .getPrefix()))
+                                                                        .append(Component.literal("\n"))
+                                                                        .append(SequoiaMod.prefix(
+                                                                                Component.translatable(
+                                                                                        "sequoia.command.playerGuild.partOfTheGuildFor",
+                                                                                        prettyTimeSinceJoin))),
+                                                                false);
+                                            }
+                                        }
+                                    });
                         } else {
                             context.getSource()
                                     .sendSuccess(
                                             () -> SequoiaMod.prefix(Component.translatable(
                                                     "sequoia.command.playerGuild.playerNotInGuild",
-                                                    player.getUsername())),
+                                                    playerResponse.getUsername())),
                                             false);
                         }
                     }

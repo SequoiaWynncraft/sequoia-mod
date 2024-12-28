@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
-import dev.lotnest.sequoia.wynn.guild.GuildService;
+import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -38,14 +38,14 @@ public class OnlineMembersCommand extends Command {
                     .sendFailure(SequoiaMod.prefix(
                             Component.translatable("sequoia.command.onlineMembers.invalidGuildName")));
         } else {
-            GuildService.getGuild(guildName).whenComplete((guild, throwable) -> {
+            GuildService.getGuild(guildName).whenComplete((guildResponse, throwable) -> {
                 if (throwable != null) {
                     SequoiaMod.error("Error looking up " + guildName + "'s guild members", throwable);
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(Component.translatable(
                                     "sequoia.command.onlineMembers.errorLookingUpGuildMembers", guildName)));
                 } else {
-                    if (guild == null) {
+                    if (guildResponse == null) {
                         context.getSource()
                                 .sendFailure(SequoiaMod.prefix(Component.translatable(
                                         "sequoia.command.onlineMembers.guildNotFound", guildName)));
@@ -54,13 +54,14 @@ public class OnlineMembersCommand extends Command {
                                 .sendSuccess(
                                         () -> SequoiaMod.prefix(Component.translatable(
                                                 "sequoia.command.onlineMembers.showingGuildMembers",
-                                                guild.getName(),
-                                                guild.getPrefix(),
-                                                guild.getOnline(),
-                                                guild.getMembers().getTotal())),
+                                                guildResponse.getName(),
+                                                guildResponse.getPrefix(),
+                                                guildResponse.getOnline(),
+                                                guildResponse.getMembers().getTotal())),
                                         false);
                         context.getSource()
-                                .sendSuccess(() -> guild.getOnlineMembers().toPrettyMessage(), false);
+                                .sendSuccess(
+                                        () -> guildResponse.getOnlineMembers().toPrettyMessage(), false);
                     }
                 }
             });

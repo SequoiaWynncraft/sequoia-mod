@@ -1,11 +1,12 @@
-package dev.lotnest.sequoia.wynn.guild;
+package dev.lotnest.sequoia.wynn.api.guild;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.wynn.player.Player;
-import dev.lotnest.sequoia.wynn.player.PlayerService;
+import dev.lotnest.sequoia.utils.URLUtils;
+import dev.lotnest.sequoia.wynn.api.player.PlayerResponse;
+import dev.lotnest.sequoia.wynn.api.player.PlayerService;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -22,9 +23,9 @@ public final class GuildService {
 
     private GuildService() {}
 
-    public static CompletableFuture<Guild> getGuild(String guildName) {
-        String normalUrl = String.format(BASE_URL, guildName.replace(" ", "%20"));
-        String prefixUrl = String.format(BASE_URL, "prefix/" + guildName.replace(" ", "%20"));
+    public static CompletableFuture<GuildResponse> getGuild(String guildName) {
+        String normalUrl = String.format(BASE_URL, URLUtils.sanitize(guildName));
+        String prefixUrl = String.format(BASE_URL, "prefix/" + URLUtils.sanitize(guildName));
 
         HttpRequest normalRequest =
                 HttpRequest.newBuilder().uri(URI.create(normalUrl)).GET().build();
@@ -36,14 +37,14 @@ public final class GuildService {
                 .thenCompose(response -> {
                     if (response.statusCode() == 200 && response.body() != null) {
                         SequoiaMod.debug("Fetched guild data: " + response.body());
-                        return CompletableFuture.completedFuture(GSON.fromJson(response.body(), Guild.class));
+                        return CompletableFuture.completedFuture(GSON.fromJson(response.body(), GuildResponse.class));
                     } else {
                         return HTTP_CLIENT
                                 .sendAsync(prefixRequest, HttpResponse.BodyHandlers.ofString())
                                 .thenApply(prefixResponse -> {
                                     if (prefixResponse.statusCode() == 200 && prefixResponse.body() != null) {
                                         SequoiaMod.debug("Fetched guild data with prefix: " + prefixResponse.body());
-                                        return GSON.fromJson(prefixResponse.body(), Guild.class);
+                                        return GSON.fromJson(prefixResponse.body(), GuildResponse.class);
                                     } else {
                                         SequoiaMod.error("Failed to fetch guild data: " + prefixResponse.statusCode());
                                         return null;
@@ -55,7 +56,7 @@ public final class GuildService {
 
     public static boolean isSequoiaGuildMember() {
         if (isSequoiaGuildMember == null) {
-            Player.Guild playerGuild =
+            PlayerResponse.Guild playerGuild =
                     PlayerService.getPlayer(McUtils.playerName()).join().getGuild();
             if (playerGuild == null) {
                 isSequoiaGuildMember = false;

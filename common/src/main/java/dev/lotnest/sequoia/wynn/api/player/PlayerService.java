@@ -1,4 +1,4 @@
-package dev.lotnest.sequoia.wynn.player;
+package dev.lotnest.sequoia.wynn.api.player;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -19,7 +19,7 @@ public final class PlayerService {
 
     private PlayerService() {}
 
-    public static CompletableFuture<Player> getPlayer(String username) {
+    public static CompletableFuture<PlayerResponse> getPlayer(String username) {
         String url = String.format(BASE_URL, username);
         HttpRequest request =
                 HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
@@ -29,7 +29,7 @@ public final class PlayerService {
                 .thenApply(response -> {
                     if (response.statusCode() == 200 && response.body() != null) {
                         SequoiaMod.debug("Fetched player data: " + response.body());
-                        return GSON.fromJson(response.body(), Player.class);
+                        return GSON.fromJson(response.body(), PlayerResponse.class);
                     } else if (response.statusCode() == 300) {
                         UUID uuid = MojangService.getUuid(username).join();
                         return getPlayer(uuid.toString()).join();
@@ -40,7 +40,7 @@ public final class PlayerService {
                 });
     }
 
-    public static CompletableFuture<Player> getPlayerFullResult(String username) {
+    public static CompletableFuture<PlayerResponse> getPlayerFullResult(String username) {
         String url = String.format(FULL_RESULT_URL, username);
         HttpRequest request =
                 HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
@@ -50,7 +50,7 @@ public final class PlayerService {
                 .thenApply(response -> {
                     if (response.statusCode() == 200 && response.body() != null) {
                         SequoiaMod.debug("Fetched player data: " + response.body());
-                        return GSON.fromJson(response.body(), Player.class);
+                        return GSON.fromJson(response.body(), PlayerResponse.class);
                     } else if (response.statusCode() == 300) {
                         UUID uuid = MojangService.getUuid(username).join();
                         return getPlayerFullResult(uuid.toString()).join();

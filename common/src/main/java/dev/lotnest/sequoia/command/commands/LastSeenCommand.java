@@ -7,10 +7,8 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.mojang.MinecraftUtils;
 import dev.lotnest.sequoia.utils.TimeUtils;
-import dev.lotnest.sequoia.wynn.player.Player;
-import dev.lotnest.sequoia.wynn.player.PlayerService;
+import dev.lotnest.sequoia.wynn.api.player.PlayerService;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
@@ -43,41 +41,41 @@ public class LastSeenCommand extends Command {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidUsername")));
         } else {
-            CompletableFuture<Player> playerCompletableFuture = PlayerService.getPlayer(username);
-            playerCompletableFuture.whenComplete((player, throwable) -> {
+            PlayerService.getPlayer(username).whenComplete((playerResponse, throwable) -> {
                 if (throwable != null) {
+                    SequoiaMod.error("Error looking up player: " + username, throwable);
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(
                                     Component.translatable("sequoia.command.lastSeen.errorLookingUpPlayer", username)));
                 } else {
-                    if (player == null) {
+                    if (playerResponse == null) {
                         context.getSource()
                                 .sendFailure(SequoiaMod.prefix(
                                         Component.translatable("sequoia.command.lastSeen.playerNotFound", username)));
                     } else {
-                        if (player.isOnline()) {
+                        if (playerResponse.isOnline()) {
                             context.getSource()
                                     .sendSuccess(
                                             () -> SequoiaMod.prefix(Component.translatable(
                                                             "sequoia.command.lastSeen.showingPlayerLastSeenOnline",
-                                                            player.getUsername(),
-                                                            player.getServer())
+                                                            playerResponse.getUsername(),
+                                                            playerResponse.getServer())
                                                     .withStyle(style -> style.withHoverEvent(new HoverEvent(
                                                                     HoverEvent.Action.SHOW_TEXT,
                                                                     Component.translatable(
                                                                             "sequoia.tooltip.clickToPrivateMessage",
-                                                                            player.getUsername())))
+                                                                            playerResponse.getUsername())))
                                                             .withClickEvent(new ClickEvent(
                                                                     ClickEvent.Action.SUGGEST_COMMAND,
-                                                                    "/msg " + player.getUsername() + " ")))),
+                                                                    "/msg " + playerResponse.getUsername() + " ")))),
                                             false);
                         } else {
                             context.getSource()
                                     .sendSuccess(
                                             () -> SequoiaMod.prefix(Component.translatable(
                                                     "sequoia.command.lastSeen.showingPlayerLastSeenOffline",
-                                                    player.getUsername(),
-                                                    TimeUtils.toPrettyTimeSince(player.getLastJoin()))),
+                                                    playerResponse.getUsername(),
+                                                    TimeUtils.toPrettyTimeSince(playerResponse.getLastJoin()))),
                                             false);
                         }
                     }

@@ -6,7 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.mojang.MinecraftUtils;
-import dev.lotnest.sequoia.wynn.player.PlayerService;
+import dev.lotnest.sequoia.wynn.api.player.PlayerService;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -38,33 +38,37 @@ public class PlayerWarsCommand extends Command {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidUsername")));
         } else {
-            PlayerService.getPlayer(username).whenComplete((player, throwable) -> {
+            PlayerService.getPlayer(username).whenComplete((playerResponse, throwable) -> {
                 if (throwable != null) {
+                    SequoiaMod.error("Error looking up player: " + username, throwable);
                     context.getSource()
                             .sendFailure(SequoiaMod.prefix(Component.translatable(
                                     "sequoia.command.playerWars.errorLookingUpPlayer", username)));
                 } else {
-                    if (player == null) {
+                    if (playerResponse == null) {
                         context.getSource()
                                 .sendFailure(SequoiaMod.prefix(
                                         Component.translatable("sequoia.command.playerWars.playerNotFound", username)));
                     } else {
-                        if (player.getGuild() != null
-                                && !StringUtils.isBlank(player.getGuild().getName())) {
+                        if (playerResponse.getGuild() != null
+                                && !StringUtils.isBlank(
+                                        playerResponse.getGuild().getName())) {
                             context.getSource()
                                     .sendSuccess(
                                             () -> SequoiaMod.prefix(Component.translatable(
                                                     "sequoia.command.playerWars.showingPlayerWars",
-                                                    player.getUsername(),
-                                                    player.getGlobalData().getWars(),
-                                                    player.getRanking().get("warsCompletion"))),
+                                                    playerResponse.getUsername(),
+                                                    playerResponse
+                                                            .getGlobalData()
+                                                            .getWars(),
+                                                    playerResponse.getRanking().get("warsCompletion"))),
                                             false);
                         } else {
                             context.getSource()
                                     .sendSuccess(
                                             () -> SequoiaMod.prefix(Component.translatable(
                                                     "sequoia.command.playerWars.playerHasNoWars",
-                                                    player.getUsername())),
+                                                    playerResponse.getUsername())),
                                             false);
                         }
                     }

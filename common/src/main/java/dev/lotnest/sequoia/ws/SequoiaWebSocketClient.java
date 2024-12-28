@@ -11,7 +11,7 @@ import dev.lotnest.sequoia.ws.handlers.SCommandPipeHandler;
 import dev.lotnest.sequoia.ws.handlers.SMessageHandler;
 import dev.lotnest.sequoia.ws.handlers.SSessionResultHandler;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
-import dev.lotnest.sequoia.wynn.guild.GuildService;
+import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
