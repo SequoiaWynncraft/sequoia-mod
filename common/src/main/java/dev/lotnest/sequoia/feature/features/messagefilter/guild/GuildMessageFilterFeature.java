@@ -1,4 +1,4 @@
-package dev.lotnest.sequoia.feature.features.guildmessagefilter;
+package dev.lotnest.sequoia.feature.features.messagefilter.guild;
 
 import com.google.common.collect.Maps;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;

@@ -1,4 +1,4 @@
-package dev.lotnest.sequoia.feature.features.guildmessagefilter;
+package dev.lotnest.sequoia.feature.features.messagefilter.guild;
 
 import static dev.lotnest.sequoia.utils.Asserter.assertMatches;
 

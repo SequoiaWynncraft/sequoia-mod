@@ -5,7 +5,7 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
-import dev.lotnest.sequoia.feature.features.guildmessagefilter.GuildMessageFilterPatterns;
+import dev.lotnest.sequoia.feature.features.messagefilter.guild.GuildMessageFilterPatterns;
 import dev.lotnest.sequoia.utils.IntegerUtils;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.messages.GuildRaidWSMessage;
