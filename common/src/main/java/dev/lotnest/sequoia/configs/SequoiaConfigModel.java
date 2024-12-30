@@ -40,6 +40,10 @@ public class SequoiaConfigModel {
 
     @Nest
     @Expanded
+    public WebSocketFeature webSocketFeature = new WebSocketFeature();
+
+    @Nest
+    @Expanded
     public GuildRaidTrackerFeature guildRaidTrackerFeature = new GuildRaidTrackerFeature();
 
     @Nest
@@ -81,6 +85,10 @@ public class SequoiaConfigModel {
 
     public static class SequoiaOSTFeature {
         public boolean enabled = false;
+    }
+
+    public static class WebSocketFeature {
+        public boolean enabled = true;
     }
 
     public static class GuildRaidTrackerFeature {

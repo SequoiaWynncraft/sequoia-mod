@@ -5,6 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
+import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -22,14 +23,22 @@ public class DisconnectCommand extends Command {
     }
 
     private int disconnectFromWebSocket(CommandContext<CommandSourceStack> context) {
+        if (!dev.lotnest.sequoia.manager.Managers.Feature.getFeatureInstance(WebSocketFeature.class)
+                .isEnabled()) {
+            context.getSource()
+                    .sendFailure(
+                            SequoiaMod.prefix(Component.translatable("sequoia.feature.webSocket.featureDisabled")));
+            return 1;
+        }
+
         if (!GuildService.isSequoiaGuildMember()) {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.notASequoiaGuildMember")));
             return 1;
         }
 
-        if (SequoiaMod.getWebSocketClient() == null
-                || !SequoiaMod.getWebSocketClient().isOpen()) {
+        if (SequoiaMod.getWebSocketFeature().getClient() == null
+                || !SequoiaMod.getWebSocketFeature().getClient().isOpen()) {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.disconnect.notConnected")));
             return 1;
@@ -39,10 +48,10 @@ public class DisconnectCommand extends Command {
                 .sendSuccess(
                         () -> SequoiaMod.prefix(Component.translatable("sequoia.command.disconnect.disconnecting")),
                         false);
-        SequoiaMod.getWebSocketClient().closeIfNeeded();
+        SequoiaMod.getWebSocketFeature().closeIfNeeded();
         Managers.TickScheduler.scheduleLater(
                 () -> {
-                    if (SequoiaMod.getWebSocketClient().isClosed()) {
+                    if (SequoiaMod.getWebSocketFeature().getClient().isClosed()) {
                         context.getSource()
                                 .sendSuccess(
                                         () -> SequoiaMod.prefix(

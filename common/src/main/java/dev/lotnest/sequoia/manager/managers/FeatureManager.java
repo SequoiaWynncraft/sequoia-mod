@@ -13,6 +13,7 @@ import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
 import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
+import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
 import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaidTrackerFeature;
 import dev.lotnest.sequoia.feature.features.lootpool.LootPoolTrackerFeature;
@@ -52,11 +53,13 @@ public final class FeatureManager extends Manager {
         registerFeature(new GuildMessageFilterFeature());
         registerFeature(new PlayerIgnoreFeature());
         registerFeature(new SequoiaOSTFeature());
+        registerFeature(new WebSocketFeature());
         registerFeature(new GuildRaidTrackerFeature());
         registerFeature(new DiscordChatBridgeFeature());
         registerFeature(new LootPoolTrackerFeature());
         registerFeature(new MessageFilterFeature());
         registerFeature(new ModMessageFilterFeature());
+        registerFeature(new DiscordChatBridgeFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();

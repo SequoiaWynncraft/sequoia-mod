@@ -40,11 +40,11 @@ public class DiscordChatBridgeFeature extends Feature {
 
         SequoiaMod.debug("[CHAT] " + messageTextWithoutNewLines.getString());
 
-        if (SequoiaMod.getWebSocketClient() == null) {
+        if (SequoiaMod.getWebSocketFeature() == null) {
             return;
         }
 
-        if (SequoiaMod.getWebSocketClient().isAuthenticating()) {
+        if (SequoiaMod.getWebSocketFeature().isAuthenticating()) {
             return;
         }
 
@@ -98,7 +98,7 @@ public class DiscordChatBridgeFeature extends Feature {
 
                 GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
                         username, nickname, message, TimeUtils.wsTimestamp(), McUtils.playerName()));
-                SequoiaMod.getWebSocketClient().sendAsJson(gChatMessageWSMessage);
+                SequoiaMod.getWebSocketFeature().sendAsJson(gChatMessageWSMessage);
                 SequoiaMod.debug("Sending guild chat message to Discord: " + gChatMessageWSMessage);
             }
         } catch (Exception exception) {

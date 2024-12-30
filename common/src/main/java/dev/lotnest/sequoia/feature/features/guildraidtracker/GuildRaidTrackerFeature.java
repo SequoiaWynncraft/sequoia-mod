@@ -31,8 +31,8 @@ public class GuildRaidTrackerFeature extends Feature {
             return;
         }
 
-        if (SequoiaMod.getWebSocketClient() == null
-                || SequoiaMod.getWebSocketClient().isAuthenticating()) {
+        if (SequoiaMod.getWebSocketFeature() == null
+                || SequoiaMod.getWebSocketFeature().isAuthenticating()) {
             return;
         }
 
@@ -92,7 +92,7 @@ public class GuildRaidTrackerFeature extends Feature {
 
         try {
             WSMessage guildRaidWSMessage = new GuildRaidWSMessage(guildRaid);
-            String payload = SequoiaMod.getWebSocketClient().sendAsJson(guildRaidWSMessage);
+            String payload = SequoiaMod.getWebSocketFeature().sendAsJson(guildRaidWSMessage);
             if (StringUtils.isNotBlank(payload)) {
                 SequoiaMod.debug("Sending Guild Raid completion: " + payload);
             }

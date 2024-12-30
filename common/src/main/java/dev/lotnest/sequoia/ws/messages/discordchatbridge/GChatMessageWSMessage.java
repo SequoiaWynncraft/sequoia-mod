@@ -4,20 +4,16 @@ import com.google.gson.annotations.SerializedName;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
-import org.apache.commons.lang3.builder.ToStringBuilder;
+
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.GSON;
 
 public class GChatMessageWSMessage extends WSMessage {
     public GChatMessageWSMessage(Data data) {
-        super(WSMessageType.GChatMessage.getValue(), SequoiaWebSocketClient.GSON.toJsonTree(data));
+        super(WSMessageType.GChatMessage.getValue(), GSON.toJsonTree(data));
     }
 
     public Data getChatMessage() {
         return SequoiaWebSocketClient.GSON.fromJson(getData(), Data.class);
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this).append("data", getData()).toString();
     }
 
     public record Data(
@@ -25,5 +21,6 @@ public class GChatMessageWSMessage extends WSMessage {
             String nickname,
             String message,
             String timestamp,
-            @SerializedName("client_name") String clientName) {}
+            @SerializedName("client_name") String clientName) {
+    }
 }

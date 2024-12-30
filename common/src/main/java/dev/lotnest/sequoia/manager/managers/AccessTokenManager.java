@@ -1,5 +1,6 @@
 package dev.lotnest.sequoia.manager.managers;
 
+import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.utils.EncryptionUtils;
 import java.io.BufferedReader;
@@ -18,16 +19,19 @@ import javax.crypto.SecretKey;
 import org.apache.commons.lang3.StringUtils;
 
 public final class AccessTokenManager {
-    private static final String BASE_FOLDER_PATH = "sequoia";
-    private static final String ACCESS_TOKEN_FILE_PATH = BASE_FOLDER_PATH + File.separator + "access_token.properties";
-    private static final String ACCESS_TOKEN_KEY = "SequoiaModAccessToken";
-    private static final String ENV_FILE_PATH = BASE_FOLDER_PATH + File.separator + ".env";
-    private static final String ENCRYPTION_KEY_PROPERTY = "SEQUOIA_MOD_ENCRYPTION_KEY";
+    public static final String BASE_FOLDER_PATH = "sequoia" + File.separator;
+    public static final String ACCESS_TOKEN_FILE_NAME = "access_token.properties";
+    public static final String ACCESS_TOKEN_KEY = "SequoiaModAccessToken";
+    public static final String ENV_FILE_NAME = ".env";
+    public static final String ENCRYPTION_KEY_PROPERTY = "SEQUOIA_MOD_ENCRYPTION_KEY";
 
-    private AccessTokenManager() {}
+    public static String getUserSpecificFolderPath() {
+        String userUUID = McUtils.player().getStringUUID();
+        return BASE_FOLDER_PATH + userUUID + File.separator;
+    }
 
-    private static String getEncryptionKey() {
-        File envFile = new File(ENV_FILE_PATH);
+    public static String getEncryptionKey() {
+        File envFile = new File(getUserSpecificFolderPath() + ENV_FILE_NAME);
         if (!envFile.exists()) {
             generateAndStoreEncryptionKey(envFile);
         }
@@ -45,7 +49,7 @@ public final class AccessTokenManager {
         return StringUtils.EMPTY;
     }
 
-    private static void generateAndStoreEncryptionKey(File envFile) {
+    public static void generateAndStoreEncryptionKey(File envFile) {
         File directory = envFile.getParentFile();
         if (!directory.exists()) {
             directory.mkdirs();
@@ -67,7 +71,7 @@ public final class AccessTokenManager {
 
     public static void storeAccessToken(String token) {
         Properties properties = new Properties();
-        File tokenFile = new File(ACCESS_TOKEN_FILE_PATH);
+        File tokenFile = new File(getUserSpecificFolderPath() + ACCESS_TOKEN_FILE_NAME);
 
         try {
             String encryptionKey = getEncryptionKey();
@@ -102,7 +106,7 @@ public final class AccessTokenManager {
 
     public static String retrieveAccessToken() {
         Properties properties = new Properties();
-        File tokenFile = new File(ACCESS_TOKEN_FILE_PATH);
+        File tokenFile = new File(getUserSpecificFolderPath() + ACCESS_TOKEN_FILE_NAME);
 
         try {
             if (tokenFile.exists()) {
@@ -129,7 +133,7 @@ public final class AccessTokenManager {
     }
 
     public static void invalidateAccessToken() {
-        File tokenFile = new File(ACCESS_TOKEN_FILE_PATH);
+        File tokenFile = new File(getUserSpecificFolderPath() + ACCESS_TOKEN_FILE_NAME);
         if (tokenFile.exists()) {
             tokenFile.delete();
         }

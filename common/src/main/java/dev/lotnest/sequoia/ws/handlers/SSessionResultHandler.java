@@ -1,6 +1,6 @@
 package dev.lotnest.sequoia.ws.handlers;
 
-import static dev.lotnest.sequoia.ws.SequoiaWebSocketClient.GSON;
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.GSON;
 
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.manager.managers.AccessTokenManager;
@@ -19,13 +19,13 @@ public class SSessionResultHandler extends WSMessageHandler {
         SSessionResultWSMessage.Data sSessionResultWSMessageData = sSessionResultWSMessage.getSSessionResultData();
 
         if (StringUtils.equals(sSessionResultWSMessageData.result(), "Authentication pending.")) {
-            SequoiaMod.getWebSocketClient().setAuthenticating(true);
+            SequoiaMod.getWebSocketFeature().setAuthenticating(true);
             SequoiaMod.debug("Authentication pending, waiting for successful authentication.");
             return;
         }
 
         if (!sSessionResultWSMessageData.error()) {
-            SequoiaMod.getWebSocketClient().setAuthenticating(false);
+            SequoiaMod.getWebSocketFeature().setAuthenticating(false);
             SequoiaMod.debug("Authenticated with WebSocket server.");
 
             if (!StringUtils.equals(AccessTokenManager.retrieveAccessToken(), sSessionResultWSMessageData.result())) {

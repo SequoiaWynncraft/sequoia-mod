@@ -2,6 +2,8 @@ package dev.lotnest.sequoia.mixins;
 
 import com.wynntils.core.components.Models;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.feature.features.WebSocketFeature;
+import dev.lotnest.sequoia.manager.managers.AccessTokenManagerUpfixer;
 import dev.lotnest.sequoia.wynn.WynnUtils;
 import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import net.minecraft.client.Minecraft;
@@ -30,11 +32,16 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
             method = "handlePlayerInfoUpdate(Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket;)V",
             at = @At("RETURN"))
     private void handlePlayerInfoUpdatePost(ClientboundPlayerInfoUpdatePacket packet, CallbackInfo ci) {
-        if (!Models.WorldState.onWorld()) {
+        if (!Models.WorldState.onWorld() && !Models.WorldState.onHousing()) {
             return;
         }
 
         if (!isFirstJoin) {
+            return;
+        }
+
+        if (!dev.lotnest.sequoia.manager.Managers.Feature.getFeatureInstance(WebSocketFeature.class)
+                .isEnabled()) {
             return;
         }
 
@@ -51,12 +58,12 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
 
                     if (WynnUtils.isWynncraftWorld(entry.displayName().getString())) {
                         isFirstJoin = true;
-                        try {
-                            if (SequoiaMod.getWebSocketClient() == null) {
-                                SequoiaMod.initWebSocketClient();
-                            }
 
-                            SequoiaMod.getWebSocketClient().connectIfNeeded();
+                        AccessTokenManagerUpfixer.fixLegacyFiles();
+
+                        try {
+                            SequoiaMod.getWebSocketFeature().initClient();
+                            SequoiaMod.getWebSocketFeature().connectIfNeeded();
                         } catch (Exception exception) {
                             SequoiaMod.error("Failed to connect to WebSocket server: " + exception.getMessage());
                         }

@@ -1,6 +1,6 @@
 package dev.lotnest.sequoia.ws.handlers;
 
-import static dev.lotnest.sequoia.ws.SequoiaWebSocketClient.GSON;
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.GSON;
 
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.ws.WSMessageHandler;
@@ -16,7 +16,7 @@ public class SCommandPipeHandler extends WSMessageHandler {
     public void handle() {
         if (StringUtils.equals("Invalid token", wsMessage.getData().getAsString())) {
             SequoiaMod.debug("Received invalid token response. Requesting a new token.");
-            SequoiaMod.getWebSocketClient().authenticate(true);
+            SequoiaMod.getWebSocketFeature().authenticate(true);
         }
     }
 }

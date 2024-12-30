@@ -1,15 +1,15 @@
 package dev.lotnest.sequoia.ws.messages.session;
 
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.GSON;
+
 import com.google.gson.annotations.SerializedName;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class GIdentifyWSMessage extends WSMessage {
     public GIdentifyWSMessage(Data data) {
-        super(WSMessageType.GIdentify.getValue(), SequoiaWebSocketClient.GSON.toJsonTree(data));
+        super(WSMessageType.GIdentify.getValue(), GSON.toJsonTree(data));
     }
 
     public Data getGIdentifyData() {
@@ -20,28 +20,5 @@ public class GIdentifyWSMessage extends WSMessage {
             @SerializedName("access_token") String accessToken,
             String uuid,
             @SerializedName("mod_version") String modVersion) {
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Data data = (Data) o;
-
-            return new EqualsBuilder()
-                    .append(accessToken, data.accessToken)
-                    .append(uuid, data.uuid)
-                    .append(modVersion, data.modVersion)
-                    .isEquals();
-        }
-
-        @Override
-        public int hashCode() {
-            return new HashCodeBuilder(17, 37)
-                    .append(accessToken)
-                    .append(uuid)
-                    .append(modVersion)
-                    .toHashCode();
-        }
     }
 }

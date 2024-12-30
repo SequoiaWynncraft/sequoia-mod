@@ -11,8 +11,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ResourceLoadStateTrackerMixin {
     @Inject(method = "finishReload()V", at = @At("RETURN"))
     private void onResourceManagerReloadPost(CallbackInfo info) {
-        // This is the signal that Minecraft has finished loading the initial resources,
-        // or a resource pack has been reloaded
         SequoiaMod.onResourcesFinishedLoading();
     }
 }
