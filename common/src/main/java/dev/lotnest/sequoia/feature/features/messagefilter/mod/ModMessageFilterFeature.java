@@ -32,6 +32,10 @@ public class ModMessageFilterFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
+        if (!SequoiaMod.CONFIG.modMessageFilterFeature.enabled()) {
+            return;
+        }
+
         String unformattedMessage =
                 WynnUtils.getUnformattedString(event.getStyledText().getStringWithoutFormatting());
 

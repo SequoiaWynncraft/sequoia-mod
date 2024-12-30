@@ -34,6 +34,10 @@ public class GuildMessageFilterFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
+        if (!SequoiaMod.CONFIG.guildMessageFilterFeature.enabled()) {
+            return;
+        }
+
         if (!RecipientType.GUILD.matchPattern(event.getStyledText(), MessageType.FOREGROUND)
                 && !RecipientType.GUILD.matchPattern(event.getStyledText(), MessageType.BACKGROUND)) {
             return;

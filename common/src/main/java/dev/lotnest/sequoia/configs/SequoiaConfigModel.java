@@ -20,7 +20,15 @@ public class SequoiaConfigModel {
     @SectionHeader("features")
     @Nest
     @Expanded
+    public MessageFilterFeature messageFilterFeature = new MessageFilterFeature();
+
+    @Nest
+    @Expanded
     public GuildMessageFilterFeature guildMessageFilterFeature = new GuildMessageFilterFeature();
+
+    @Nest
+    @Expanded
+    public ModMessageFilterFeature modMessageFilterFeature = new ModMessageFilterFeature();
 
     @Nest
     @Expanded
@@ -42,7 +50,15 @@ public class SequoiaConfigModel {
     @Expanded
     public LootPoolTrackerFeature lootPoolTrackerFeature = new LootPoolTrackerFeature();
 
+    public static class MessageFilterFeature {
+        public boolean enabled = false;
+    }
+
     public static class GuildMessageFilterFeature {
+        public boolean enabled = false;
+    }
+
+    public static class ModMessageFilterFeature {
         public boolean enabled = false;
     }
 

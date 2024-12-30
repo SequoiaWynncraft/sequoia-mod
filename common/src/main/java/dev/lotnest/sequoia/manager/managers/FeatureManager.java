@@ -21,6 +21,9 @@ import dev.lotnest.sequoia.feature.features.messagefilter.guild.GuildMessageFilt
 import dev.lotnest.sequoia.feature.features.messagefilter.mod.ModMessageFilterFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -28,10 +31,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public final class FeatureManager extends Manager {
     private static final Map<Feature, FeatureState> FEATURES = Maps.newLinkedHashMap();
@@ -59,9 +58,6 @@ public final class FeatureManager extends Manager {
         registerFeature(new MessageFilterFeature());
         registerFeature(new ModMessageFilterFeature());
 
-        // Reload Minecraft's config files so our own keybinds get loaded
-        // This is needed because we are late to register the keybinds,
-        // but we cannot move it earlier to the init process because of I18n
         synchronized (McUtils.options()) {
             McUtils.options().load();
         }
@@ -190,8 +186,6 @@ public final class FeatureManager extends Manager {
 
         crashFeature(feature);
 
-        // If a crash happens in a client-side message event, and we send a new message about disabling X feature,
-        // we will cause a new exception and an endless recursion.
         boolean shouldSendChat = !(event instanceof ClientsideMessageEvent);
 
         SequoiaMod.reportCrash(

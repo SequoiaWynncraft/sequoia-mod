@@ -87,6 +87,9 @@ public class SequoiaCommand extends Command {
                 helpMessage, "playerwars", "Checks the wars of a player and their leaderboard position.");
         describeSequoiaSubcommand(helpMessage, "discord", "Sends a link to the Sequoia Discord server.");
         describeSequoiaSubcommand(helpMessage, "search", "Searches for items, etc.");
+        describeSequoiaSubcommand(helpMessage, "connect", "Connects to Sequoia's WS server.");
+        describeSequoiaSubcommand(helpMessage, "disconnect", "Disconnects from Sequoia's WS server.");
+        describeSequoiaSubcommand(helpMessage, "reconnect", "Reconnects to Sequoia's WS server.");
 
         List<Command> otherCommands = Managers.Command.getCommandInstanceSet().stream()
                 .filter(command -> !(command instanceof SequoiaCommand))

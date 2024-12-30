@@ -81,16 +81,16 @@ public class SequoiaWebSocketClient extends WebSocketClient {
     }
 
     public void connectIfNeeded() {
-        if (SequoiaMod.getWebSocketClient().getReadyState() == ReadyState.NOT_YET_CONNECTED) {
-            SequoiaMod.getWebSocketClient().connect();
+        if (getReadyState() == ReadyState.NOT_YET_CONNECTED) {
+            connect();
         } else if (isClosed()) {
-            SequoiaMod.getWebSocketClient().reconnect();
+            reconnect();
         }
     }
 
     public void closeIfNeeded() {
         if (isOpen()) {
-            SequoiaMod.getWebSocketClient().close();
+            close();
         }
     }
 
@@ -129,7 +129,7 @@ public class SequoiaWebSocketClient extends WebSocketClient {
     public void onClose(int i, String s, boolean b) {
         SequoiaMod.debug(
                 "WebSocket connection closed. Code: " + i + (StringUtils.isNotBlank(s) ? ", Reason: " + s : ""));
-        SequoiaMod.getWebSocketClient().setAuthenticating(false);
+        setAuthenticating(false);
     }
 
     @Override

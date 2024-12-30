@@ -10,6 +10,7 @@ import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
 import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -178,8 +179,19 @@ public final class SequoiaMod {
         return webSocketClient;
     }
 
-    public static void setWebSocketClient(SequoiaWebSocketClient webSocketClient) {
-        SequoiaMod.webSocketClient = webSocketClient;
+    public static void initWebSocketClient() {
+        if (webSocketClient == null) {
+            webSocketClient = new SequoiaWebSocketClient(
+                    URI.create(
+                            SequoiaMod.isDevelopmentEnvironment()
+                                    ? SequoiaWebSocketClient.WS_DEV_URL
+                                    : SequoiaWebSocketClient.WS_PROD_URL),
+                    Map.of(
+                            "Authoworization",
+                            "Bearer meowmeowAG6v92hc23LK5rqrSD279",
+                            "X-UUID",
+                            McUtils.player().getStringUUID()));
+        }
     }
 
     public enum ModLoader {
