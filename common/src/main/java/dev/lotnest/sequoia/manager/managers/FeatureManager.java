@@ -14,6 +14,7 @@ import dev.lotnest.sequoia.feature.features.CommandsFeature;
 import dev.lotnest.sequoia.feature.features.GuildMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
+import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
 import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaidTrackerFeature;
 import dev.lotnest.sequoia.manager.Manager;
@@ -45,19 +46,13 @@ public final class FeatureManager extends Manager {
     }
 
     public void init() {
-        // Chat
+        registerFeature(new CommandsFeature());
         registerFeature(new GuildMessageFilterFeature());
         registerFeature(new PlayerIgnoreFeature());
-        registerFeature(new DiscordChatBridgeFeature());
-
-        // Commands
-        registerFeature(new CommandsFeature());
-
-        // Sounds
         registerFeature(new SequoiaOSTFeature());
-
-        // Trackers
+        registerFeature(new WebSocketFeature());
         registerFeature(new GuildRaidTrackerFeature());
+        registerFeature(new DiscordChatBridgeFeature());
 
         // Reload Minecraft's config files so our own keybinds get loaded
         // This is needed because we are late to register the keybinds,
@@ -190,8 +185,6 @@ public final class FeatureManager extends Manager {
 
         crashFeature(feature);
 
-        // If a crash happens in a client-side message event, and we send a new message about disabling X feature,
-        // we will cause a new exception and an endless recursion.
         boolean shouldSendChat = !(event instanceof ClientsideMessageEvent);
 
         SequoiaMod.reportCrash(

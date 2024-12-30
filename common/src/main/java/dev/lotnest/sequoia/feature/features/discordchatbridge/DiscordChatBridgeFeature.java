@@ -7,6 +7,7 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.TimeUtils;
+import dev.lotnest.sequoia.ws.messages.discordchatbridge.GChatMessageWSMessage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class DiscordChatBridgeFeature extends Feature {
-    private static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
+    protected static final Pattern GUILD_CHAT_PATTERN = Pattern.compile(
             "^[\\s\\p{C}\\p{M}\\p{So}\\p{Sk}\\p{P}\\p{Z}\\p{S}\\p{L}\\p{N}§[0-9a-fk-or<]*]*?([^:]+):\\s*(.+)$",
             Pattern.MULTILINE);
     private static final Pattern NICKNAME_PATTERN =
@@ -39,11 +40,11 @@ public class DiscordChatBridgeFeature extends Feature {
 
         SequoiaMod.debug("[CHAT] " + messageTextWithoutNewLines.getString());
 
-        if (SequoiaMod.getWebSocketClient() == null) {
+        if (SequoiaMod.getWebSocketFeature() == null) {
             return;
         }
 
-        if (SequoiaMod.getWebSocketClient().isAuthenticating()) {
+        if (SequoiaMod.getWebSocketFeature().isAuthenticating()) {
             return;
         }
 
@@ -79,11 +80,11 @@ public class DiscordChatBridgeFeature extends Feature {
             if (guildChatMatcher.matches()) {
                 nickname = guildChatMatcher
                         .group(1)
-                        .replaceAll("[^\\x20-\\x7E]", "")
+                        .replaceAll("[^\\p{Print}]", "")
                         .trim();
                 String message = guildChatMatcher
                         .group(2)
-                        .replaceAll("[^\\x20-\\x7E]", "")
+                        .replaceAll("[^\\p{Print}]", "")
                         .trim();
 
                 if (nickname != null && nameMap.containsKey(nickname)) {
@@ -97,7 +98,7 @@ public class DiscordChatBridgeFeature extends Feature {
 
                 GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
                         username, nickname, message, TimeUtils.wsTimestamp(), McUtils.playerName()));
-                SequoiaMod.getWebSocketClient().sendAsJson(gChatMessageWSMessage);
+                SequoiaMod.getWebSocketFeature().sendAsJson(gChatMessageWSMessage);
                 SequoiaMod.debug("Sending guild chat message to Discord: " + gChatMessageWSMessage);
             }
         } catch (Exception exception) {
@@ -134,7 +135,6 @@ public class DiscordChatBridgeFeature extends Feature {
             if (hover.getValue(hover.getAction()) instanceof Component hoverText) {
                 Matcher nicknameMatcher = NICKNAME_PATTERN.matcher(hoverText.getString());
                 if (!nicknameMatcher.matches()) {
-                    SequoiaMod.debug("No match for hover text: " + hoverText.getString());
                     return;
                 }
 
@@ -163,7 +163,6 @@ public class DiscordChatBridgeFeature extends Feature {
         HoverEvent hover = message.getStyle().getHoverEvent();
         if (hover != null && hover.getValue(hover.getAction()) instanceof Component hoverText) {
             String hoverString = hoverText.getString();
-            SequoiaMod.debug("Hover text found: " + hoverString);
             return hoverString.contains("real username");
         }
         return false;

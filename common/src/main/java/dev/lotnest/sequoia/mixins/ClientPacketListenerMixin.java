@@ -1,13 +1,11 @@
 package dev.lotnest.sequoia.mixins;
 
 import com.wynntils.core.components.Models;
-import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
+import dev.lotnest.sequoia.feature.features.WebSocketFeature;
+import dev.lotnest.sequoia.manager.managers.AccessTokenManagerUpfixer;
 import dev.lotnest.sequoia.wynn.WynnUtils;
-import dev.lotnest.sequoia.wynn.guild.GuildService;
-import java.net.URI;
-import java.util.Map;
+import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -15,12 +13,16 @@ import net.minecraft.client.multiplayer.CommonListenerCookie;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientPacketListener.class)
 public abstract class ClientPacketListenerMixin extends ClientCommonPacketListenerImpl {
+    @Unique
+    private boolean isFirstJoin = true;
+
     protected ClientPacketListenerMixin(
             Minecraft minecraft, Connection connection, CommonListenerCookie commonListenerCookie) {
         super(minecraft, connection, commonListenerCookie);
@@ -30,7 +32,16 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
             method = "handlePlayerInfoUpdate(Lnet/minecraft/network/protocol/game/ClientboundPlayerInfoUpdatePacket;)V",
             at = @At("RETURN"))
     private void handlePlayerInfoUpdatePost(ClientboundPlayerInfoUpdatePacket packet, CallbackInfo ci) {
-        if (!Models.WorldState.onWorld()) {
+        if (!Models.WorldState.onWorld() && !Models.WorldState.onHousing()) {
+            return;
+        }
+
+        if (!isFirstJoin) {
+            return;
+        }
+
+        if (!dev.lotnest.sequoia.manager.Managers.Feature.getFeatureInstance(WebSocketFeature.class)
+                .isEnabled()) {
             return;
         }
 
@@ -46,21 +57,13 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
                     }
 
                     if (WynnUtils.isWynncraftWorld(entry.displayName().getString())) {
-                        try {
-                            if (SequoiaMod.getWebSocketClient() == null) {
-                                SequoiaMod.setWebSocketClient(new SequoiaWebSocketClient(
-                                        URI.create(
-                                                SequoiaMod.isDevelopmentEnvironment()
-                                                        ? SequoiaWebSocketClient.WS_DEV_URL
-                                                        : SequoiaWebSocketClient.WS_PROD_URL),
-                                        Map.of(
-                                                "Authoworization",
-                                                "Bearer meowmeowAG6v92hc23LK5rqrSD279",
-                                                "X-UUID",
-                                                McUtils.player().getStringUUID())));
-                            }
+                        isFirstJoin = true;
 
-                            SequoiaMod.getWebSocketClient().connectIfNeeded();
+                        AccessTokenManagerUpfixer.fixLegacyFiles();
+
+                        try {
+                            SequoiaMod.getWebSocketFeature().initClient();
+                            SequoiaMod.getWebSocketFeature().connectIfNeeded();
                         } catch (Exception exception) {
                             SequoiaMod.error("Failed to connect to WebSocket server: " + exception.getMessage());
                         }

@@ -1,11 +1,11 @@
 package dev.lotnest.sequoia.ws.handlers;
 
-import static dev.lotnest.sequoia.ws.SequoiaWebSocketClient.GSON;
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.GSON;
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.URL_PATTERN;
 
 import com.google.gson.JsonElement;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import dev.lotnest.sequoia.ws.WSMessageHandler;
 import dev.lotnest.sequoia.ws.messages.SMessageWSMessage;
 import java.util.regex.Matcher;
@@ -29,11 +29,11 @@ public class SMessageHandler extends WSMessageHandler {
             String serverMessageText = sMessageWSMessageData.getAsString();
             if (StringUtils.equals(serverMessageText, "Authentication required.")) {
                 SequoiaMod.debug("Received authentication required message, reauthenticating.");
-                SequoiaMod.getWebSocketClient().authenticate();
+                SequoiaMod.getWebSocketFeature().authenticate();
                 return;
             }
 
-            Matcher matcher = SequoiaWebSocketClient.URL_PATTERN.matcher(serverMessageText);
+            Matcher matcher = URL_PATTERN.matcher(serverMessageText);
             MutableComponent messageComponent = Component.literal("Server message ➤ ");
             int lastMatchEnd = 0;
 

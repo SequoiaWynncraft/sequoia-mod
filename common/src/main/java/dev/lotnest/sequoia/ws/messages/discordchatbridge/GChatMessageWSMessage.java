@@ -1,21 +1,20 @@
-package dev.lotnest.sequoia.feature.features.discordchatbridge;
+package dev.lotnest.sequoia.ws.messages.discordchatbridge;
 
-import com.google.gson.annotations.SerializedName;
-import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.GSON;
+
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
-import java.time.OffsetDateTime;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-public class SChannelMessageWSMessage extends WSMessage {
-    public SChannelMessageWSMessage(Data data) {
-        super(WSMessageType.SChannelMessage.getValue(), SequoiaWebSocketClient.GSON.toJsonTree(data));
+public class GChatMessageWSMessage extends WSMessage {
+    public GChatMessageWSMessage(Data data) {
+        super(WSMessageType.GChatMessage.getValue(), GSON.toJsonTree(data));
     }
 
-    public Data getChannelMessageData() {
-        return SequoiaWebSocketClient.GSON.fromJson(getData(), Data.class);
+    public Data getChatMessage() {
+        return GSON.fromJson(getData(), GChatMessageWSMessage.Data.class);
     }
 
     @Override
@@ -23,13 +22,7 @@ public class SChannelMessageWSMessage extends WSMessage {
         return new ToStringBuilder(this).append("data", getData()).toString();
     }
 
-    public record Data(
-            String username,
-            String nickname,
-            @SerializedName("display_name") String displayName,
-            @SerializedName("sequoia_roles") String[] sequoiaRoles,
-            String message,
-            OffsetDateTime timestamp) {
+    public record Data(String username, String nickname, String message, String timestamp, String clientName) {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -41,10 +34,9 @@ public class SChannelMessageWSMessage extends WSMessage {
             return new EqualsBuilder()
                     .append(username(), data.username())
                     .append(nickname(), data.nickname())
-                    .append(displayName(), data.displayName())
-                    .append(sequoiaRoles(), data.sequoiaRoles())
                     .append(message(), data.message())
                     .append(timestamp(), data.timestamp())
+                    .append(clientName(), data.clientName())
                     .isEquals();
         }
 
@@ -53,10 +45,9 @@ public class SChannelMessageWSMessage extends WSMessage {
             return new HashCodeBuilder(17, 37)
                     .append(username())
                     .append(nickname())
-                    .append(displayName())
-                    .append(sequoiaRoles())
                     .append(message())
                     .append(timestamp())
+                    .append(clientName())
                     .toHashCode();
         }
 
@@ -65,10 +56,9 @@ public class SChannelMessageWSMessage extends WSMessage {
             return new ToStringBuilder(this)
                     .append("username", username)
                     .append("nickname", nickname)
-                    .append("displayName", displayName)
-                    .append("sequoiaRoles", sequoiaRoles)
                     .append("message", message)
                     .append("timestamp", timestamp)
+                    .append("clientName", clientName)
                     .toString();
         }
     }

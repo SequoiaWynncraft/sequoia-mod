@@ -32,6 +32,10 @@ public class SequoiaConfigModel {
 
     @Nest
     @Expanded
+    public WebSocketFeature webSocketFeature = new WebSocketFeature();
+
+    @Nest
+    @Expanded
     public GuildRaidTrackerFeature guildRaidTrackerFeature = new GuildRaidTrackerFeature();
 
     @Nest
@@ -50,6 +54,9 @@ public class SequoiaConfigModel {
         private static final Pattern MINECRAFT_NAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,16}");
 
         public boolean enabled = false;
+        public boolean allowGuildChatMessagesFromIgnoredPlayers = false;
+        public boolean allowPartyChatMessagesFromIgnoredPlayers = false;
+        public boolean allowShoutsFromIgnoredPlayers = false;
 
         @PredicateConstraint("minecraftNameValidator")
         public List<String> ignoredPlayers = Lists.newArrayList();
@@ -62,6 +69,10 @@ public class SequoiaConfigModel {
 
     public static class SequoiaOSTFeature {
         public boolean enabled = false;
+    }
+
+    public static class WebSocketFeature {
+        public boolean enabled = true;
     }
 
     public static class GuildRaidTrackerFeature {

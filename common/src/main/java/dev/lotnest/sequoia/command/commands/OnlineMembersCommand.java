@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
-import dev.lotnest.sequoia.wynn.guild.GuildService;
+import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

@@ -7,9 +7,9 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.component.CoreComponent;
 import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
+import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
-import dev.lotnest.sequoia.ws.SequoiaWebSocketClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -40,7 +40,7 @@ public final class SequoiaMod {
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-    private static SequoiaWebSocketClient webSocketClient = null;
+    private static WebSocketFeature webSocketClient = null;
 
     public static String getVersion() {
         return version;
@@ -174,12 +174,8 @@ public final class SequoiaMod {
         return PREFIX.copy().append(component);
     }
 
-    public static SequoiaWebSocketClient getWebSocketClient() {
-        return webSocketClient;
-    }
-
-    public static void setWebSocketClient(SequoiaWebSocketClient webSocketClient) {
-        SequoiaMod.webSocketClient = webSocketClient;
+    public static WebSocketFeature getWebSocketFeature() {
+        return Managers.Feature.getFeatureInstance(WebSocketFeature.class);
     }
 
     public enum ModLoader {

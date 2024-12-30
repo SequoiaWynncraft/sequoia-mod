@@ -14,15 +14,19 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.ClientCommandSourceStack;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.command.commands.ConfigCommand;
+import dev.lotnest.sequoia.command.commands.ConnectCommand;
+import dev.lotnest.sequoia.command.commands.DisconnectCommand;
+import dev.lotnest.sequoia.command.commands.DiscordCommand;
 import dev.lotnest.sequoia.command.commands.LastSeenCommand;
 import dev.lotnest.sequoia.command.commands.MeowCommand;
 import dev.lotnest.sequoia.command.commands.OnlineMembersCommand;
 import dev.lotnest.sequoia.command.commands.PlayerDungeonsCommand;
 import dev.lotnest.sequoia.command.commands.PlayerGuildCommand;
 import dev.lotnest.sequoia.command.commands.PlayerRaidsCommand;
+import dev.lotnest.sequoia.command.commands.PlayerWarsCommand;
+import dev.lotnest.sequoia.command.commands.ReconnectCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.manager.Manager;
-import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
@@ -35,6 +39,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.compress.utils.Lists;
 
 // Credits to Earthcomputer and Forge
 // Parts of this code originates from https://github.com/Earthcomputer/clientcommands, and other
@@ -53,7 +58,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 public final class ClientCommandManager extends Manager {
     private final CommandDispatcher<CommandSourceStack> clientDispatcher = new CommandDispatcher<>();
 
-    private final List<Command> commandInstanceSet = new ArrayList<>();
+    private final List<Command> commandInstanceSet = Lists.newArrayList();
     private SequoiaCommand sequoiaCommand;
 
     public ClientCommandManager() {
@@ -70,8 +75,6 @@ public final class ClientCommandManager extends Manager {
                     .forEach(node -> addNode(event.getRoot(), node));
         }
 
-        // Sequoia command is special,
-        // it registers every other command as a subcommand
         sequoiaCommand.registerWithCommands(builder -> addNode(event.getRoot(), builder.build()), commandInstanceSet);
     }
 
@@ -100,7 +103,7 @@ public final class ClientCommandManager extends Manager {
         if (!parse.getExceptions().isEmpty()
                 || (parse.getContext().getCommand() == null
                         && parse.getContext().getChild() == null)) {
-            return false; // can't parse - let server handle command
+            return false;
         }
 
         try {
@@ -171,9 +174,12 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new PlayerGuildCommand());
         registerCommand(new PlayerRaidsCommand());
         registerCommand(new PlayerDungeonsCommand());
+        registerCommand(new PlayerWarsCommand());
+        registerCommand(new DiscordCommand());
+        registerCommand(new ConnectCommand());
+        registerCommand(new DisconnectCommand());
+        registerCommand(new ReconnectCommand());
 
-        // The SequoiaCommand must be registered last, since it
-        // need the above commands as aliases
         registerCommandWithCommandSet(new SequoiaCommand());
     }
 }
