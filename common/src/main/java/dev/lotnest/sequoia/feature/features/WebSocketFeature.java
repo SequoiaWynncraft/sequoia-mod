@@ -157,7 +157,7 @@ public class WebSocketFeature extends Feature {
         }
 
         GIdentifyWSMessage gIdentifyWSMessage = new GIdentifyWSMessage(new GIdentifyWSMessage.Data(
-                AccessTokenManager.retrieveAccessToken(), McUtils.player().getStringUUID()));
+                AccessTokenManager.retrieveAccessToken(), McUtils.player().getStringUUID(), SequoiaMod.getVersion()));
         sendAsJson(gIdentifyWSMessage);
     }
 

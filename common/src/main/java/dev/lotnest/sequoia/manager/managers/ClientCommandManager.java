@@ -27,7 +27,9 @@ import dev.lotnest.sequoia.command.commands.PlayerWarsCommand;
 import dev.lotnest.sequoia.command.commands.ReconnectCommand;
 import dev.lotnest.sequoia.command.commands.SearchCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
+import dev.lotnest.sequoia.command.commands.TestCommand;
 import dev.lotnest.sequoia.manager.Manager;
+import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -40,8 +42,6 @@ import net.minecraft.network.chat.Style;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.compress.utils.Lists;
-
-import java.util.List;
 
 // Credits to Earthcomputer and Forge
 // Parts of this code originates from https://github.com/Earthcomputer/clientcommands, and other
@@ -104,7 +104,7 @@ public final class ClientCommandManager extends Manager {
 
         if (!parse.getExceptions().isEmpty()
                 || (parse.getContext().getCommand() == null
-                && parse.getContext().getChild() == null)) {
+                        && parse.getContext().getChild() == null)) {
             return false;
         }
 

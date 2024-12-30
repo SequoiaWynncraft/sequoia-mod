@@ -1,6 +1,6 @@
 package dev.lotnest.sequoia.ws.handlers;
 
-import static dev.lotnest.sequoia.ws.SequoiaWebSocketClient.GSON;
+import static dev.lotnest.sequoia.feature.features.WebSocketFeature.GSON;
 
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
@@ -20,7 +20,7 @@ public class SChannelMessageHandler extends WSMessageHandler {
                 && SequoiaMod.CONFIG.discordChatBridgeFeature.sendDiscordMessagesToInGameChat()) {
             SChannelMessageWSMessage sChannelMessageWSMessage = (SChannelMessageWSMessage) wsMessage;
             SChannelMessageWSMessage.Data sChannelMessageWSMessageData =
-                    sChannelMessageWSMessage.getChannelMessageData();
+                    sChannelMessageWSMessage.getSChannelMessageData();
 
             McUtils.sendMessageToClient(Component.literal("[DISCORD] ")
                     .withStyle(ChatFormatting.AQUA)

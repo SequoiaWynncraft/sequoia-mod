@@ -10,6 +10,10 @@ import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
@@ -17,11 +21,6 @@ import net.minecraft.network.chat.MutableComponent;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public final class SequoiaMod {
     public static final String MOD_ID = "sequoia";
