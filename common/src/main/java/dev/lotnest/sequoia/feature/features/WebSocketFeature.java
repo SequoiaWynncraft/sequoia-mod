@@ -38,7 +38,11 @@ public class WebSocketFeature extends Feature {
 
     public void initClient() {
         initClient(
-                URI.create(SequoiaMod.isDevelopmentEnvironment() ? WS_DEV_URL : WS_PROD_URL),
+                URI.create(
+                        SequoiaMod.isDevelopmentEnvironment()
+                                        || StringUtils.equalsIgnoreCase(System.getenv("SEQUOIA_MOD_USE_WS_DEV"), "TRUE")
+                                ? WS_DEV_URL
+                                : WS_PROD_URL),
                 Map.of(
                         "Authoworization",
                         "Bearer meowmeowAG6v92hc23LK5rqrSD279",
