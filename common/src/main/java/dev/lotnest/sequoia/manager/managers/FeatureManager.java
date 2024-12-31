@@ -16,16 +16,9 @@ import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
 import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaidTrackerFeature;
-import dev.lotnest.sequoia.feature.features.lootpool.LootPoolTrackerFeature;
-import dev.lotnest.sequoia.feature.features.messagefilter.MessageFilterFeature;
-import dev.lotnest.sequoia.feature.features.messagefilter.guild.GuildMessageFilterFeature;
-import dev.lotnest.sequoia.feature.features.messagefilter.mod.ModMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.outervoid.OuterVoidTrackerFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -33,6 +26,10 @@ import net.minecraft.network.chat.MutableComponent;
 import net.neoforged.bus.api.Event;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public final class FeatureManager extends Manager {
     private static final Map<Feature, FeatureState> FEATURES = Maps.newLinkedHashMap();
@@ -51,16 +48,15 @@ public final class FeatureManager extends Manager {
 
     public void init() {
         registerFeature(new CommandsFeature());
-        registerFeature(new GuildMessageFilterFeature());
         registerFeature(new PlayerIgnoreFeature());
         registerFeature(new SequoiaOSTFeature());
         registerFeature(new WebSocketFeature());
         registerFeature(new GuildRaidTrackerFeature());
         registerFeature(new DiscordChatBridgeFeature());
-        registerFeature(new LootPoolTrackerFeature());
-        registerFeature(new MessageFilterFeature());
-        registerFeature(new ModMessageFilterFeature());
-        registerFeature(new DiscordChatBridgeFeature());
+//        registerFeature(new LootPoolTrackerFeature());
+//        registerFeature(new MessageFilterFeature());
+//        registerFeature(new GuildMessageFilterFeature());
+//        registerFeature(new ModMessageFilterFeature());
         registerFeature(new OuterVoidTrackerFeature());
 
         synchronized (McUtils.options()) {
