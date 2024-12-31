@@ -22,7 +22,7 @@ public abstract class Feature extends CoreComponent implements Comparable<Featur
 
     public void onDisable() {}
 
-    public final boolean isEnabled() {
+    public boolean isEnabled() {
         return Managers.Feature.isEnabled(this);
     }
 

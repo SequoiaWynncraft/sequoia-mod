@@ -1,6 +1,7 @@
 package dev.lotnest.sequoia.mixins;
 
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.wynn.WynnUtils;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ServerData;
@@ -22,10 +23,12 @@ public abstract class ClientCommonPacketListenerImplMixin {
             method = "handleDisconnect(Lnet/minecraft/network/protocol/common/ClientboundDisconnectPacket;)V",
             at = @At("HEAD"))
     private void handleDisconnect(ClientboundDisconnectPacket packet, CallbackInfo ci) {
-        if (SequoiaMod.getWebSocketFeature() != null
+        WebSocketFeature webSocketFeature = SequoiaMod.getWebSocketFeature();
+        if (webSocketFeature != null
+                && webSocketFeature.isEnabled()
                 && serverData != null
                 && WynnUtils.isWynncraftServer(serverData.ip)) {
-            SequoiaMod.getWebSocketFeature().closeIfNeeded();
+            webSocketFeature.closeIfNeeded();
         }
     }
 }

@@ -40,8 +40,8 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
             return;
         }
 
-        if (!dev.lotnest.sequoia.manager.Managers.Feature.getFeatureInstance(WebSocketFeature.class)
-                .isEnabled()) {
+        WebSocketFeature webSocketFeature = SequoiaMod.getWebSocketFeature();
+        if (webSocketFeature == null || !webSocketFeature.isEnabled()) {
             return;
         }
 
@@ -62,8 +62,8 @@ public abstract class ClientPacketListenerMixin extends ClientCommonPacketListen
                         AccessTokenManagerUpfixer.fixLegacyFiles();
 
                         try {
-                            SequoiaMod.getWebSocketFeature().initClient();
-                            SequoiaMod.getWebSocketFeature().connectIfNeeded();
+                            webSocketFeature.initClient();
+                            webSocketFeature.connectIfNeeded();
                         } catch (Exception exception) {
                             SequoiaMod.error("Failed to connect to WebSocket server: " + exception.getMessage());
                         }

@@ -216,6 +216,11 @@ public class WebSocketFeature extends Feature {
     }
 
     @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.webSocketFeature.enabled();
+    }
+
+    @Override
     public void onEnable() {
         if (!Models.WorldState.onWorld() && !Models.WorldState.onHousing()) {
             return;
