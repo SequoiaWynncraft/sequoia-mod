@@ -4,7 +4,9 @@
     "ClientLevelMixin",
     "ClientPacketListenerMixin",
     "CrashReportMixin",
-    "ResourceLoadStateTrackerMixin"
+    "ResourceLoadStateTrackerMixin",
+    "ScreenMixin",
+    "TitleScreenMixin"
   ],
   "compatibilityLevel": "JAVA_17",
   "injectors": {

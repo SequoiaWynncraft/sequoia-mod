@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import org.apache.commons.lang3.StringUtils;
 
 public class SequoiaCommand extends Command {
     public void registerWithCommands(
@@ -40,62 +38,29 @@ public class SequoiaCommand extends Command {
     }
 
     @Override
-    protected List<String> getAliases() {
+    public List<String> getAliases() {
         return List.of("seq");
     }
 
     @Override
     public LiteralArgumentBuilder<CommandSourceStack> getCommandBuilder(
             LiteralArgumentBuilder<CommandSourceStack> base) {
-        return base.then(Commands.literal("version").executes(this::version)).executes(this::help);
-    }
-
-    private int version(CommandContext<CommandSourceStack> context) {
-        MutableComponent versionMessage;
-
-        if (StringUtils.isBlank(SequoiaMod.getVersion())) {
-            versionMessage =
-                    SequoiaMod.prefix(Component.literal("Could not determine Sequoia version, please report this.")
-                            .withStyle(ChatFormatting.RED));
-        } else {
-            versionMessage = SequoiaMod.prefix(Component.literal("You are running Sequoia " + SequoiaMod.getVersion())
-                    .append(SequoiaMod.isDevelopmentBuild() ? " (Development build)" : "")
-                    .append(" by Lotnest (Credits to dotJJ for server development and to OwORawr for Sequoia OST).")
-                    .withStyle(ChatFormatting.GREEN));
-        }
-
-        McUtils.sendMessageToClient(versionMessage);
-        return 1;
+        return base.executes(this::help);
     }
 
     private int help(CommandContext<CommandSourceStack> context) {
         MutableComponent helpMessage = SequoiaMod.prefix(Component.literal("Available Sequoia commands: \n")
-                .withStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
+                .withStyle(Style.EMPTY.withColor(ChatFormatting.GREEN)));
 
-        describeSequoiaSubcommand(helpMessage, "version", "Shows the version of Sequoia currently installed.");
-        describeSequoiaSubcommand(helpMessage, "config", "Opens the config GUI.");
-        describeSequoiaSubcommand(helpMessage, "onlinemembers", "Checks online members of a guild.");
-        describeSequoiaSubcommand(helpMessage, "meow", "Meow!");
-        describeSequoiaSubcommand(helpMessage, "lastseen", "Checks when a player was last seen online.");
-        describeSequoiaSubcommand(helpMessage, "playerguild", "Checks the guild of a player.");
-        describeSequoiaSubcommand(
-                helpMessage, "playerraids", "Checks the raids of a player and their leaderboard position.");
-        describeSequoiaSubcommand(
-                helpMessage, "playerdungeons", "Checks the dungeons of a player and their leaderboard position.");
-        describeSequoiaSubcommand(helpMessage, "test", "Tests various components of the mod.");
-        describeSequoiaSubcommand(
-                helpMessage, "playerwars", "Checks the wars of a player and their leaderboard position.");
-        describeSequoiaSubcommand(helpMessage, "discord", "Sends a link to the Sequoia Discord server.");
-        describeSequoiaSubcommand(helpMessage, "search", "Searches for items, etc.");
-        describeSequoiaSubcommand(helpMessage, "connect", "Connects to Sequoia's WS server.");
-        describeSequoiaSubcommand(helpMessage, "disconnect", "Disconnects from Sequoia's WS server.");
-        describeSequoiaSubcommand(helpMessage, "reconnect", "Reconnects to Sequoia's WS server.");
-
-        List<Command> otherCommands = Managers.Command.getCommandInstanceSet().stream()
+        List<Command> commands = Managers.Command.getCommandInstanceSet().stream()
                 .filter(command -> !(command instanceof SequoiaCommand))
                 .toList();
-        for (Command command : otherCommands) {
-            describeCommand(helpMessage, command.getCommandName(), command.getDescription());
+        for (Command command : commands) {
+            describeSequoiaSubcommand(
+                    helpMessage,
+                    command.getCommandName()
+                            + (command.getAliases().isEmpty() ? "" : " | " + String.join(" |", command.getAliases())),
+                    command.getDescription());
         }
 
         McUtils.sendMessageToClient(helpMessage);
@@ -103,7 +68,7 @@ public class SequoiaCommand extends Command {
     }
 
     private static void describeSequoiaSubcommand(MutableComponent text, String subCommand, String description) {
-        describeCommand(text, "sequoia " + subCommand, description);
+        describeCommand(text, "seq " + subCommand, description);
     }
 
     private static void describeCommand(MutableComponent text, String command, String description) {
@@ -114,9 +79,9 @@ public class SequoiaCommand extends Command {
                 .withHoverEvent(new HoverEvent(
                         HoverEvent.Action.SHOW_TEXT, Component.literal("Click here to run this command"))));
 
-        clickComponent.append(Component.literal("/" + command).withStyle(ChatFormatting.GREEN));
-        clickComponent.append(Component.literal(" - ").withStyle(ChatFormatting.DARK_GRAY));
-        clickComponent.append(Component.literal(description).withStyle(ChatFormatting.GRAY));
+        clickComponent.append(Component.literal("/" + command).withStyle(ChatFormatting.DARK_GREEN));
+        clickComponent.append(Component.literal(" - ").withStyle(ChatFormatting.YELLOW));
+        clickComponent.append(Component.literal(description).withStyle(ChatFormatting.YELLOW));
 
         text.append("\n");
         text.append(clickComponent);

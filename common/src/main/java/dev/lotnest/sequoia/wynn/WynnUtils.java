@@ -31,6 +31,8 @@ public final class WynnUtils {
                 .replaceAll("\\n", "")
                 .replaceAll("[^\\x20-\\x7E]", "")
                 .replaceAll("\u00A0", " ")
+                .replaceAll("\\[", "")
+                .replaceAll("]", "")
                 .trim();
     }
 

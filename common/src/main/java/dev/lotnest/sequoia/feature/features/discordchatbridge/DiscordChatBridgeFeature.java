@@ -3,6 +3,8 @@ package dev.lotnest.sequoia.feature.features.discordchatbridge;
 import com.google.common.collect.Maps;
 import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import com.wynntils.handlers.chat.type.MessageType;
+import com.wynntils.handlers.chat.type.RecipientType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
@@ -28,6 +30,14 @@ public class DiscordChatBridgeFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
+        if (event.getMessageType() != MessageType.FOREGROUND) {
+            return;
+        }
+
+        if (!RecipientType.GUILD.matchPattern(event.getStyledText(), MessageType.FOREGROUND)) {
+            return;
+        }
+
         StyledText messageTextWithoutNewLines = event.getStyledText()
                 .replaceAll("\n", "")
                 .replaceAll("\uDAFF\uDFFC\uE001\uDB00\uDC06\\s+", "")
@@ -40,7 +50,8 @@ public class DiscordChatBridgeFeature extends Feature {
 
         SequoiaMod.debug("[CHAT] " + messageTextWithoutNewLines.getString());
 
-        if (SequoiaMod.getWebSocketFeature() == null) {
+        if (SequoiaMod.getWebSocketFeature() == null
+                || !SequoiaMod.getWebSocketFeature().isEnabled()) {
             return;
         }
 
@@ -56,19 +67,7 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        if (!messageTextWithoutNewLines.contains("§b") && !messageTextWithoutNewLines.contains("§3")) {
-            return;
-        }
-
-        if (messageTextWithoutNewLines.contains("§d") || messageTextWithoutNewLines.contains("§5")) {
-            return;
-        }
-
         String messageStringWithoutFormatting = messageTextWithoutNewLines.getStringWithoutFormatting();
-        if (!containsUnicode(messageStringWithoutFormatting) || messageStringWithoutFormatting.startsWith("[Event]")) {
-            return;
-        }
-
         Matcher guildChatMatcher = GUILD_CHAT_PATTERN.matcher(messageStringWithoutFormatting);
         Map<String, List<String>> nameMap = Maps.newHashMap();
         String nickname;

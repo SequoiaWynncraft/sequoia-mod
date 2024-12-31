@@ -15,7 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 public class OnlineMembersCommand extends Command {
     @Override
     public String getCommandName() {
-        return "onlinemembers";
+        return "onlineMembers";
     }
 
     @Override

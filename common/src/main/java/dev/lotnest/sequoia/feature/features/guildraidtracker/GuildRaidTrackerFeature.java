@@ -2,6 +2,7 @@ package dev.lotnest.sequoia.feature.features.guildraidtracker;
 
 import com.google.common.collect.Maps;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
@@ -27,12 +28,24 @@ import org.apache.commons.lang3.StringUtils;
 public class GuildRaidTrackerFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGuildRaidCompletion(ChatMessageReceivedEvent event) {
-        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
+        if (event.getMessageType() != MessageType.FOREGROUND) {
             return;
         }
 
         if (SequoiaMod.getWebSocketFeature() == null
-                || SequoiaMod.getWebSocketFeature().isAuthenticating()) {
+                || !SequoiaMod.getWebSocketFeature().isEnabled()) {
+            return;
+        }
+
+        if (SequoiaMod.getWebSocketFeature().isAuthenticating()) {
+            return;
+        }
+
+        if (!SequoiaMod.CONFIG.guildRaidTrackerFeature.enabled()) {
+            return;
+        }
+
+        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
             return;
         }
 

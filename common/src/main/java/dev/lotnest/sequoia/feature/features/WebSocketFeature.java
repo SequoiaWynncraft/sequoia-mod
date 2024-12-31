@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
 
 public class WebSocketFeature extends Feature {
@@ -34,6 +33,7 @@ public class WebSocketFeature extends Feature {
     public static final String WS_PROD_URL = "ws://lotnest.dev:8085/sequoia-tree/ws";
 
     private WebSocketClient client;
+    private boolean isFirstConnection = false;
     private boolean isAuthenticating;
 
     public void initClient() {
@@ -98,7 +98,7 @@ public class WebSocketFeature extends Feature {
 
                 SequoiaMod.debug("WebSocket connection closed. Code: " + i
                         + (StringUtils.isNotBlank(s) ? ", Reason: " + s : ""));
-                setAuthenticating(false);
+                closeIfNeeded();
             }
 
             @Override
@@ -125,13 +125,21 @@ public class WebSocketFeature extends Feature {
             return null;
         }
 
+        if (client == null) {
+            initClient();
+        }
+
+        if (!client.isOpen()) {
+            return null;
+        }
+
         try {
             String json = GSON.toJson(object);
             SequoiaMod.debug("Sending WebSocket message: " + json);
             client.send(json);
             return json;
         } catch (Exception exception) {
-            SequoiaMod.error("Failed to send WebSocket message: " + exception.getMessage());
+            SequoiaMod.error("Failed to send WebSocket message", exception);
             return null;
         }
     }
@@ -184,9 +192,18 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
-        if (client.getReadyState() == ReadyState.NOT_YET_CONNECTED) {
+        if (client == null) {
+            initClient();
+        }
+
+        if (client.isOpen()) {
+            return;
+        }
+
+        if (!isFirstConnection) {
+            isFirstConnection = true;
             client.connect();
-        } else if (client.isClosed()) {
+        } else {
             client.reconnect();
         }
     }
@@ -195,6 +212,7 @@ public class WebSocketFeature extends Feature {
         if (client.isOpen()) {
             client.close();
         }
+        setAuthenticating(false);
     }
 
     @Override

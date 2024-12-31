@@ -54,6 +54,10 @@ public class SequoiaConfigModel {
     @Expanded
     public LootPoolTrackerFeature lootPoolTrackerFeature = new LootPoolTrackerFeature();
 
+    @Nest
+    @Expanded
+    public OuterVoidTrackerFeature outerVoidTrackerFeature = new OuterVoidTrackerFeature();
+
     public static class MessageFilterFeature {
         public boolean enabled = false;
     }
@@ -102,6 +106,10 @@ public class SequoiaConfigModel {
     }
 
     public static class LootPoolTrackerFeature {
+        public boolean enabled = true;
+    }
+
+    public static class OuterVoidTrackerFeature {
         public boolean enabled = true;
     }
 }

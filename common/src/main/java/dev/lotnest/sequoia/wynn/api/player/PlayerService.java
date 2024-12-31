@@ -3,7 +3,7 @@ package dev.lotnest.sequoia.wynn.api.player;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.mojang.MojangService;
+import dev.lotnest.sequoia.minecraft.MojangService;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;

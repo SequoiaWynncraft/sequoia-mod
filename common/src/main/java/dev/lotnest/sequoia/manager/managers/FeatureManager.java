@@ -20,6 +20,7 @@ import dev.lotnest.sequoia.feature.features.lootpool.LootPoolTrackerFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.MessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.guild.GuildMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.mod.ModMessageFilterFeature;
+import dev.lotnest.sequoia.feature.features.outervoid.OuterVoidTrackerFeature;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
 import java.util.List;
@@ -60,6 +61,7 @@ public final class FeatureManager extends Manager {
         registerFeature(new MessageFilterFeature());
         registerFeature(new ModMessageFilterFeature());
         registerFeature(new DiscordChatBridgeFeature());
+        registerFeature(new OuterVoidTrackerFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();

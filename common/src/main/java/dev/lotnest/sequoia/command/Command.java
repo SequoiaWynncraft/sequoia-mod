@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component;
 public abstract class Command implements Translatable {
     public abstract String getCommandName();
 
-    protected List<String> getAliases() {
+    public List<String> getAliases() {
         return List.of();
     }
 

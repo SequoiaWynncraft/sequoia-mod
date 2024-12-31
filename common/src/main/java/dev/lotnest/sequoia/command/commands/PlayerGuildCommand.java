@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
-import dev.lotnest.sequoia.mojang.MinecraftUtils;
+import dev.lotnest.sequoia.minecraft.MinecraftUtils;
 import dev.lotnest.sequoia.utils.TimeUtils;
 import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import dev.lotnest.sequoia.wynn.api.player.PlayerService;
@@ -18,7 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 public class PlayerGuildCommand extends Command {
     @Override
     public String getCommandName() {
-        return "playerguild";
+        return "playerGuild";
     }
 
     @Override
