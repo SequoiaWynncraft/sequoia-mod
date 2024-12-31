@@ -28,6 +28,7 @@ import dev.lotnest.sequoia.command.commands.PlayerWarsCommand;
 import dev.lotnest.sequoia.command.commands.ReconnectCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.command.commands.TestCommand;
+import dev.lotnest.sequoia.command.commands.VersionCommand;
 import dev.lotnest.sequoia.manager.Manager;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -169,6 +170,7 @@ public final class ClientCommandManager extends Manager {
     }
 
     private void registerAllCommands() {
+        registerCommand(new VersionCommand());
         registerCommand(new ConfigCommand());
         registerCommand(new OnlineMembersCommand());
         registerCommand(new MeowCommand());
