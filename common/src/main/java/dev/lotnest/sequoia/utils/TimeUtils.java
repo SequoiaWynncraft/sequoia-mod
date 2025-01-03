@@ -1,5 +1,6 @@
 package dev.lotnest.sequoia.utils;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -17,13 +18,37 @@ public class TimeUtils {
     }
 
     public static String toPrettyTimeSince(String timestamp) {
-        return toPrettyTime(
-                (int) ((System.currentTimeMillis() - parseTimestamp(timestamp).toEpochMilli()) / 60000));
+        long totalSeconds =
+                (System.currentTimeMillis() - parseTimestamp(timestamp).toEpochMilli()) / 1000;
+        return toPrettyTime(totalSeconds);
     }
 
-    public static String toPrettyTime(int minutes) {
-        return (minutes >= 1440.0 ? (int) Math.floor((minutes / 1440.0)) + "d " : "")
-                + (int) (Math.floor((minutes % 1440) / 60.0)) + "h " + minutes % 60 + "m";
+    public static String toPrettyTime(long totalSeconds) {
+        Duration duration = Duration.ofSeconds(totalSeconds);
+
+        long years = duration.toDays() / 365;
+        duration = duration.minusDays(years * 365);
+
+        long months = duration.toDays() / 30;
+        duration = duration.minusDays(months * 30);
+
+        long days = duration.toDays();
+        duration = duration.minusDays(days);
+
+        long hours = duration.toHours();
+        duration = duration.minusHours(hours);
+
+        long minutes = duration.toMinutes();
+        duration = duration.minusMinutes(minutes);
+
+        long seconds = duration.getSeconds();
+
+        return (years > 0 ? years + "y " : "") + (months > 0 ? months + "mo " : "")
+                + (days > 0 ? days + "d " : "")
+                + (hours > 0 ? hours + "h " : "")
+                + (minutes > 0 ? minutes + "m " : "")
+                + seconds
+                + "s";
     }
 
     public static String wsTimestamp() {

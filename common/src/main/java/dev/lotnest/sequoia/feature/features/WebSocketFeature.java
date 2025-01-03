@@ -209,6 +209,10 @@ public class WebSocketFeature extends Feature {
     }
 
     public void closeIfNeeded() {
+        if (client == null) {
+            return;
+        }
+
         if (client.isOpen()) {
             client.close();
         }

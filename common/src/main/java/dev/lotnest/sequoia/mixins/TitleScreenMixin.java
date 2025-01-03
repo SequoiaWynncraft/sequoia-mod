@@ -1,5 +1,6 @@
 package dev.lotnest.sequoia.mixins;
 
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.minecraft.SharedPanoramaRenderer;
 import java.util.Random;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,7 +36,26 @@ public abstract class TitleScreenMixin {
         "/seq meow",
         "meow",
         "99% gamblers quit before hitting it big",
-        "I have a damage build that relies on heals"
+        "I have a damage build that relies on heals",
+        "16LE to be in next SEQ slander",
+        "@Defender BLAK incident",
+        "Drastically improved server performance",
+        "Waiting for players 1/3",
+        "Crazy? I was crazy once",
+        "Salted, you owe me 2 dungeon bombs",
+        "I am the night",
+        "I am the vengeance",
+        "4 snakes, 1 meteor",
+        "Increasing to 12stx next year",
+        "can we honestly e-war?",
+        "Did you dodge your aura today?",
+        "Spellforged, the #1 Minecraft MMORPG",
+        "Bottom text",
+        "Sleep = Downtime",
+        "SEQueue",
+        "seqwawa",
+        "llamadile rewarded 1024 Emeralds to llamadile",
+        "Who is Blud?"
     };
 
     @Shadow
@@ -47,6 +67,14 @@ public abstract class TitleScreenMixin {
 
     @Inject(method = "renderPanorama", at = @At("HEAD"), cancellable = true)
     private void renderPanorama(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
+        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.enabled()) {
+            return;
+        }
+
+        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.showSequoiaPanorama()) {
+            return;
+        }
+
         SharedPanoramaRenderer.INSTANCE.render(
                 guiGraphics, guiGraphics.guiWidth(), guiGraphics.guiHeight(), 1.0F, partialTick);
         ci.cancel();
@@ -54,6 +82,14 @@ public abstract class TitleScreenMixin {
 
     @Inject(method = "init", at = @At("HEAD"))
     private void addSequoiaSplashes(CallbackInfo ci) {
+        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.enabled()) {
+            return;
+        }
+
+        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.showSequoiaSplashes()) {
+            return;
+        }
+
         splash = new SplashRenderer(SPLASHES[random.nextInt(SPLASHES.length)]);
     }
 }

@@ -26,6 +26,7 @@ import dev.lotnest.sequoia.command.commands.PlayerGuildCommand;
 import dev.lotnest.sequoia.command.commands.PlayerRaidsCommand;
 import dev.lotnest.sequoia.command.commands.PlayerWarsCommand;
 import dev.lotnest.sequoia.command.commands.ReconnectCommand;
+import dev.lotnest.sequoia.command.commands.SearchCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.command.commands.TestCommand;
 import dev.lotnest.sequoia.command.commands.VersionCommand;
@@ -181,7 +182,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new TestCommand());
         registerCommand(new PlayerWarsCommand());
         registerCommand(new DiscordCommand());
-        //        registerCommand(new SearchCommand());
+        registerCommand(new SearchCommand());
         registerCommand(new ConnectCommand());
         registerCommand(new DisconnectCommand());
         registerCommand(new ReconnectCommand());

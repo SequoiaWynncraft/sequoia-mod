@@ -134,7 +134,11 @@ public class OuterVoidTrackerFeature extends Feature {
                 int itemCountNeeded = getNeededItemCount(itemName);
                 if (itemStack.getCount() >= itemCountNeeded) {
                     neededItems.remove(itemName);
-                    McUtils.playSoundUI(SoundEvents.PLAYER_LEVELUP);
+
+                    if (SequoiaMod.CONFIG.outerVoidTrackerFeature.playSoundEffect()) {
+                        McUtils.playSoundUI(SoundEvents.PLAYER_LEVELUP);
+                    }
+
                     McUtils.sendMessageToClient(SequoiaMod.prefix(
                             Component.translatable("sequoia.feature.outerVoidTracker.enoughNeededItemCollected")
                                     .withStyle(ChatFormatting.GREEN)
