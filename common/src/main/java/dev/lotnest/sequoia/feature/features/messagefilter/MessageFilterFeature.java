@@ -25,6 +25,7 @@ public class MessageFilterFeature extends Feature {
         addPatternsToMap(MessageFilterPatterns.EVENT, "EVENT");
         addPatternsToMap(MessageFilterPatterns.PARTY_FINDER, "PARTY_FINDER");
         addPatternsToMap(MessageFilterPatterns.CRATE, "CRATE");
+        addPatternsToMap(MessageFilterPatterns.PET, "PET");
     }
 
     private static void addPatternsToMap(Pattern[] patterns, String category) {
