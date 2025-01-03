@@ -1,6 +1,7 @@
 package dev.lotnest.sequoia.configs;
 
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.feature.features.messagefilter.MessageFilterDecisionType;
 import io.wispforest.owo.config.annotation.Config;
 import io.wispforest.owo.config.annotation.Expanded;
 import io.wispforest.owo.config.annotation.Modmenu;
@@ -16,6 +17,9 @@ import org.apache.commons.compress.utils.Lists;
 public class SequoiaConfigModel {
     @SectionHeader("general")
     public boolean verboseLogging = false;
+
+    public boolean renderSequoiaPanorama = true;
+    public boolean renderSequoiaSplashes = true;
 
     @SectionHeader("features")
     @Nest
@@ -58,20 +62,28 @@ public class SequoiaConfigModel {
     @Expanded
     public OuterVoidTrackerFeature outerVoidTrackerFeature = new OuterVoidTrackerFeature();
 
-    @Nest
-    @Expanded
-    public TitleScreenEnhancementsFeature titleScreenEnhancementsFeature = new TitleScreenEnhancementsFeature();
-
     public static class MessageFilterFeature {
         public boolean enabled = false;
+        public MessageFilterDecisionType eventMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType partyFinderMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType crateMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType petMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
     }
 
     public static class GuildMessageFilterFeature {
         public boolean enabled = false;
+        public MessageFilterDecisionType raidMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType warMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType economyMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType rewardMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType bankMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType rankMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
     }
 
     public static class ModMessageFilterFeature {
         public boolean enabled = false;
+        public MessageFilterDecisionType wynntilsConnectionMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
+        public MessageFilterDecisionType fuyggConnectionMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
     }
 
     public static class PlayerIgnoreFeature {
@@ -116,11 +128,5 @@ public class SequoiaConfigModel {
     public static class OuterVoidTrackerFeature {
         public boolean enabled = true;
         public boolean playSoundEffect = true;
-    }
-
-    public static class TitleScreenEnhancementsFeature {
-        public boolean enabled = true;
-        public boolean showSequoiaPanorama = true;
-        public boolean showSequoiaSplashes = true;
     }
 }

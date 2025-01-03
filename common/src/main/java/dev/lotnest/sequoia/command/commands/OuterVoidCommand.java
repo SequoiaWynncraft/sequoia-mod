@@ -8,7 +8,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
-import dev.lotnest.sequoia.feature.features.outervoid.OuterVoidTrackerFeature;
+import dev.lotnest.sequoia.feature.features.OuterVoidTrackerFeature;
 import dev.lotnest.sequoia.manager.Managers;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;

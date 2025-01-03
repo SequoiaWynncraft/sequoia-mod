@@ -1,4 +1,4 @@
-package dev.lotnest.sequoia.feature.features.outervoid;
+package dev.lotnest.sequoia.feature.features;
 
 import com.google.common.collect.Maps;
 import com.wynntils.core.components.Models;

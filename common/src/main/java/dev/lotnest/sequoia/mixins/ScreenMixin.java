@@ -13,11 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ScreenMixin {
     @Inject(method = "renderPanorama", at = @At("HEAD"), cancellable = true)
     private void renderPanorama(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
-        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.enabled()) {
-            return;
-        }
-
-        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.showSequoiaPanorama()) {
+        if (!SequoiaMod.CONFIG.renderSequoiaPanorama()) {
             return;
         }
 

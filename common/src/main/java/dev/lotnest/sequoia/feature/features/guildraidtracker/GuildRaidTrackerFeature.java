@@ -53,7 +53,7 @@ public class GuildRaidTrackerFeature extends Feature {
         String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
         Map<String, List<String>> nameMap = Maps.newHashMap();
 
-        Matcher guildRaidCompletionMatcher = GuildMessageFilterPatterns.RAID_COMPLETION.matcher(unformattedMessage);
+        Matcher guildRaidCompletionMatcher = GuildMessageFilterPatterns.RAID[0].matcher(unformattedMessage);
         if (!guildRaidCompletionMatcher.matches()) {
             return;
         }

@@ -4,8 +4,8 @@ import com.google.common.collect.Maps;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
+import dev.lotnest.sequoia.feature.features.messagefilter.MessageFilterDecisionType;
 import dev.lotnest.sequoia.wynn.WynnUtils;
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,18 +16,28 @@ public class ModMessageFilterFeature extends Feature {
     private static final Map<Pattern, String> PATTERN_ACTIONS = Maps.newHashMap();
 
     static {
-        try {
-            Field[] fields = ModMessageFilterPatterns.class.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.getType().equals(Pattern.class)) {
-                    field.setAccessible(true);
-                    Pattern pattern = (Pattern) field.get(null);
-                    PATTERN_ACTIONS.put(pattern, field.getName());
-                }
-            }
-        } catch (IllegalAccessException exception) {
-            SequoiaMod.error("Failed to initialize " + ModMessageFilterFeature.class.getSimpleName(), exception);
+        initializePatternActions();
+    }
+
+    private static void initializePatternActions() {
+        addPatternsToMap(ModMessageFilterPatterns.WYNNTILS_CONNECTION, "WYNNTILS_CONNECTION");
+        addPatternsToMap(ModMessageFilterPatterns.FUY_GG_CONNECTION, "FUY_GG_CONNECTION");
+    }
+
+    private static void addPatternsToMap(Pattern[] patterns, String category) {
+        for (Pattern pattern : patterns) {
+            PATTERN_ACTIONS.put(pattern, category);
         }
+    }
+
+    private static MessageFilterDecisionType getUserDecisionType(String category) {
+        return switch (category) {
+            case "WYNNTILS_CONNECTION" -> SequoiaMod.CONFIG.modMessageFilterFeature
+                    .wynntilsConnectionMessagesFilterDecisionType();
+            case "FUY_GG_CONNECTION" -> SequoiaMod.CONFIG.modMessageFilterFeature
+                    .fuyggConnectionMessagesFilterDecisionType();
+            default -> MessageFilterDecisionType.KEEP;
+        };
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -41,11 +51,19 @@ public class ModMessageFilterFeature extends Feature {
 
         for (Map.Entry<Pattern, String> patternEntry : PATTERN_ACTIONS.entrySet()) {
             Pattern pattern = patternEntry.getKey();
-            String patternName = patternEntry.getValue();
-
+            String category = patternEntry.getValue();
+            MessageFilterDecisionType messageFilterDecisionType = getUserDecisionType(category);
             Matcher matcher = pattern.matcher(unformattedMessage);
+
             if (matcher.matches()) {
-                SequoiaMod.debug("[" + ModMessageFilterFeature.class.getSimpleName() + "] " + patternName + " matched");
+                SequoiaMod.debug("[" + ModMessageFilterFeature.class.getSimpleName() + "] Pattern in category '"
+                        + category + "' matched: " + MessageFilterDecisionType.class.getSimpleName() + "."
+                        + messageFilterDecisionType.name());
+
+                if (messageFilterDecisionType == MessageFilterDecisionType.HIDE) {
+                    event.setCanceled(true);
+                    return;
+                }
             }
         }
     }

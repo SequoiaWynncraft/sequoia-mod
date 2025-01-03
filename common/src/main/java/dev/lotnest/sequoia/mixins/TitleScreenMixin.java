@@ -55,7 +55,9 @@ public abstract class TitleScreenMixin {
         "SEQueue",
         "seqwawa",
         "llamadile rewarded 1024 Emeralds to llamadile",
-        "Who is Blud?"
+        "Who is Blud?",
+        "October 14th 2022",
+        "Please do not the cat"
     };
 
     @Shadow
@@ -67,11 +69,7 @@ public abstract class TitleScreenMixin {
 
     @Inject(method = "renderPanorama", at = @At("HEAD"), cancellable = true)
     private void renderPanorama(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
-        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.enabled()) {
-            return;
-        }
-
-        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.showSequoiaPanorama()) {
+        if (!SequoiaMod.CONFIG.renderSequoiaPanorama()) {
             return;
         }
 
@@ -82,11 +80,7 @@ public abstract class TitleScreenMixin {
 
     @Inject(method = "init", at = @At("HEAD"))
     private void addSequoiaSplashes(CallbackInfo ci) {
-        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.enabled()) {
-            return;
-        }
-
-        if (!SequoiaMod.CONFIG.titleScreenEnhancementsFeature.showSequoiaSplashes()) {
+        if (!SequoiaMod.CONFIG.renderSequoiaSplashes()) {
             return;
         }
 

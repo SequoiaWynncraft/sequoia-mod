@@ -2,32 +2,45 @@ package dev.lotnest.sequoia.feature.features.messagefilter;
 
 import com.google.common.collect.Maps;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import com.wynntils.handlers.chat.type.MessageType;
+import com.wynntils.handlers.chat.type.RecipientType;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.wynn.WynnUtils;
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 
 public class MessageFilterFeature extends Feature {
     private static final Map<Pattern, String> PATTERN_ACTIONS = Maps.newHashMap();
 
     static {
-        try {
-            Field[] fields = MessageFilterPatterns.class.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.getType().equals(Pattern.class)) {
-                    field.setAccessible(true);
-                    Pattern pattern = (Pattern) field.get(null);
-                    PATTERN_ACTIONS.put(pattern, field.getName());
-                }
-            }
-        } catch (IllegalAccessException exception) {
-            SequoiaMod.error("Failed to initialize " + MessageFilterFeature.class.getSimpleName(), exception);
+        initializePatternActions();
+    }
+
+    private static void initializePatternActions() {
+        addPatternsToMap(MessageFilterPatterns.EVENT, "EVENT");
+        addPatternsToMap(MessageFilterPatterns.PARTY_FINDER, "PARTY_FINDER");
+        addPatternsToMap(MessageFilterPatterns.CRATE, "CRATE");
+    }
+
+    private static void addPatternsToMap(Pattern[] patterns, String category) {
+        for (Pattern pattern : patterns) {
+            PATTERN_ACTIONS.put(pattern, category);
         }
+    }
+
+    private static MessageFilterDecisionType getUserDecisionType(String category) {
+        return switch (category) {
+            case "EVENT" -> SequoiaMod.CONFIG.messageFilterFeature.eventMessagesFilterDecisionType();
+            case "PARTY_FINDER" -> SequoiaMod.CONFIG.messageFilterFeature.partyFinderMessagesFilterDecisionType();
+            case "CRATE" -> SequoiaMod.CONFIG.messageFilterFeature.crateMessagesFilterDecisionType();
+            case "PET" -> SequoiaMod.CONFIG.messageFilterFeature.petMessagesFilterDecisionType();
+            default -> MessageFilterDecisionType.KEEP;
+        };
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -41,11 +54,25 @@ public class MessageFilterFeature extends Feature {
 
         for (Map.Entry<Pattern, String> patternEntry : PATTERN_ACTIONS.entrySet()) {
             Pattern pattern = patternEntry.getKey();
-            String patternName = patternEntry.getValue();
-
+            String category = patternEntry.getValue();
+            MessageFilterDecisionType messageFilterDecisionType = getUserDecisionType(category);
             Matcher matcher = pattern.matcher(unformattedMessage);
+
             if (matcher.matches()) {
-                SequoiaMod.debug("[" + MessageFilterFeature.class.getSimpleName() + "] " + patternName + " matched");
+                if (StringUtils.equals(category, "PET")
+                        && !RecipientType.PETS.matchPattern(event.getStyledText(), MessageType.FOREGROUND)
+                        && !RecipientType.PETS.matchPattern(event.getStyledText(), MessageType.BACKGROUND)) {
+                    continue;
+                }
+
+                SequoiaMod.debug("[" + MessageFilterFeature.class.getSimpleName() + "] Pattern in category '"
+                        + category + "' matched: " + MessageFilterDecisionType.class.getSimpleName() + "."
+                        + messageFilterDecisionType.name());
+
+                if (messageFilterDecisionType == MessageFilterDecisionType.HIDE) {
+                    event.setCanceled(true);
+                    return;
+                }
             }
         }
     }
