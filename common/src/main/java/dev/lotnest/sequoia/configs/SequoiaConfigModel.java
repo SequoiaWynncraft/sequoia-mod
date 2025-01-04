@@ -6,7 +6,7 @@ import io.wispforest.owo.config.annotation.Config;
 import io.wispforest.owo.config.annotation.Expanded;
 import io.wispforest.owo.config.annotation.Modmenu;
 import io.wispforest.owo.config.annotation.Nest;
-import io.wispforest.owo.config.annotation.PredicateConstraint;
+import io.wispforest.owo.config.annotation.RangeConstraint;
 import io.wispforest.owo.config.annotation.SectionHeader;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -128,5 +128,8 @@ public class SequoiaConfigModel {
     public static class OuterVoidTrackerFeature {
         public boolean enabled = true;
         public boolean playSoundEffect = true;
+
+        @RangeConstraint(min = 1, max = 20)
+        public float scale = 2.0f;
     }
 }

@@ -6,7 +6,8 @@
     "CrashReportMixin",
     "ResourceLoadStateTrackerMixin",
     "ScreenMixin",
-    "TitleScreenMixin"
+    "TitleScreenMixin",
+    "ItemEntityRendererMixin"
   ],
   "compatibilityLevel": "JAVA_17",
   "injectors": {
