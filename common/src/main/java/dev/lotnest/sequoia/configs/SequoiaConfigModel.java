@@ -6,6 +6,7 @@ import io.wispforest.owo.config.annotation.Config;
 import io.wispforest.owo.config.annotation.Expanded;
 import io.wispforest.owo.config.annotation.Modmenu;
 import io.wispforest.owo.config.annotation.Nest;
+import io.wispforest.owo.config.annotation.PredicateConstraint;
 import io.wispforest.owo.config.annotation.RangeConstraint;
 import io.wispforest.owo.config.annotation.SectionHeader;
 import java.util.List;
@@ -53,10 +54,6 @@ public class SequoiaConfigModel {
     @Nest
     @Expanded
     public DiscordChatBridgeFeature discordChatBridgeFeature = new DiscordChatBridgeFeature();
-
-    @Nest
-    @Expanded
-    public LootPoolTrackerFeature lootPoolTrackerFeature = new LootPoolTrackerFeature();
 
     @Nest
     @Expanded
@@ -121,15 +118,11 @@ public class SequoiaConfigModel {
         public boolean sendDiscordMessagesToInGameChat = true;
     }
 
-    public static class LootPoolTrackerFeature {
-        public boolean enabled = true;
-    }
-
     public static class OuterVoidTrackerFeature {
         public boolean enabled = true;
         public boolean playSoundEffect = true;
 
         @RangeConstraint(min = 1, max = 20)
-        public float scale = 2.0f;
+        public float scale = 2.0F;
     }
 }

@@ -39,7 +39,7 @@ public class VersionCommand extends Command {
         } else {
             versionMessage = SequoiaMod.prefix(Component.literal("You are running Sequoia " + SequoiaMod.getVersion())
                     .append(SequoiaMod.isDevelopmentBuild() ? " (Development build)" : "")
-                    .append(" by Lotnest (Credits to dotJJ for server development and to OwORawr for Sequoia OST).")
+                    .append(" by Lotnest (Owner & Lead Developer), Iriya_ (Mod Developer), dotJJ (Server Developer) and OwORawr (Sequoia OST composer).")
                     .withStyle(ChatFormatting.GREEN));
         }
 
