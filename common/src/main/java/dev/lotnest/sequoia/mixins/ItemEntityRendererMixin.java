@@ -13,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntityRenderer.class)
 abstract class ItemEntityRendererMixin {
-    private static final int X1 = 13500, Y1 = 100, Z1 = -3600;
-    private static final int X2 = 15000, Y2 = 300, Z2 = -3000;
+    private static final int OUTER_VOID_MIN_X = 13500, OUTER_VOID_MIN_Y = 100, OUTER_VOID_MIN_Z = -3600;
+    private static final int OUTER_VOID_MAX_X = 15000, OUTER_VOID_MAX_Y = 300, OUTER_VOID_MAX_Z = -3000;
 
     @Inject(method = "render", at = @At("HEAD"))
     private void onRender(
@@ -29,8 +29,8 @@ abstract class ItemEntityRendererMixin {
         int x = (int) entity.getX();
         int y = (int) entity.getY();
         int z = (int) entity.getZ();
-        if (SequoiaMod.CONFIG.outerVoidItemFeature.enabled() && isWithinBox(x, y, z)) {
-            float scale = SequoiaMod.CONFIG.outerVoidItemFeature.scale();
+        if (SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled() && isWithinBox(x, y, z)) {
+            float scale = SequoiaMod.CONFIG.outerVoidTrackerFeature.scale();
             matrices.scale(scale, scale, scale);
         }
     }
@@ -49,6 +49,11 @@ abstract class ItemEntityRendererMixin {
 
     @Unique
     private boolean isWithinBox(int x, int y, int z) {
-        return x >= X1 && x <= X2 && y >= Y1 && y <= Y2 && z >= Z1 && z <= Z2;
+        return x >= OUTER_VOID_MIN_X
+                && x <= OUTER_VOID_MAX_X
+                && y >= OUTER_VOID_MIN_Y
+                && y <= OUTER_VOID_MAX_Y
+                && z >= OUTER_VOID_MIN_Z
+                && z <= OUTER_VOID_MAX_Z;
     }
 }
