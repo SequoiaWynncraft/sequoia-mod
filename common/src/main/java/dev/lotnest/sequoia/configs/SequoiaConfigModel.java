@@ -62,6 +62,10 @@ public class SequoiaConfigModel {
     @Expanded
     public OuterVoidTrackerFeature outerVoidTrackerFeature = new OuterVoidTrackerFeature();
 
+    @Nest
+    @Expanded
+    public OuterVoidItemFeature outerVoidItemFeature = new OuterVoidItemFeature();
+
     public static class MessageFilterFeature {
         public boolean enabled = false;
         public MessageFilterDecisionType eventMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
@@ -128,5 +132,10 @@ public class SequoiaConfigModel {
     public static class OuterVoidTrackerFeature {
         public boolean enabled = true;
         public boolean playSoundEffect = true;
+    }
+
+    public static class OuterVoidItemFeature {
+        public boolean enabled = true;
+        public float scale = 2.0f;
     }
 }
