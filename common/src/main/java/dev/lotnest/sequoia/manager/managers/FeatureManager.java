@@ -17,7 +17,6 @@ import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
 import dev.lotnest.sequoia.feature.features.guildraidtracker.GuildRaidTrackerFeature;
-import dev.lotnest.sequoia.feature.features.lootpool.LootPoolTrackerFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.MessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.guild.GuildMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.mod.ModMessageFilterFeature;
@@ -56,7 +55,6 @@ public final class FeatureManager extends Manager {
         registerFeature(new WebSocketFeature());
         registerFeature(new GuildRaidTrackerFeature());
         registerFeature(new DiscordChatBridgeFeature());
-        registerFeature(new LootPoolTrackerFeature());
         registerFeature(new MessageFilterFeature());
         registerFeature(new GuildMessageFilterFeature());
         registerFeature(new ModMessageFilterFeature());
