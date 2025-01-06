@@ -3,13 +3,11 @@ package dev.lotnest.sequoia.feature.features;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.ibm.icu.impl.Pair;
-import com.ibm.icu.text.Normalizer2;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wynntils.core.components.Models;
-import com.wynntils.core.text.StyledText;
 import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.event.TickEvent;
 import com.wynntils.utils.colors.CommonColors;
@@ -18,24 +16,20 @@ import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.render.buffered.CustomRenderType;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
-import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.Position;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.player.Player;
-import net.neoforged.bus.api.SubscribeEvent;
-import org.apache.commons.lang3.StringUtils;
-import org.joml.Matrix4f;
-
 import dev.lotnest.sequoia.utils.PlayerUtils;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.Position;
+import net.minecraft.world.entity.player.Player;
+import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.joml.Matrix4f;
 
 public class RaidLowHealthFeature extends Feature {
     private static final MultiBufferSource.BufferSource BUFFER_SOURCE =
@@ -43,11 +37,11 @@ public class RaidLowHealthFeature extends Feature {
 
     private static final Pattern PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN = Pattern.compile(
             "§e- §4\\[§([a-z0-9](\\|§[a-z0-9])*)?(\\|)*(\\d*?)(§[a-z0-9]\\d*)*\\|\\|§4] §f(.+?)(?:§7 \\[\\d+])?");
+    private static final Pattern SEGMENT_PATTERN = Pattern.compile("§4\\[(.*?)§4]");
 
-    // Number of straight lines to draw when rendering circle
-    private static final int SEGMENTS = 64;
-    private static final float HEIGHT = 0.1f;
-    private static final int TRANSPARENCY = 95;
+    private static final int CIRCLE_SEGMENTS = 64;
+    private static final float CIRCLE_HEIGHT = 0.1F;
+    private static final int CIRCLE_TRANSPARENCY = 95;
 
     private final Set<Player> detectedPlayers = Sets.newHashSet();
     private final Map<Player, List<Pair<CustomColor, Float>>> circlesToRender = Maps.newHashMap();
@@ -56,8 +50,11 @@ public class RaidLowHealthFeature extends Feature {
     public void onPlayerRender(PlayerRenderEvent event) {
         AbstractClientPlayer player = event.getPlayer();
         detectedPlayers.add(player);
+
         List<Pair<CustomColor, Float>> circles = circlesToRender.get(player);
-        if (circles == null) return;
+        if (circles == null) {
+            return;
+        }
 
         circles.forEach(circleType -> {
             float radius = circleType.second;
@@ -74,76 +71,74 @@ public class RaidLowHealthFeature extends Feature {
     }
 
     private void checkCircles(Player player) {
-        // Don't render for ghost/npc
         if (!Models.Player.isLocalPlayer(player)) {
             return;
         }
 
-        final List<Pair<CustomColor, Float>>[] circles = new List[]{null};
+        List<Pair<CustomColor, Float>>[] circles = new List[] {null};
         if (player == McUtils.player()) {
             return;
         } else {
-            //if (!Models.Party.getPartyMembers()
-            //        .contains(StyledText.fromComponent(player.getName()).getStringWithoutFormatting())) return;
-            Pattern healthScoreboardPlayerScorePattern = Pattern.compile(
-                    "§e- §4\\[§([a-z0-9](\\|§[a-z0-9])*)?(\\|)*(\\d*?)(§[a-z0-9]\\d*)*\\|\\|§4] §f(.+?)(?:§7 \\[\\d+])");
-
-            PlayerUtils.getScoreboardLines().forEach(scoreboardLine -> {
+            for (String scoreboardLine : PlayerUtils.getScoreboardLines()) {
                 Matcher scoreboardLineMatcher = PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN.matcher(scoreboardLine);
                 if (scoreboardLineMatcher.matches()) {
-                    String healthRaw = scoreboardLineMatcher.group(5); // Cleaned health value
-                    String healthCleaned = healthRaw != null ? healthRaw.replaceAll("§[a-z0-9]", "") : "Unknown";
                     String playerName = scoreboardLineMatcher.group(6);
+                    Matcher segmentSectionMatcher = SEGMENT_PATTERN.matcher(scoreboardLine);
 
-                    // Extract health bar colors and segments (between §4[ and §4])
-                    Matcher segmentSectionMatcher = Pattern.compile("§4\\[(.*?)§4\\]").matcher(scoreboardLine);
                     if (segmentSectionMatcher.find()) {
-                        String segmentSection = segmentSectionMatcher.group(1); // Get content between §4[ and §4]
+                        String segmentSection = segmentSectionMatcher.group(1);
 
                         long totalSegments = 0;
                         long redSegments = 0;
                         long greySegments = 0;
+                        String currentColor = "";
 
-                        String currentColor = ""; // Track the current color state
-
-                        // Iterate over each character as a segment
                         for (int i = 0; i < segmentSection.length(); i++) {
                             char ch = segmentSection.charAt(i);
 
                             if (ch == '§' && i + 1 < segmentSection.length()) {
-                                char nextChar = segmentSection.charAt(i + 1); // Get the color code
+                                char nextChar = segmentSection.charAt(i + 1);
                                 if (nextChar == 'c') {
-                                    currentColor = "red"; // Switch to red state
+                                    currentColor = "red";
                                 } else if (nextChar == '8') {
-                                    currentColor = "grey"; // Switch to grey state
+                                    currentColor = "grey";
                                 }
-                                i++; // Skip the color code character
+                                i++;
                                 continue;
                             }
 
-                            totalSegments++; // Count each character as a segment
+                            totalSegments++;
 
-                            // Classify the segment based on the current color state
                             if (StringUtils.equals("red", currentColor)) {
                                 redSegments++;
+                            } else if (StringUtils.equals("grey", currentColor)) {
+                                greySegments++;
                             }
                         }
 
-                        // Calculate health percentage based on red and total segments
-                        double healthPercentage = totalSegments > 0 ? (redSegments / (double) totalSegments) * 100 : 0;
-
-                        // Log results
-                        SequoiaMod.debug("Scoreboard Line: " + scoreboardLine);
-                        SequoiaMod.debug("Player: " + playerName + ", Health: " + healthCleaned + ", Red Segments: "
-                                + redSegments + ", Grey Segments: " + greySegments + ", Total Segments: " + totalSegments
-                                + ", Health Percentage: " + healthPercentage + "%");
-                        if (healthPercentage <= 40 && player.getName().getString().contains(playerName)) {
-                            circles[0] = Collections.singletonList(Pair.of(CommonColors.RED.withAlpha(TRANSPARENCY), 7.9f));
+                        double healthPercentage;
+                        if (totalSegments > 0) {
+                            // Health is determined by red segments out of total segments
+                            healthPercentage = (redSegments / (double) totalSegments) * 100;
+                        } else {
+                            // If no segments are found, consider the health as 100%
+                            healthPercentage = 100.0;
                         }
 
+                        SequoiaMod.debug("Scoreboard Line: " + scoreboardLine);
+                        SequoiaMod.debug("Player: " + playerName + ", Red Segments: "
+                                + redSegments + ", Grey Segments: " + greySegments + ", Total Segments: "
+                                + totalSegments
+                                + ", Health Percentage: " + healthPercentage + "%");
+
+                        if (healthPercentage <= 40.0
+                                && player.getName().getString().contains(playerName)) {
+                            circles[0] = Collections.singletonList(
+                                    Pair.of(CommonColors.RED.withAlpha(CIRCLE_TRANSPARENCY), 7.9F));
+                        }
                     }
                 }
-            });
+            }
 
             circlesToRender.put(player, circles[0]);
         }
@@ -159,10 +154,10 @@ public class RaidLowHealthFeature extends Feature {
         VertexConsumer consumer = BUFFER_SOURCE.getBuffer(CustomRenderType.POSITION_COLOR_QUAD);
 
         Matrix4f matrix4f = poseStack.last().pose();
-        double angleStep = 2 * Math.PI / SEGMENTS;
+        double angleStep = 2 * Math.PI / CIRCLE_SEGMENTS;
         double startingAngle = -(System.currentTimeMillis() % 40000) * 2 * Math.PI / 40000.0;
         double angle = startingAngle;
-        for (int i = 0; i < SEGMENTS; i++) {
+        for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
             if (i % 4 > 2) {
                 angle += angleStep;
                 continue;
@@ -170,11 +165,13 @@ public class RaidLowHealthFeature extends Feature {
             float x = (float) (position.x() + Math.sin(angle) * radius);
             float z = (float) (position.z() + Math.cos(angle) * radius);
             consumer.addVertex(matrix4f, x, (float) position.y(), z).setColor(color);
-            consumer.addVertex(matrix4f, x, (float) position.y() + HEIGHT, z).setColor(color);
+            consumer.addVertex(matrix4f, x, (float) position.y() + CIRCLE_HEIGHT, z)
+                    .setColor(color);
             angle += angleStep;
             float x2 = (float) (position.x() + Math.sin(angle) * radius);
             float z2 = (float) (position.z() + Math.cos(angle) * radius);
-            consumer.addVertex(matrix4f, x2, (float) position.y() + HEIGHT, z2).setColor(color);
+            consumer.addVertex(matrix4f, x2, (float) position.y() + CIRCLE_HEIGHT, z2)
+                    .setColor(color);
             consumer.addVertex(matrix4f, x2, (float) position.y(), z2).setColor(color);
         }
 

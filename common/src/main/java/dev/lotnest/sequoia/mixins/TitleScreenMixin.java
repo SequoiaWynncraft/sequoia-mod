@@ -57,7 +57,11 @@ public abstract class TitleScreenMixin {
         "llamadile rewarded 1024 Emeralds to llamadile",
         "Who is Blud?",
         "October 14th 2022",
-        "Please do not the cat"
+        "Please do not the cat",
+        "Lots of Nests!",
+        "Network Protocol Error",
+        "Vibrant Network Protocol Error for the next 60 challenges",
+        "Pan"
     };
 
     @Shadow

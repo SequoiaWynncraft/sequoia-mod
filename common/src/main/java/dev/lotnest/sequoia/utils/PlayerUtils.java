@@ -1,7 +1,8 @@
 package dev.lotnest.sequoia.utils;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.Collections;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -10,13 +11,8 @@ import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerScoreEntry;
 import net.minecraft.world.scores.Scoreboard;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 public final class PlayerUtils {
-    private PlayerUtils() {
-    }
+    private PlayerUtils() {}
 
     public static void sendTitle(Component title) {
         sendTitle(title, null);
@@ -58,7 +54,6 @@ public final class PlayerUtils {
     public static void sendTitlesAnimation(int titleFadeInTime, int titleStayTime, int titleFadeOutTime) {
         Minecraft.getInstance().gui.setTimes(titleFadeInTime, titleStayTime, titleFadeOutTime);
     }
-
 
     public static List<String> getScoreboardLines() {
         LocalPlayer player = Minecraft.getInstance().player;
