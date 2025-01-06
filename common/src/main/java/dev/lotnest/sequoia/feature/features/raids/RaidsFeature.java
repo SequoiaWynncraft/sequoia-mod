@@ -6,14 +6,13 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.wynn.WynnUtils;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.SubscribeEvent;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class RaidsFeature extends Feature {
     private static final Pattern PLAYER_BUFF_CHOSEN =
