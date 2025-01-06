@@ -3,6 +3,7 @@ package dev.lotnest.sequoia.feature.features;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.ibm.icu.impl.Pair;
+import com.ibm.icu.text.Normalizer2;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -15,14 +16,8 @@ import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.colors.CustomColor;
 import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.render.buffered.CustomRenderType;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
-import dev.lotnest.sequoia.utils.PlayerUtils;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.Position;
@@ -31,6 +26,15 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joml.Matrix4f;
+
+import dev.lotnest.sequoia.utils.PlayerUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RaidLowHealthFeature extends Feature {
     private static final MultiBufferSource.BufferSource BUFFER_SOURCE =
@@ -74,61 +78,76 @@ public class RaidLowHealthFeature extends Feature {
             return;
         }
 
-        List<Pair<CustomColor, Float>>[] circles = new List[] {null};
+        final List<Pair<CustomColor, Float>>[] circles = new List[]{null};
         if (player == McUtils.player()) {
             return;
         } else {
-            if (!Models.Party.getPartyMembers()
-                    .contains(StyledText.fromComponent(player.getName()).getStringWithoutFormatting())) {
-                return;
-            }
+            //if (!Models.Party.getPartyMembers()
+            //        .contains(StyledText.fromComponent(player.getName()).getStringWithoutFormatting())) return;
+            Pattern healthScoreboardPlayerScorePattern = Pattern.compile(
+                    "§e- §4\\[§([a-z0-9](\\|§[a-z0-9])*)?(\\|)*(\\d*?)(§[a-z0-9]\\d*)*\\|\\|§4] §f(.+?)(?:§7 \\[\\d+])");
 
             PlayerUtils.getScoreboardLines().forEach(scoreboardLine -> {
                 Matcher scoreboardLineMatcher = PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN.matcher(scoreboardLine);
                 if (scoreboardLineMatcher.matches()) {
-                    String playerName = scoreboardLineMatcher.group(5);
-                    Matcher segmentSectionMatcher =
-                            Pattern.compile("§4\\[(.*?)§4]").matcher(scoreboardLine);
+                    String healthRaw = scoreboardLineMatcher.group(5); // Cleaned health value
+                    String healthCleaned = healthRaw != null ? healthRaw.replaceAll("§[a-z0-9]", "") : "Unknown";
+                    String playerName = scoreboardLineMatcher.group(6);
 
+                    // Extract health bar colors and segments (between §4[ and §4])
+                    Matcher segmentSectionMatcher = Pattern.compile("§4\\[(.*?)§4\\]").matcher(scoreboardLine);
                     if (segmentSectionMatcher.find()) {
-                        String segmentSection = segmentSectionMatcher.group(1);
+                        String segmentSection = segmentSectionMatcher.group(1); // Get content between §4[ and §4]
 
                         long totalSegments = 0;
                         long redSegments = 0;
-                        String currentColor = "";
+                        long greySegments = 0;
 
+                        String currentColor = ""; // Track the current color state
+
+                        // Iterate over each character as a segment
                         for (int i = 0; i < segmentSection.length(); i++) {
                             char ch = segmentSection.charAt(i);
 
                             if (ch == '§' && i + 1 < segmentSection.length()) {
-                                char nextChar = segmentSection.charAt(i + 1);
+                                char nextChar = segmentSection.charAt(i + 1); // Get the color code
                                 if (nextChar == 'c') {
-                                    currentColor = "red";
+                                    currentColor = "red"; // Switch to red state
+                                } else if (nextChar == '8') {
+                                    currentColor = "grey"; // Switch to grey state
                                 }
-                                i++;
+                                i++; // Skip the color code character
                                 continue;
                             }
 
-                            totalSegments++;
+                            totalSegments++; // Count each character as a segment
 
+                            // Classify the segment based on the current color state
                             if (StringUtils.equals("red", currentColor)) {
                                 redSegments++;
                             }
                         }
 
+                        // Calculate health percentage based on red and total segments
                         double healthPercentage = totalSegments > 0 ? (redSegments / (double) totalSegments) * 100 : 0;
 
-                        if (!player.getName().contains(Component.literal(playerName)) && !(healthPercentage <= 40)) {
-                            return;
+                        // Log results
+                        SequoiaMod.debug("Scoreboard Line: " + scoreboardLine);
+                        SequoiaMod.debug("Player: " + playerName + ", Health: " + healthCleaned + ", Red Segments: "
+                                + redSegments + ", Grey Segments: " + greySegments + ", Total Segments: " + totalSegments
+                                + ", Health Percentage: " + healthPercentage + "%");
+                        if (healthPercentage <= 40 && player.getName().getString().contains(playerName)) {
+                            circles[0] = Collections.singletonList(Pair.of(CommonColors.RED.withAlpha(TRANSPARENCY), 7.9f));
                         }
 
-                        circles[0] = Collections.singletonList(Pair.of(CommonColors.RED.withAlpha(TRANSPARENCY), 7.9f));
+
+
                     }
                 }
             });
-        }
 
-        circlesToRender.put(player, circles[0]);
+            circlesToRender.put(player, circles[0]);
+        }
     }
 
     private void renderCircle(PoseStack poseStack, Position position, float radius, int color) {
