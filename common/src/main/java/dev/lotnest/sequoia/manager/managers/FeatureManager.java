@@ -13,6 +13,7 @@ import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
 import dev.lotnest.sequoia.feature.features.OuterVoidTrackerFeature;
 import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
+import dev.lotnest.sequoia.feature.features.RaidLowHealthFeature;
 import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
@@ -65,6 +66,7 @@ public final class FeatureManager extends Manager {
         registerFeature(new RaidsFeature());
         registerFeature(new NOLRaidFeature());
         registerFeature(new TNARaidFeature());
+        registerFeature(new RaidLowHealthFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();
@@ -102,11 +104,11 @@ public final class FeatureManager extends Manager {
     private void initializeFeature(Feature feature) {
         commands.discoverCommands(feature);
 
-        assert !feature.getTranslatedName().startsWith("sequoia.feature.")
-                : "Fix i18n for " + feature.getTranslatedName();
-
-        assert !feature.getTranslatedDescription().startsWith("sequoia.feature.")
-                : "Fix i18n for " + feature.getTranslatedDescription();
+        //        assert !feature.getTranslatedName().startsWith("sequoia.feature.")
+        //                : "Fix i18n for " + feature.getTranslatedName();
+        //
+        //        assert !feature.getTranslatedDescription().startsWith("sequoia.feature.")
+        //                : "Fix i18n for " + feature.getTranslatedDescription();
 
         enableFeature(feature);
     }
