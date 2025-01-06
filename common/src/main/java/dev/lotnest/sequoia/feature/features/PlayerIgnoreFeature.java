@@ -19,7 +19,7 @@ public class PlayerIgnoreFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        if (!SequoiaMod.CONFIG.playerIgnoreFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -61,5 +61,10 @@ public class PlayerIgnoreFeature extends Feature {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.playerIgnoreFeature.enabled();
     }
 }

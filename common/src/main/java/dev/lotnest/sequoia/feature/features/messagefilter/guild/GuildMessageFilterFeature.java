@@ -50,7 +50,7 @@ public class GuildMessageFilterFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        if (!SequoiaMod.CONFIG.guildMessageFilterFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -79,5 +79,10 @@ public class GuildMessageFilterFeature extends Feature {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.guildMessageFilterFeature.enabled();
     }
 }

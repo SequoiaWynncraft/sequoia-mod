@@ -41,7 +41,7 @@ public class GuildRaidTrackerFeature extends Feature {
             return;
         }
 
-        if (!SequoiaMod.CONFIG.guildRaidTrackerFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -91,14 +91,14 @@ public class GuildRaidTrackerFeature extends Feature {
                 StringUtils.isNotBlank(sr) ? Integer.parseInt(sr) : 0));
     }
 
-    private String extractUsername(String nickname, Map<String, List<String>> nameMap) {
+    private static String extractUsername(String nickname, Map<String, List<String>> nameMap) {
         if (nameMap.containsKey(nickname)) {
             return nameMap.get(nickname).removeLast();
         }
         return nickname;
     }
 
-    private void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
+    private static void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
         if (guildRaid == null) {
             return;
         }
@@ -171,5 +171,10 @@ public class GuildRaidTrackerFeature extends Feature {
             return hoverText.getString().contains("real username");
         }
         return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.guildRaidTrackerFeature.enabled();
     }
 }

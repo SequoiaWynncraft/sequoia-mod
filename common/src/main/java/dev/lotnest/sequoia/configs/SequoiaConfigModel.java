@@ -59,6 +59,10 @@ public class SequoiaConfigModel {
     @Expanded
     public OuterVoidTrackerFeature outerVoidTrackerFeature = new OuterVoidTrackerFeature();
 
+    @Nest
+    @Expanded
+    public RaidsFeature raidsFeature = new RaidsFeature();
+
     public static class MessageFilterFeature {
         public boolean enabled = false;
         public MessageFilterDecisionType eventMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
@@ -124,5 +128,39 @@ public class SequoiaConfigModel {
 
         @RangeConstraint(min = 1, max = 20)
         public float scale = 2.0F;
+    }
+
+    public static class RaidsFeature {
+        public boolean enabled = true;
+        public boolean trackPartyBuffsChosen = true;
+
+        @Nest
+        @Expanded
+        public NOTGRaidFeature NOTGRaidFeature = new NOTGRaidFeature();
+
+        @Nest
+        @Expanded
+        public TCCRaidFeature TCCRaidFeature = new TCCRaidFeature();
+
+        @Nest
+        @Expanded
+        public NOLRaidFeature NOLRaidFeature = new NOLRaidFeature();
+
+        @Nest
+        @Expanded
+        public TNARaidFeature TNARaidFeature = new TNARaidFeature();
+
+        public static class NOTGRaidFeature {}
+
+        public static class TCCRaidFeature {}
+
+        public static class NOLRaidFeature {
+            public boolean showLightOrbFormingTitle = true;
+            public boolean showCrystallineDecaysSpawnedTitle = true;
+        }
+
+        public static class TNARaidFeature {
+            public boolean showShadowlingKilledTitle = true;
+        }
     }
 }

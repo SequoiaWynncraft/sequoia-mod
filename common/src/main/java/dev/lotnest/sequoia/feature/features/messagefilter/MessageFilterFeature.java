@@ -46,7 +46,7 @@ public class MessageFilterFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        if (!SequoiaMod.CONFIG.messageFilterFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -76,5 +76,10 @@ public class MessageFilterFeature extends Feature {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.messageFilterFeature.enabled();
     }
 }

@@ -1,6 +1,7 @@
-package dev.lotnest.sequoia.manager.managers;
+package dev.lotnest.sequoia.upfixers;
 
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.manager.managers.AccessTokenManager;
 import java.io.File;
 
 public final class AccessTokenManagerUpfixer {

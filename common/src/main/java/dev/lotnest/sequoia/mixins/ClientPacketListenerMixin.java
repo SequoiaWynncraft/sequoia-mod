@@ -3,7 +3,7 @@ package dev.lotnest.sequoia.mixins;
 import com.wynntils.core.components.Models;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
-import dev.lotnest.sequoia.manager.managers.AccessTokenManagerUpfixer;
+import dev.lotnest.sequoia.upfixers.AccessTokenManagerUpfixer;
 import dev.lotnest.sequoia.wynn.WynnUtils;
 import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import net.minecraft.client.Minecraft;

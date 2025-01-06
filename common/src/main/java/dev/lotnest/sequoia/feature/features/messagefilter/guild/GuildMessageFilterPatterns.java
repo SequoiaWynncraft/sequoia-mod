@@ -46,7 +46,8 @@ public final class GuildMessageFilterPatterns {
         Pattern.compile(
                 "^(?<guild1>.+?) scheduled (?<resourceIcon>.+?) (?<amount>.+?) (?<resource>.+?) per hour to (?<guild2>.+?)$"),
         Pattern.compile("^(?<player>.+?) changed the global borders to (?<style>.+?)$"),
-        Pattern.compile("^(?<player>.+?) changed the borders of (?<territory>.+?) to (?<style>.+?)$")
+        Pattern.compile("^(?<player>.+?) changed the borders of (?<territory>.+?) to (?<style>.+?)$"),
+        Pattern.compile("^(?<player>.+?) sent (?<guild>.+?) a request to be allied$")
     };
 
     public static final Pattern[] REWARD = {

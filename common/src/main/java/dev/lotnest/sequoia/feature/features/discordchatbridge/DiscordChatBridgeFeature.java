@@ -166,4 +166,9 @@ public class DiscordChatBridgeFeature extends Feature {
         }
         return false;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.discordChatBridgeFeature.enabled();
+    }
 }

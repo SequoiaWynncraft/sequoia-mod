@@ -111,7 +111,7 @@ public class OuterVoidTrackerFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onTick(TickEvent event) {
-        if (!SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -147,5 +147,10 @@ public class OuterVoidTrackerFeature extends Feature {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled();
     }
 }
