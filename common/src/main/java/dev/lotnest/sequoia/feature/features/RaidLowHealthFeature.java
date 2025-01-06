@@ -1,5 +1,7 @@
 package dev.lotnest.sequoia.feature.features;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.ibm.icu.impl.Pair;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
@@ -14,9 +16,8 @@ import com.wynntils.utils.colors.CustomColor;
 import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.render.buffered.CustomRenderType;
 import dev.lotnest.sequoia.feature.Feature;
+import dev.lotnest.sequoia.utils.PlayerUtils;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,24 +29,27 @@ import net.minecraft.core.Position;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.joml.Matrix4f;
 
 public class RaidLowHealthFeature extends Feature {
     private static final MultiBufferSource.BufferSource BUFFER_SOURCE =
             MultiBufferSource.immediate(new ByteBufferBuilder(256));
 
+    private static final Pattern PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN = Pattern.compile(
+            "§e- §4\\[§([a-z0-9](\\|§[a-z0-9])*)?(\\|)*(\\d*?)(§[a-z0-9]\\d*)*\\|\\|§4] §f(.+?)(?:§7 \\[\\d+])?");
+
     // Number of straight lines to draw when rendering circle
     private static final int SEGMENTS = 64;
     private static final float HEIGHT = 0.1f;
     private static final int TRANSPARENCY = 95;
 
-    private final Set<Player> detectedPlayers = new HashSet<>();
-
-    private final Map<Player, List<Pair<CustomColor, Float>>> circlesToRender = new HashMap<>();
+    private final Set<Player> detectedPlayers = Sets.newHashSet();
+    private final Map<Player, List<Pair<CustomColor, Float>>> circlesToRender = Maps.newHashMap();
 
     @SubscribeEvent
-    public void onPlayerRender(PlayerRenderEvent e) {
-        AbstractClientPlayer player = e.getPlayer();
+    public void onPlayerRender(PlayerRenderEvent event) {
+        AbstractClientPlayer player = event.getPlayer();
         detectedPlayers.add(player);
         List<Pair<CustomColor, Float>> circles = circlesToRender.get(player);
         if (circles == null) return;
@@ -53,12 +57,12 @@ public class RaidLowHealthFeature extends Feature {
         circles.forEach(circleType -> {
             float radius = circleType.second;
             int color = circleType.first.asInt();
-            renderCircle(e.getPoseStack(), player.position(), radius, color);
+            renderCircle(event.getPoseStack(), player.position(), radius, color);
         });
     }
 
     @SubscribeEvent
-    public void onTick(TickEvent e) {
+    public void onTick(TickEvent event) {
         circlesToRender.clear();
         detectedPlayers.forEach(this::checkCircles);
         detectedPlayers.clear();
@@ -69,34 +73,30 @@ public class RaidLowHealthFeature extends Feature {
         if (!Models.Player.isLocalPlayer(player)) {
             return;
         }
-        ;
 
-        final List<Pair<CustomColor, Float>>[] circles = new List[] {null};
+        List<Pair<CustomColor, Float>>[] circles = new List[] {null};
         if (player == McUtils.player()) {
             return;
         } else {
             if (!Models.Party.getPartyMembers()
-                    .contains(StyledText.fromComponent(player.getName()).getStringWithoutFormatting())) return;
-            Pattern healthScoreboardPlayerScorePattern = Pattern.compile(
-                    "§e- §4\\[§([a-z0-9](\\|§[a-z0-9])*)?(\\|)*(\\d*?)(§[a-z0-9]\\d*)*\\|\\|§4] §f(.+?)(?:§7 \\[\\d+])?");
+                    .contains(StyledText.fromComponent(player.getName()).getStringWithoutFormatting())) {
+                return;
+            }
 
-            McUtils.player().getScoreboard().playerScores.keySet().forEach(scoreboardLine -> {
-                Matcher scoreboardLineMatcher = healthScoreboardPlayerScorePattern.matcher(scoreboardLine);
+            PlayerUtils.getScoreboardLines().forEach(scoreboardLine -> {
+                Matcher scoreboardLineMatcher = PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN.matcher(scoreboardLine);
                 if (scoreboardLineMatcher.matches()) {
-                    String healthRaw = scoreboardLineMatcher.group(3);
-                    String healthCleaned = healthRaw != null ? healthRaw.replaceAll("§[a-z0-9]", "") : "Unknown";
                     String playerName = scoreboardLineMatcher.group(5);
-
                     Matcher segmentSectionMatcher =
-                            Pattern.compile("§4\\[(.*?)§4\\]").matcher(scoreboardLine);
+                            Pattern.compile("§4\\[(.*?)§4]").matcher(scoreboardLine);
+
                     if (segmentSectionMatcher.find()) {
                         String segmentSection = segmentSectionMatcher.group(1);
 
                         long totalSegments = 0;
                         long redSegments = 0;
-                        long greySegments = 0;
-
                         String currentColor = "";
+
                         for (int i = 0; i < segmentSection.length(); i++) {
                             char ch = segmentSection.charAt(i);
 
@@ -104,8 +104,6 @@ public class RaidLowHealthFeature extends Feature {
                                 char nextChar = segmentSection.charAt(i + 1);
                                 if (nextChar == 'c') {
                                     currentColor = "red";
-                                } else if (nextChar == '8') {
-                                    currentColor = "grey";
                                 }
                                 i++;
                                 continue;
@@ -113,10 +111,8 @@ public class RaidLowHealthFeature extends Feature {
 
                             totalSegments++;
 
-                            if ("red".equals(currentColor)) {
+                            if (StringUtils.equals("red", currentColor)) {
                                 redSegments++;
-                            } else if ("grey".equals(currentColor)) {
-                                greySegments++;
                             }
                         }
 

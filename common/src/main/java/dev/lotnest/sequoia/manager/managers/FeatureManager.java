@@ -104,11 +104,11 @@ public final class FeatureManager extends Manager {
     private void initializeFeature(Feature feature) {
         commands.discoverCommands(feature);
 
-        //        assert !feature.getTranslatedName().startsWith("sequoia.feature.")
-        //                : "Fix i18n for " + feature.getTranslatedName();
-        //
-        //        assert !feature.getTranslatedDescription().startsWith("sequoia.feature.")
-        //                : "Fix i18n for " + feature.getTranslatedDescription();
+        assert !feature.getTranslatedName().startsWith("sequoia.feature.")
+                : "Fix i18n for " + feature.getTranslatedName();
+
+        assert !feature.getTranslatedDescription().startsWith("sequoia.feature.")
+                : "Fix i18n for " + feature.getTranslatedDescription();
 
         enableFeature(feature);
     }
