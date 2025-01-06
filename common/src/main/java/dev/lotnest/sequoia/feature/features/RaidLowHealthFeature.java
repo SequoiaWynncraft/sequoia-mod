@@ -22,6 +22,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.Position;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
@@ -139,8 +140,6 @@ public class RaidLowHealthFeature extends Feature {
                         if (healthPercentage <= 40 && player.getName().getString().contains(playerName)) {
                             circles[0] = Collections.singletonList(Pair.of(CommonColors.RED.withAlpha(TRANSPARENCY), 7.9f));
                         }
-
-
 
                     }
                 }
