@@ -45,6 +45,7 @@ public class RaidLowHealthFeature extends Feature {
 
     private final Set<Player> detectedPlayers = Sets.newHashSet();
     private final Map<Player, List<Pair<CustomColor, Float>>> circlesToRender = Maps.newHashMap();
+    private static int line = 0;
 
     @SubscribeEvent
     public void onPlayerRender(PlayerRenderEvent event) {
@@ -68,6 +69,7 @@ public class RaidLowHealthFeature extends Feature {
         circlesToRender.clear();
         detectedPlayers.forEach(this::checkCircles);
         detectedPlayers.clear();
+
     }
 
     private void checkCircles(Player player) {
@@ -79,10 +81,15 @@ public class RaidLowHealthFeature extends Feature {
         if (player == McUtils.player()) {
             return;
         } else {
+
+            List<String> partyMembers = Models.Party.getPartyMembers();
+            line = 0;
             for (String scoreboardLine : PlayerUtils.getScoreboardLines()) {
                 Matcher scoreboardLineMatcher = PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN.matcher(scoreboardLine);
                 if (scoreboardLineMatcher.matches()) {
-                    String playerName = scoreboardLineMatcher.group(6);
+                    line++;
+                    String playerName = partyMembers.get(line);
+
                     Matcher segmentSectionMatcher = SEGMENT_PATTERN.matcher(scoreboardLine);
 
                     if (segmentSectionMatcher.find()) {
@@ -124,12 +131,6 @@ public class RaidLowHealthFeature extends Feature {
                             // If no segments are found, consider the health as 100%
                             healthPercentage = 100.0;
                         }
-
-                        SequoiaMod.debug("Scoreboard Line: " + scoreboardLine);
-                        SequoiaMod.debug("Player: " + playerName + ", Red Segments: "
-                                + redSegments + ", Grey Segments: " + greySegments + ", Total Segments: "
-                                + totalSegments
-                                + ", Health Percentage: " + healthPercentage + "%");
 
                         if (healthPercentage <= 40.0
                                 && player.getName().getString().contains(playerName)) {
