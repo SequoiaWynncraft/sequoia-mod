@@ -12,11 +12,12 @@ import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.event.TickEvent;
 import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.colors.CustomColor;
-import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.render.buffered.CustomRenderType;
-import dev.lotnest.sequoia.SequoiaMod;
+import com.wynntils.utils.type.ThrottledSupplier;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.PlayerUtils;
+import dev.lotnest.sequoia.wynn.WynnUtils;
+import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joml.Matrix4f;
 
-public class RaidLowHealthFeature extends Feature {
+public class PartyLowHealthFeature extends Feature {
     private static final MultiBufferSource.BufferSource BUFFER_SOURCE =
             MultiBufferSource.immediate(new ByteBufferBuilder(256));
 
@@ -45,7 +46,8 @@ public class RaidLowHealthFeature extends Feature {
 
     private final Set<Player> detectedPlayers = Sets.newHashSet();
     private final Map<Player, List<Pair<CustomColor, Float>>> circlesToRender = Maps.newHashMap();
-    private static int line = 0;
+    private final ThrottledSupplier<List<String>> partyMembersSupplier =
+            new ThrottledSupplier<>(WynnUtils::getPartyMembersFromTabList, Duration.ofMillis(250));
 
     @SubscribeEvent
     public void onPlayerRender(PlayerRenderEvent event) {
@@ -69,85 +71,89 @@ public class RaidLowHealthFeature extends Feature {
         circlesToRender.clear();
         detectedPlayers.forEach(this::checkCircles);
         detectedPlayers.clear();
-
     }
 
     private void checkCircles(Player player) {
+        if (!Models.WorldState.onWorld()) {
+            return;
+        }
+
         if (!Models.Player.isLocalPlayer(player)) {
             return;
         }
 
-        List<Pair<CustomColor, Float>>[] circles = new List[] {null};
-        if (player == McUtils.player()) {
+        if (PlayerUtils.isSelf(player)) {
             return;
-        } else {
+        }
 
-            List<String> partyMembers = Models.Party.getPartyMembers();
-            line = 0;
-            for (String scoreboardLine : PlayerUtils.getScoreboardLines()) {
-                Matcher scoreboardLineMatcher = PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN.matcher(scoreboardLine);
-                if (scoreboardLineMatcher.matches()) {
-                    line++;
-                    String playerName = partyMembers.get(line);
+        int line = 0;
+        List<Pair<CustomColor, Float>>[] circles = new List[] {null};
+        List<String> partyMembers = partyMembersSupplier.get();
 
-                    Matcher segmentSectionMatcher = SEGMENT_PATTERN.matcher(scoreboardLine);
+        if (partyMembers.size() < 2) {
+            return;
+        }
 
-                    if (segmentSectionMatcher.find()) {
-                        String segmentSection = segmentSectionMatcher.group(1);
+        for (String scoreboardLine : PlayerUtils.getScoreboardLines()) {
+            Matcher scoreboardLineMatcher = PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN.matcher(scoreboardLine);
+            if (scoreboardLineMatcher.matches()) {
+                line++;
+                if (line >= partyMembers.size()) {
+                    return;
+                }
 
-                        long totalSegments = 0;
-                        long redSegments = 0;
-                        long greySegments = 0;
-                        String currentColor = "";
+                String playerName = partyMembers.get(line);
+                Matcher segmentSectionMatcher = SEGMENT_PATTERN.matcher(scoreboardLine);
 
-                        for (int i = 0; i < segmentSection.length(); i++) {
-                            char ch = segmentSection.charAt(i);
+                if (segmentSectionMatcher.find()) {
+                    String segmentSection = segmentSectionMatcher.group(1);
 
-                            if (ch == '§' && i + 1 < segmentSection.length()) {
-                                char nextChar = segmentSection.charAt(i + 1);
-                                if (nextChar == 'c') {
-                                    currentColor = "red";
-                                } else if (nextChar == '8') {
-                                    currentColor = "grey";
-                                }
-                                i++;
-                                continue;
+                    long totalSegments = 0;
+                    long redSegments = 0;
+                    String currentColor = "";
+
+                    for (int i = 0; i < segmentSection.length(); i++) {
+                        char ch = segmentSection.charAt(i);
+
+                        if (ch == '§' && i + 1 < segmentSection.length()) {
+                            char nextChar = segmentSection.charAt(i + 1);
+                            if (nextChar == 'c') {
+                                currentColor = "red";
+                            } else if (nextChar == '8') {
+                                currentColor = "grey";
                             }
-
-                            totalSegments++;
-
-                            if (StringUtils.equals("red", currentColor)) {
-                                redSegments++;
-                            } else if (StringUtils.equals("grey", currentColor)) {
-                                greySegments++;
-                            }
+                            i++;
+                            continue;
                         }
 
-                        double healthPercentage;
-                        if (totalSegments > 0) {
-                            // Health is determined by red segments out of total segments
-                            healthPercentage = (redSegments / (double) totalSegments) * 100;
-                        } else {
-                            // If no segments are found, consider the health as 100%
-                            healthPercentage = 100.0;
-                        }
+                        totalSegments++;
 
-                        if (healthPercentage <= 40.0
-                                && player.getName().getString().contains(playerName)) {
-                            circles[0] = Collections.singletonList(
-                                    Pair.of(CommonColors.RED.withAlpha(CIRCLE_TRANSPARENCY), 7.9F));
+                        if (StringUtils.equals("red", currentColor)) {
+                            redSegments++;
                         }
+                    }
+
+                    double healthPercentage;
+                    if (totalSegments > 0) {
+                        healthPercentage = (redSegments / (double) totalSegments) * 100;
+                    } else {
+                        healthPercentage = 100.0;
+                    }
+
+                    if (healthPercentage <= 40.0 && player.getName().getString().contains(playerName)) {
+                        circles[0] = Collections.singletonList(
+                                Pair.of(CommonColors.RED.withAlpha(CIRCLE_TRANSPARENCY), 7.9F));
                     }
                 }
             }
+        }
 
+        if (circles[0] != null) {
             circlesToRender.put(player, circles[0]);
         }
     }
 
     private void renderCircle(PoseStack poseStack, Position position, float radius, int color) {
-        // Circle must be rendered on both sides, otherwise it will be invisible when looking at
-        // it from the outside
         RenderSystem.disableCull();
 
         poseStack.pushPose();
@@ -158,11 +164,13 @@ public class RaidLowHealthFeature extends Feature {
         double angleStep = 2 * Math.PI / CIRCLE_SEGMENTS;
         double startingAngle = -(System.currentTimeMillis() % 40000) * 2 * Math.PI / 40000.0;
         double angle = startingAngle;
+
         for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
             if (i % 4 > 2) {
                 angle += angleStep;
                 continue;
             }
+
             float x = (float) (position.x() + Math.sin(angle) * radius);
             float z = (float) (position.z() + Math.cos(angle) * radius);
             consumer.addVertex(matrix4f, x, (float) position.y(), z).setColor(color);

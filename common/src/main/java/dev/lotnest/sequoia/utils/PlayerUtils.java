@@ -1,11 +1,13 @@
 package dev.lotnest.sequoia.utils;
 
 import com.google.common.collect.Lists;
+import com.wynntils.utils.mc.McUtils;
 import java.util.Collections;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerScoreEntry;
@@ -80,5 +82,9 @@ public final class PlayerUtils {
         }
 
         return Collections.emptyList();
+    }
+
+    public static boolean isSelf(Player player) {
+        return McUtils.player() == player;
     }
 }

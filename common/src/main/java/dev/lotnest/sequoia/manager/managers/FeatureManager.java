@@ -12,8 +12,8 @@ import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.feature.FeatureCommands;
 import dev.lotnest.sequoia.feature.features.CommandsFeature;
 import dev.lotnest.sequoia.feature.features.OuterVoidTrackerFeature;
+import dev.lotnest.sequoia.feature.features.PartyLowHealthFeature;
 import dev.lotnest.sequoia.feature.features.PlayerIgnoreFeature;
-import dev.lotnest.sequoia.feature.features.RaidLowHealthFeature;
 import dev.lotnest.sequoia.feature.features.SequoiaOSTFeature;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
 import dev.lotnest.sequoia.feature.features.discordchatbridge.DiscordChatBridgeFeature;
@@ -66,7 +66,7 @@ public final class FeatureManager extends Manager {
         registerFeature(new RaidsFeature());
         registerFeature(new NOLRaidFeature());
         registerFeature(new TNARaidFeature());
-        registerFeature(new RaidLowHealthFeature());
+        registerFeature(new PartyLowHealthFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();
