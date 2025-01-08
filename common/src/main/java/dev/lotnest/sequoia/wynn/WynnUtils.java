@@ -1,7 +1,6 @@
 package dev.lotnest.sequoia.wynn;
 
 import com.wynntils.utils.mc.McUtils;
-import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.minecraft.MinecraftUtils;
 import java.util.Collections;
 import java.util.Comparator;
@@ -79,16 +78,11 @@ public final class WynnUtils {
 
     public static List<String> getPartyMembersFromTabList() {
         List<String> tabListWithoutEmptyLines = getTabListWithoutEmptyLines();
-        SequoiaMod.debug("Tab list: " + tabListWithoutEmptyLines);
         int partyIndex = tabListWithoutEmptyLines.indexOf("§e  §lParty");
-        SequoiaMod.debug("Party entry index: " + partyIndex);
 
         if (partyIndex == -1) {
             return Collections.emptyList();
         }
-
-        SequoiaMod.debug("Tab list lines from index " + partyIndex + ": "
-                + tabListWithoutEmptyLines.subList(partyIndex + 1, tabListWithoutEmptyLines.size()));
 
         return tabListWithoutEmptyLines.subList(partyIndex + 1, tabListWithoutEmptyLines.size()).stream()
                 .takeWhile(WynnUtils::isValidPartyMemberEntry)
