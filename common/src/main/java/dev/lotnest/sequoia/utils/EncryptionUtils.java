@@ -10,7 +10,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 
 public final class EncryptionUtils {
-    private static final String ALGORITHM = "AES/GCM/NoPadding";
+    private static final String ALGORITHM = "AES";
 
     public static String encrypt(String data, Key key) {
         try {
