@@ -19,7 +19,6 @@ import dev.lotnest.sequoia.wynn.api.guild.GuildService;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
-import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -28,9 +27,8 @@ public class WebSocketFeature extends Feature {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(OffsetDateTime.class, new OffsetDateTimeAdapter())
             .create();
-    public static final Pattern URL_PATTERN = Pattern.compile("(https?://\\S+)", Pattern.CASE_INSENSITIVE);
-    public static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
-    public static final String WS_PROD_URL = "wss://lotnest.dev/sequoia-mod/ws";
+    private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
+    private static final String WS_PROD_URL = "wss://lotnest.dev/sequoia-mod/ws";
 
     private WebSocketClient client;
     private boolean isFirstConnection = false;
@@ -50,7 +48,7 @@ public class WebSocketFeature extends Feature {
                         McUtils.player().getStringUUID()));
     }
 
-    public void initClient(URI serverUri, Map<String, String> httpHeaders) {
+    private void initClient(URI serverUri, Map<String, String> httpHeaders) {
         if (client != null) {
             return;
         }
@@ -79,10 +77,10 @@ public class WebSocketFeature extends Feature {
                     SequoiaMod.debug("Received WebSocket message: " + wsMessage);
 
                     switch (wsMessageType) {
-                        case SChannelMessage -> new SChannelMessageHandler(s).handle();
-                        case SSessionResult -> new SSessionResultHandler(s).handle();
-                        case SMessage -> new SMessageHandler(s).handle();
-                        case SCommandPipe -> new SCommandPipeHandler(s).handle();
+                        case S_CHANNEL_MESSAGE -> new SChannelMessageHandler(s).handle();
+                        case S_SESSION_RESULT -> new SSessionResultHandler(s).handle();
+                        case S_MESSAGE -> new SMessageHandler(s).handle();
+                        case S_COMMAND_PIPE -> new SCommandPipeHandler(s).handle();
                         default -> SequoiaMod.debug("Unhandled WebSocket message type: " + wsMessageType);
                     }
                 } catch (Exception exception) {

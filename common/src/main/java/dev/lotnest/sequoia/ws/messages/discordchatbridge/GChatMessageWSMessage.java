@@ -8,7 +8,7 @@ import dev.lotnest.sequoia.ws.WSMessageType;
 
 public class GChatMessageWSMessage extends WSMessage {
     public GChatMessageWSMessage(Data data) {
-        super(WSMessageType.GChatMessage.getValue(), GSON.toJsonTree(data));
+        super(WSMessageType.G_CHAT_MESSAGE.getValue(), GSON.toJsonTree(data));
     }
 
     public Data getChatMessage() {

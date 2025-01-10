@@ -7,6 +7,6 @@ import dev.lotnest.sequoia.ws.WSMessageType;
 
 public class SCommandPipeWSMessage extends WSMessage {
     public SCommandPipeWSMessage(String data) {
-        super(WSMessageType.SCommandPipe.getValue(), GSON.toJsonTree(data));
+        super(WSMessageType.S_COMMAND_PIPE.getValue(), GSON.toJsonTree(data));
     }
 }
