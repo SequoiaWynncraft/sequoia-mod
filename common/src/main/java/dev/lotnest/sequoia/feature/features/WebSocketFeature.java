@@ -7,11 +7,13 @@ package dev.lotnest.sequoia.feature.features;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.wynntils.core.components.Models;
+import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.json.adapters.OffsetDateTimeAdapter;
 import dev.lotnest.sequoia.manager.managers.AccessTokenManager;
+import dev.lotnest.sequoia.upfixers.AccessTokenManagerUpfixer;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
 import dev.lotnest.sequoia.ws.handlers.SChannelMessageHandler;
@@ -19,10 +21,12 @@ import dev.lotnest.sequoia.ws.handlers.SCommandPipeHandler;
 import dev.lotnest.sequoia.ws.handlers.SMessageHandler;
 import dev.lotnest.sequoia.ws.handlers.SSessionResultHandler;
 import dev.lotnest.sequoia.ws.messages.session.GIdentifyWSMessage;
-import dev.lotnest.sequoia.wynn.api.guild.GuildService;
+import dev.lotnest.sequoia.wynn.WynnUtils;
 import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.Map;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -155,7 +159,7 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
-        if (!GuildService.isSequoiaGuildMember()) {
+        if (!WynnUtils.isSequoiaGuildMember()) {
             return;
         }
 
@@ -219,6 +223,31 @@ public class WebSocketFeature extends Feature {
             client.close();
         }
         setAuthenticating(false);
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onCharacterUpdate(CharacterUpdateEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
+
+        if (!WynnUtils.isSequoiaGuildMember()) {
+            return;
+        }
+
+        WebSocketFeature webSocketFeature = SequoiaMod.getWebSocketFeature();
+        if (webSocketFeature == null || !webSocketFeature.isEnabled()) {
+            return;
+        }
+
+        AccessTokenManagerUpfixer.fixLegacyFiles();
+
+        try {
+            webSocketFeature.initClient();
+            webSocketFeature.connectIfNeeded();
+        } catch (RuntimeException exception) {
+            SequoiaMod.error("Failed to connect to WebSocket server: " + exception.getMessage());
+        }
     }
 
     @Override

@@ -4,7 +4,17 @@
  */
 package dev.lotnest.sequoia.wynn;
 
+import static com.wynntils.models.character.CharacterModel.GUILD_MENU_SLOT;
+
+import com.wynntils.core.WynntilsMod;
+import com.wynntils.core.components.Models;
+import com.wynntils.handlers.container.scriptedquery.QueryBuilder;
+import com.wynntils.handlers.container.scriptedquery.QueryStep;
+import com.wynntils.handlers.container.scriptedquery.ScriptedContainerQuery;
+import com.wynntils.handlers.container.type.ContainerContent;
+import com.wynntils.models.containers.ContainerModel;
 import com.wynntils.utils.mc.McUtils;
+import com.wynntils.utils.wynn.InventoryUtils;
 import dev.lotnest.sequoia.minecraft.MinecraftUtils;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
 
 public final class WynnUtils {
@@ -115,5 +126,24 @@ public final class WynnUtils {
 
     public static boolean isWynncraftWorld(String input) {
         return WORLD_NAME_TABLIST_ENTRY.matcher(input).matches();
+    }
+
+    public static boolean isSequoiaGuildMember() {
+        QueryBuilder queryBuilder = ScriptedContainerQuery.builder("Character Info Query");
+        queryBuilder.onError(msg -> WynntilsMod.warn("Error querying Character Info: " + msg));
+        queryBuilder.then(QueryStep.useItemInHotbar(InventoryUtils.COMPASS_SLOT_NUM)
+                .expectContainerTitle(ContainerModel.CHARACTER_INFO_NAME)
+                .processIncomingContainer(WynnUtils::parseCharacterContainer));
+
+        Models.Guild.addGuildContainerQuerySteps(queryBuilder);
+
+        queryBuilder.build().executeQuery();
+
+        return StringUtils.equals(Models.Guild.getGuildName(), "Sequoia");
+    }
+
+    private static void parseCharacterContainer(ContainerContent container) {
+        ItemStack guildInfoItem = container.items().get(GUILD_MENU_SLOT);
+        Models.Guild.parseGuildInfoFromGuildMenu(guildInfoItem);
     }
 }
