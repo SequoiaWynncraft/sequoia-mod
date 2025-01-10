@@ -34,7 +34,7 @@ public class WebSocketFeature extends Feature {
             .create();
     public static final Pattern URL_PATTERN = Pattern.compile("(https?://\\S+)", Pattern.CASE_INSENSITIVE);
     public static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
-    public static final String WS_PROD_URL = "ws://lotnest.dev:8085/sequoia-tree/ws";
+    public static final String WS_PROD_URL = "wss://lotnest.dev/sequoia-mod/ws";
 
     private WebSocketClient client;
     private boolean isFirstConnection = false;
