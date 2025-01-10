@@ -12,17 +12,17 @@ public enum RaidType {
     THE_CANYON_COLOSSUS(2, "The Canyon Colossus"),
     THE_NAMELESS_ANOMALY(3, "The Nameless Anomaly");
 
-    public final int id;
-    public final String name;
+    private final int id;
+    private final String displayName;
 
-    RaidType(int id, String name) {
+    RaidType(int id, String displayName) {
         this.id = id;
-        this.name = name;
+        this.displayName = displayName;
     }
 
     public static RaidType getRaidType(String name) {
         for (RaidType raidType : values()) {
-            if (StringUtils.equals(raidType.name, name)) {
+            if (StringUtils.equals(raidType.getDisplayName(), name)) {
                 return raidType;
             }
         }
@@ -33,7 +33,7 @@ public enum RaidType {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getDisplayName() {
+        return displayName;
     }
 }

@@ -10,6 +10,6 @@ import dev.lotnest.sequoia.ws.WSMessageType;
 
 public class SMessageWSMessage extends WSMessage {
     public SMessageWSMessage(JsonElement data) {
-        super(WSMessageType.SMessage.getValue(), data);
+        super(WSMessageType.S_MESSAGE.getValue(), data);
     }
 }

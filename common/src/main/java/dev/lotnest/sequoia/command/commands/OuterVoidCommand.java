@@ -21,6 +21,10 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 
 public class OuterVoidCommand extends Command {
+    private static final String ITEM_NAME_ARGUMENT = "itemName";
+
+    private static final String FEATURE_DISABLED_I18N_KEY = "sequoia.command.outerVoid.featureDisabled";
+
     @Override
     public String getCommandName() {
         return "outerVoid";
@@ -36,7 +40,7 @@ public class OuterVoidCommand extends Command {
             LiteralArgumentBuilder<CommandSourceStack> base) {
         return base.then(Commands.literal("addNeededItem")
                         .then(Commands.argument("itemAmount", IntegerArgumentType.integer(1))
-                                .then(Commands.argument("itemName", StringArgumentType.greedyString())
+                                .then(Commands.argument(ITEM_NAME_ARGUMENT, StringArgumentType.greedyString())
                                         .suggests((context, builder) -> {
                                             OuterVoidTrackerFeature outerVoidTrackerFeature =
                                                     Managers.Feature.getFeatureInstance(OuterVoidTrackerFeature.class);
@@ -48,7 +52,7 @@ public class OuterVoidCommand extends Command {
                                         })
                                         .executes(this::addNeededItem))))
                 .then(Commands.literal("removeNeededItem")
-                        .then(Commands.argument("itemName", StringArgumentType.greedyString())
+                        .then(Commands.argument(ITEM_NAME_ARGUMENT, StringArgumentType.greedyString())
                                 .suggests((context, builder) -> {
                                     OuterVoidTrackerFeature outerVoidTrackerFeature =
                                             Managers.Feature.getFeatureInstance(OuterVoidTrackerFeature.class);
@@ -67,12 +71,11 @@ public class OuterVoidCommand extends Command {
         OuterVoidTrackerFeature outerVoidTrackerFeature =
                 Managers.Feature.getFeatureInstance(OuterVoidTrackerFeature.class);
         if (!outerVoidTrackerFeature.isEnabled()) {
-            McUtils.sendMessageToClient(
-                    SequoiaMod.prefix(Component.translatable("sequoia.command.outerVoid.featureDisabled")));
+            McUtils.sendMessageToClient(SequoiaMod.prefix(Component.translatable(FEATURE_DISABLED_I18N_KEY)));
             return 1;
         }
 
-        String itemName = context.getArgument("itemName", String.class);
+        String itemName = context.getArgument(ITEM_NAME_ARGUMENT, String.class);
         int itemAmount = context.getArgument("itemAmount", Integer.class);
 
         if (!outerVoidTrackerFeature.itemNameExists(itemName)) {
@@ -99,12 +102,11 @@ public class OuterVoidCommand extends Command {
         OuterVoidTrackerFeature outerVoidTrackerFeature =
                 Managers.Feature.getFeatureInstance(OuterVoidTrackerFeature.class);
         if (!outerVoidTrackerFeature.isEnabled()) {
-            McUtils.sendMessageToClient(
-                    SequoiaMod.prefix(Component.translatable("sequoia.command.outerVoid.featureDisabled")));
+            McUtils.sendMessageToClient(SequoiaMod.prefix(Component.translatable(FEATURE_DISABLED_I18N_KEY)));
             return 1;
         }
 
-        String itemName = context.getArgument("itemName", String.class);
+        String itemName = context.getArgument(ITEM_NAME_ARGUMENT, String.class);
         if (!outerVoidTrackerFeature.hasNeededItem(itemName)) {
             McUtils.sendMessageToClient(
                     SequoiaMod.prefix(Component.translatable("sequoia.command.outerVoid.notInNeededItems", itemName)));
@@ -122,8 +124,7 @@ public class OuterVoidCommand extends Command {
         OuterVoidTrackerFeature outerVoidTrackerFeature =
                 Managers.Feature.getFeatureInstance(OuterVoidTrackerFeature.class);
         if (!outerVoidTrackerFeature.isEnabled()) {
-            McUtils.sendMessageToClient(
-                    SequoiaMod.prefix(Component.translatable("sequoia.command.outerVoid.featureDisabled")));
+            McUtils.sendMessageToClient(SequoiaMod.prefix(Component.translatable(FEATURE_DISABLED_I18N_KEY)));
             return 1;
         }
 

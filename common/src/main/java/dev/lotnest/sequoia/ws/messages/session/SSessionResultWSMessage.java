@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 
 public class SSessionResultWSMessage extends WSMessage {
     public SSessionResultWSMessage(Data data) {
-        super(WSMessageType.SSessionResult.getValue(), GSON.toJsonTree(data));
+        super(WSMessageType.S_SESSION_RESULT.getValue(), GSON.toJsonTree(data));
     }
 
     public Data getSSessionResultData() {

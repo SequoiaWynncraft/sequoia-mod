@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class GLocationServiceWSMessage extends WSMessage {
     public GLocationServiceWSMessage(Data data) {
-        super(WSMessageType.GLocationService.getValue(), GSON.toJsonTree(data));
+        super(WSMessageType.G_LOCATION_SERVICE.getValue(), GSON.toJsonTree(data));
     }
 
     public Data getGLocationServiceData() {

@@ -12,7 +12,7 @@ import dev.lotnest.sequoia.ws.WSMessageType;
 
 public class GIdentifyWSMessage extends WSMessage {
     public GIdentifyWSMessage(Data data) {
-        super(WSMessageType.GIdentify.getValue(), GSON.toJsonTree(data));
+        super(WSMessageType.G_IDENTIFY.getValue(), GSON.toJsonTree(data));
     }
 
     public Data getGIdentifyData() {
