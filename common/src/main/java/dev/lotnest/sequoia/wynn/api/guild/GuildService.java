@@ -2,17 +2,13 @@ package dev.lotnest.sequoia.wynn.api.guild;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.utils.URLUtils;
-import dev.lotnest.sequoia.wynn.api.player.PlayerResponse;
-import dev.lotnest.sequoia.wynn.api.player.PlayerService;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.concurrent.CompletableFuture;
-import org.apache.commons.lang3.StringUtils;
 
 public final class GuildService {
     private static final String BASE_URL = "https://api.wynncraft.com/v3/guild/%s";
@@ -52,19 +48,5 @@ public final class GuildService {
                                 });
                     }
                 });
-    }
-
-    public static boolean isSequoiaGuildMember() {
-        if (isSequoiaGuildMember == null) {
-            PlayerResponse.Guild playerGuild =
-                    PlayerService.getPlayer(McUtils.playerName()).join().getGuild();
-            if (playerGuild == null) {
-                isSequoiaGuildMember = false;
-            } else {
-                isSequoiaGuildMember =
-                        StringUtils.equals(playerGuild.getUuid(), "ee860b7c-9a1d-49cf-9f19-ab673ba0f23b");
-            }
-        }
-        return isSequoiaGuildMember;
     }
 }

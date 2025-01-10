@@ -6,7 +6,7 @@ import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
-import dev.lotnest.sequoia.wynn.api.guild.GuildService;
+import dev.lotnest.sequoia.wynn.WynnUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 
@@ -31,7 +31,7 @@ public class ReconnectCommand extends Command {
             return 1;
         }
 
-        if (!GuildService.isSequoiaGuildMember()) {
+        if (!WynnUtils.isSequoiaGuildMember()) {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.notASequoiaGuildMember")));
             return 1;

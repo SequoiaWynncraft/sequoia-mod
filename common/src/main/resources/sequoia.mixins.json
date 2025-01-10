@@ -2,7 +2,6 @@
   "client": [
     "ClientCommonPacketListenerImplMixin",
     "ClientLevelMixin",
-    "ClientPacketListenerMixin",
     "CrashReportMixin",
     "ResourceLoadStateTrackerMixin",
     "ScreenMixin",
