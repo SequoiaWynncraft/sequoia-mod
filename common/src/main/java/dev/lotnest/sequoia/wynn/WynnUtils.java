@@ -126,7 +126,7 @@ public final class WynnUtils {
 
     public static boolean isSequoiaGuildMember() {
         QueryBuilder queryBuilder = ScriptedContainerQuery.builder("Character Info Query");
-        queryBuilder.onError(msg -> WynntilsMod.warn("Error querying Character Info: " + msg));
+        queryBuilder.onError(message -> WynntilsMod.warn("Error querying Character Info: " + message));
         queryBuilder.then(QueryStep.useItemInHotbar(InventoryUtils.COMPASS_SLOT_NUM)
                 .expectContainerTitle(ContainerModel.CHARACTER_INFO_NAME)
                 .processIncomingContainer(WynnUtils::parseCharacterContainer));

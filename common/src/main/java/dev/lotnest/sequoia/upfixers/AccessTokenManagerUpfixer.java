@@ -7,7 +7,7 @@ import java.io.File;
 public final class AccessTokenManagerUpfixer {
     private AccessTokenManagerUpfixer() {}
 
-    public static void fixLegacyFiles() {
+    public static void fixLegacyFilesIfNeeded() {
         String userFolderPath = AccessTokenManager.getUserSpecificFolderPath();
         File userFolder = new File(userFolderPath);
         if (!userFolder.exists()) {

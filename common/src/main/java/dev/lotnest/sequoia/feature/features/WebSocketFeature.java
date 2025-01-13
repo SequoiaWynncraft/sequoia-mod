@@ -236,7 +236,7 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
-        AccessTokenManagerUpfixer.fixLegacyFiles();
+        AccessTokenManagerUpfixer.fixLegacyFilesIfNeeded();
 
         try {
             webSocketFeature.initClient();
