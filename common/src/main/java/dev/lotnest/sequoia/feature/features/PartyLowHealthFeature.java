@@ -68,7 +68,7 @@ public class PartyLowHealthFeature extends Feature {
             if (line >= partyMembers.size()) {
                 return;
             }
-
+            line++;
             String playerName = partyMembers.get(line);
             Matcher scoreboardHealthMatcher = SCOREBOARD_HEALTH_PATTERN.matcher(scoreboardLine);
 
@@ -84,8 +84,6 @@ public class PartyLowHealthFeature extends Feature {
                             CommonColors.RED.withAlpha(CIRCLE_TRANSPARENCY).asInt());
                 }
             }
-
-            line++;
         }
     }
 
@@ -139,10 +137,6 @@ public class PartyLowHealthFeature extends Feature {
         double startingAngle = -(System.currentTimeMillis() % 40000) * 2 * Math.PI / 40000.0;
         double angle = startingAngle;
         for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
-            if (i % 4 > 2) {
-                angle += angleStep;
-                continue;
-            }
             float x = (float) (position.x() + Math.sin(angle) * radius);
             float z = (float) (position.z() + Math.cos(angle) * radius);
             consumer.addVertex(matrix4f, x, (float) position.y(), z).setColor(color);
