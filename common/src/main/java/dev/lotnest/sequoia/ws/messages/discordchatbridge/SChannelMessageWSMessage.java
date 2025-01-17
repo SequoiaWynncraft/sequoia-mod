@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 
 public class SChannelMessageWSMessage extends WSMessage {
     public SChannelMessageWSMessage(Data data) {
-        super(WSMessageType.SChannelMessage.getValue(), GSON.toJsonTree(data));
+        super(WSMessageType.S_CHANNEL_MESSAGE.getValue(), GSON.toJsonTree(data));
     }
 
     public Data getSChannelMessageData() {

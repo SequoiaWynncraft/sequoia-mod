@@ -8,6 +8,6 @@ import dev.lotnest.sequoia.ws.WSMessageType;
 
 public class GuildRaidWSMessage extends WSMessage {
     public GuildRaidWSMessage(GuildRaid guildRaid) {
-        super(WSMessageType.GRaidSubmission.getValue(), GSON.toJsonTree(guildRaid));
+        super(WSMessageType.G_RAID_SUBMISSION.getValue(), GSON.toJsonTree(guildRaid));
     }
 }
