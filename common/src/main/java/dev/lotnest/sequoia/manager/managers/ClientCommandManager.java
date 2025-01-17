@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.manager.managers;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -27,14 +31,11 @@ import dev.lotnest.sequoia.command.commands.PlayerRaidsCommand;
 import dev.lotnest.sequoia.command.commands.PlayerRankCommand;
 import dev.lotnest.sequoia.command.commands.PlayerWarsCommand;
 import dev.lotnest.sequoia.command.commands.ReconnectCommand;
-import dev.lotnest.sequoia.command.commands.SearchCommand;
 import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.command.commands.TestCommand;
 import dev.lotnest.sequoia.command.commands.VersionCommand;
 import dev.lotnest.sequoia.manager.Manager;
-
 import java.util.List;
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -109,7 +110,7 @@ public final class ClientCommandManager extends Manager {
 
         if (!parse.getExceptions().isEmpty()
                 || (parse.getContext().getCommand() == null
-                && parse.getContext().getChild() == null)) {
+                        && parse.getContext().getChild() == null)) {
             return false;
         }
 
