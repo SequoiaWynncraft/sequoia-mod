@@ -32,7 +32,9 @@ import dev.lotnest.sequoia.command.commands.SequoiaCommand;
 import dev.lotnest.sequoia.command.commands.TestCommand;
 import dev.lotnest.sequoia.command.commands.VersionCommand;
 import dev.lotnest.sequoia.manager.Manager;
+
 import java.util.List;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.commands.CommandSourceStack;
@@ -107,7 +109,7 @@ public final class ClientCommandManager extends Manager {
 
         if (!parse.getExceptions().isEmpty()
                 || (parse.getContext().getCommand() == null
-                        && parse.getContext().getChild() == null)) {
+                && parse.getContext().getChild() == null)) {
             return false;
         }
 
@@ -183,7 +185,6 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new TestCommand());
         registerCommand(new PlayerWarsCommand());
         registerCommand(new DiscordCommand());
-        registerCommand(new SearchCommand());
         registerCommand(new ConnectCommand());
         registerCommand(new DisconnectCommand());
         registerCommand(new ReconnectCommand());
