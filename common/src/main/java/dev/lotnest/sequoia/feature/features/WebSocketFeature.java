@@ -43,6 +43,11 @@ public class WebSocketFeature extends Feature {
     private boolean isAuthenticating;
 
     public void initClient() {
+        if (McUtils.player() == null || StringUtils.isBlank(McUtils.player().getStringUUID())) {
+            SequoiaMod.warn("Player UUID is not available. WebSocket connection will not be established.");
+            return;
+        }
+
         initClient(
                 URI.create(
                         SequoiaMod.isDevelopmentEnvironment()
@@ -144,7 +149,7 @@ public class WebSocketFeature extends Feature {
             SequoiaMod.debug("Sending WebSocket message: " + json);
             client.send(json);
             return json;
-        } catch (Exception exception) {
+        } catch (RuntimeException exception) {
             SequoiaMod.error("Failed to send WebSocket message", exception);
             return null;
         }
@@ -156,6 +161,11 @@ public class WebSocketFeature extends Feature {
 
     public void authenticate(boolean receivedInvalidTokenResult) {
         if (!isEnabled()) {
+            return;
+        }
+
+        if (McUtils.player() == null || StringUtils.isBlank(McUtils.player().getStringUUID())) {
+            SequoiaMod.warn("Player UUID is not available. WebSocket connection will not be established.");
             return;
         }
 
