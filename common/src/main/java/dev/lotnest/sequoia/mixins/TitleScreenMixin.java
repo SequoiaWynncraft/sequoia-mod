@@ -65,7 +65,10 @@ public abstract class TitleScreenMixin {
         "Lots of Nests!",
         "Network Protocol Error",
         "Vibrant Network Protocol Error for the next 60 challenges",
-        "Pan"
+        "Pan",
+        "can someone lend me 17stx",
+        "[QZZ] has taken control of Bloody Trail!",
+        "[GsW] has taken control of Entrance to Bucie!"
     };
 
     @Shadow
