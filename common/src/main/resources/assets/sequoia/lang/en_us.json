@@ -75,7 +75,7 @@
   "sequoia.command.search.description": "Searches for items, etc.",
   "sequoia.command.search.errorSearchingItem": "§cAn error occurred while searching for §e%s§c, check the logs for more information.",
   "sequoia.command.search.invalidItemName": "§cInvalid item name provided, check the item name and try again.",
-  "sequoia.command.search.itemFound": "§aFound §2%s §aitem: §e%s",
+  "sequoia.command.search.itemFound": "§aFound §2%s §aitem:\n",
   "sequoia.command.search.itemNotFound": "§e%s §cwas not found, check the item name and try again.",
   "sequoia.command.search.searchingItem": "§eSearching for §2%s §eitem...",
   "sequoia.command.syntaxError": "§cInvalid arguments, please check the syntax and try again.",

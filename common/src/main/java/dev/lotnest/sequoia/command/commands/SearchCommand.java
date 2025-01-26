@@ -75,7 +75,8 @@ public class SearchCommand extends Command {
                     context.getSource()
                             .sendSuccess(
                                     () -> SequoiaMod.prefix(Component.translatable(
-                                            "sequoia.command.search.itemFound", completedItemName, itemResponse)),
+                                                    "sequoia.command.search.itemFound", completedItemName)
+                                            .append(itemResponse.toComponent())),
                                     false);
                 } else {
                     context.getSource()
@@ -91,8 +92,7 @@ public class SearchCommand extends Command {
                                 false);
 
                 itemsResponse.items().forEach((completedItemName, itemResponse) -> context.getSource()
-                        .sendSystemMessage(SequoiaMod.prefix(
-                                Component.literal(String.format("Item: %s - %s", completedItemName, itemResponse)))));
+                        .sendSystemMessage(SequoiaMod.prefix(itemResponse.toComponent())));
             }
         });
 

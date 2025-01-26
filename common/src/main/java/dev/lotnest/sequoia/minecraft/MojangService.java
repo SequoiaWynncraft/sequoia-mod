@@ -7,6 +7,8 @@ package dev.lotnest.sequoia.minecraft;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.utils.HttpUtils;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,8 +28,7 @@ public final class MojangService {
 
     public static CompletableFuture<UUID> getUuid(String username) {
         String url = String.format(USERS_PROFILES_MINECRAFT_BASE_URL, username);
-        HttpRequest request =
-                HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+        HttpRequest request = HttpUtils.newGetRequest(url);
 
         return HTTP_CLIENT
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())

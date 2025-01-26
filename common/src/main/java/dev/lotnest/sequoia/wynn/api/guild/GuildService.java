@@ -7,6 +7,7 @@ package dev.lotnest.sequoia.wynn.api.guild;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.utils.HttpUtils;
 import dev.lotnest.sequoia.utils.URLUtils;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -26,11 +27,8 @@ public final class GuildService {
     public static CompletableFuture<GuildResponse> getGuild(String guildName) {
         String normalUrl = String.format(BASE_URL, URLUtils.sanitize(guildName));
         String prefixUrl = String.format(BASE_URL, "prefix/" + URLUtils.sanitize(guildName));
-
-        HttpRequest normalRequest =
-                HttpRequest.newBuilder().uri(URI.create(normalUrl)).GET().build();
-        HttpRequest prefixRequest =
-                HttpRequest.newBuilder().uri(URI.create(prefixUrl)).GET().build();
+        HttpRequest normalRequest = HttpUtils.newGetRequest(normalUrl);
+        HttpRequest prefixRequest = HttpUtils.newGetRequest(prefixUrl);
 
         return HTTP_CLIENT
                 .sendAsync(normalRequest, HttpResponse.BodyHandlers.ofString())

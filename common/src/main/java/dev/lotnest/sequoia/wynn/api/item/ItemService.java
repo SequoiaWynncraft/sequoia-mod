@@ -8,9 +8,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.json.adapters.ItemResponseIconAdapter;
+import dev.lotnest.sequoia.json.adapters.ItemResponseIdentificationAdapter;
 import dev.lotnest.sequoia.json.adapters.ItemsResponseAdapter;
 import dev.lotnest.sequoia.json.typetokens.ItemsResponseTypeToken;
+import dev.lotnest.sequoia.utils.HttpUtils;
 import dev.lotnest.sequoia.utils.URLUtils;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -24,14 +27,15 @@ public final class ItemService {
     private static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ItemsResponse.class, new ItemsResponseAdapter())
             .registerTypeAdapter(ItemResponse.Icon.class, new ItemResponseIconAdapter())
+            .registerTypeAdapter(ItemResponse.Identification.class, new ItemResponseIdentificationAdapter())
             .create();
 
-    private ItemService() {}
+    private ItemService() {
+    }
 
     public static CompletableFuture<ItemsResponse> searchItem(String itemName) {
         String url = String.format(SEARCH_URL, URLUtils.sanitize(itemName));
-        HttpRequest request =
-                HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+        HttpRequest request = HttpUtils.newGetRequest(url);
 
         return HTTP_CLIENT
                 .sendAsync(request, HttpResponse.BodyHandlers.ofString())
