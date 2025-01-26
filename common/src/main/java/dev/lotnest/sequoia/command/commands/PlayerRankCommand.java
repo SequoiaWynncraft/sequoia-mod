@@ -51,14 +51,18 @@ public class PlayerRankCommand extends Command {
                                 .sendFailure(SequoiaMod.prefix(
                                         Component.translatable("sequoia.command.playerRank.playerNotFound", username)));
                     } else {
+                        String rank = playerResponse.getSupportRank();
+                        if (!StringUtils.equals(playerResponse.getRank(), "Player")) {
+                            rank = playerResponse.getRank();
+                        }
+
+                        String finalRank = rank;
                         context.getSource()
                                 .sendSuccess(
                                         () -> SequoiaMod.prefix(Component.translatable(
                                                 "sequoia.command.playerRank.showingPlayerRank",
                                                 playerResponse.getUsername(),
-                                                StringUtils.isNotBlank(playerResponse.getSupportRank())
-                                                        ? playerResponse.getSupportRank()
-                                                        : playerResponse.getRank())),
+                                                finalRank)),
                                         false);
                     }
                 }
