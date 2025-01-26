@@ -14,6 +14,7 @@ import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.json.adapters.OffsetDateTimeAdapter;
 import dev.lotnest.sequoia.manager.managers.AccessTokenManager;
 import dev.lotnest.sequoia.upfixers.AccessTokenManagerUpfixer;
+import dev.lotnest.sequoia.utils.HttpUtils;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
 import dev.lotnest.sequoia.ws.handlers.SChannelMessageHandler;
@@ -58,7 +59,9 @@ public class WebSocketFeature extends Feature {
                         "Authoworization",
                         "Bearer meowmeowAG6v92hc23LK5rqrSD279",
                         "X-UUID",
-                        McUtils.player().getStringUUID()));
+                        McUtils.player().getStringUUID(),
+                        "User-Agent",
+                        HttpUtils.USER_AGENT));
     }
 
     private void initClient(URI serverUri, Map<String, String> httpHeaders) {

@@ -9,15 +9,15 @@ import java.net.URI;
 import java.net.http.HttpRequest;
 
 public final class HttpUtils {
+    public static final String USER_AGENT = SequoiaMod.MOD_ID + "-mod/" + SequoiaMod.getVersion()
+            + "(minecraft:Lotnest; discord:@lotnest; github:Lotnest; mailto:lotnestyt@gmail.com; restrictions:no-reply-not-allowed)";
+
     private HttpUtils() {}
 
     public static HttpRequest newGetRequest(String url) {
         return HttpRequest.newBuilder()
                 .header("Accept", "application/json")
-                .header(
-                        "User-Agent",
-                        SequoiaMod.MOD_ID + "-mod/" + SequoiaMod.getVersion()
-                                + "(minecraft:Lotnest; discord:@lotnest; github:Lotnest; mailto:lotnestyt@gmail.com; restrictions:no-reply-not-allowed)")
+                .header("User-Agent", USER_AGENT)
                 .uri(URI.create(url))
                 .GET()
                 .build();
