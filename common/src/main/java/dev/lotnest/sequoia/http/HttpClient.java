@@ -4,32 +4,28 @@
  */
 package dev.lotnest.sequoia.http;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
 import java.net.http.HttpResponse;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 public class HttpClient {
-    private static final Gson GSON = new GsonBuilder().create();
     private static final int[] OK_STATUS_CODES = {200, 201, 202, 203, 204, 205, 206, 207, 208, 226};
-
-    private final Cache<String, HttpResponse<String>> responseCache;
-    private final java.net.http.HttpClient httpClient;
+    private static final int POOL_SIZE = 10;
+    private static final Gson gson = new GsonBuilder().create();
+    private static final ConcurrentMap<java.net.http.HttpClient, Boolean> httpClientPool = Maps.newConcurrentMap();
 
     private HttpClient() {
         this(1, TimeUnit.MINUTES);
     }
 
     private HttpClient(long cacheDuration, TimeUnit cacheDurationUnit) {
-        responseCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(cacheDuration, cacheDurationUnit)
-                .build();
-        httpClient = java.net.http.HttpClient.newHttpClient();
+        createClientPool();
     }
 
     public static HttpClient newHttpClient() {
@@ -38,6 +34,13 @@ public class HttpClient {
 
     public static HttpClient newHttpClient(long cacheDuration, TimeUnit cacheDurationUnit) {
         return new HttpClient(cacheDuration, cacheDurationUnit);
+    }
+
+    private void createClientPool() {
+        for (int i = 0; i < POOL_SIZE; i++) {
+            java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+            httpClientPool.put(client, false);
+        }
     }
 
     private boolean isOkStatusCode(int statusCode) {
@@ -49,14 +52,29 @@ public class HttpClient {
         return false;
     }
 
+    private java.net.http.HttpClient getAvailableClient() {
+        for (Map.Entry<java.net.http.HttpClient, Boolean> entry : httpClientPool.entrySet()) {
+            java.net.http.HttpClient client = entry.getKey();
+            if (Boolean.FALSE.equals(entry.getValue())) {
+                httpClientPool.put(client, true);
+                return client;
+            }
+        }
+
+        java.net.http.HttpClient newClient = java.net.http.HttpClient.newHttpClient();
+        httpClientPool.put(newClient, true);
+        return newClient;
+    }
+
     public HttpResponse<String> get(String url) {
         try {
-            return responseCache.get(url, () -> {
-                SequoiaMod.debug("Fetching response from: " + url);
-                java.net.http.HttpRequest request = HttpUtils.newGetRequest(url);
-                return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            });
-        } catch (ExecutionException exception) {
+            java.net.http.HttpClient client = getAvailableClient();
+            java.net.http.HttpRequest request = HttpUtils.newGetRequest(url);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            httpClientPool.put(client, false);
+            return response;
+        } catch (Exception exception) {
             SequoiaMod.error("Failed to fetch response", exception);
             return null;
         }
@@ -64,41 +82,53 @@ public class HttpClient {
 
     public CompletableFuture<HttpResponse<String>> getAsync(String url) {
         try {
-            SequoiaMod.debug("Fetching async response from: " + url);
+            java.net.http.HttpClient client = getAvailableClient();
             java.net.http.HttpRequest request = HttpUtils.newGetRequest(url);
-            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            CompletableFuture<HttpResponse<String>> responseFuture =
+                    client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+
+            responseFuture.thenRun(() -> httpClientPool.put(client, false));
+
+            return responseFuture;
         } catch (Exception exception) {
-            SequoiaMod.error("Failed to fetch response", exception);
+            SequoiaMod.error("Failed to fetch async response", exception);
             return null;
         }
     }
 
     public HttpResponse<String> post(String url, String body) {
         try {
-            return responseCache.get(url, () -> {
-                SequoiaMod.debug("Posting to: " + url + " with body: " + body);
-                java.net.http.HttpRequest request = HttpUtils.newPostRequest(url, body);
-                return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-            });
-        } catch (ExecutionException exception) {
-            SequoiaMod.error("Failed to fetch response", exception);
+            java.net.http.HttpClient client = getAvailableClient();
+            java.net.http.HttpRequest request = HttpUtils.newPostRequest(url, body);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            httpClientPool.put(client, false);
+
+            return response;
+        } catch (Exception exception) {
+            SequoiaMod.error("Failed to post response", exception);
             return null;
         }
     }
 
     public CompletableFuture<HttpResponse<String>> postAsync(String url, String body) {
         try {
-            SequoiaMod.debug("Posting async to: " + url + " with body: " + body);
+            java.net.http.HttpClient client = getAvailableClient();
             java.net.http.HttpRequest request = HttpUtils.newPostRequest(url, body);
-            return httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            CompletableFuture<HttpResponse<String>> responseFuture =
+                    client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+
+            responseFuture.thenRun(() -> httpClientPool.put(client, false));
+
+            return responseFuture;
         } catch (Exception exception) {
-            SequoiaMod.error("Failed to fetch response", exception);
+            SequoiaMod.error("Failed to post async response", exception);
             return null;
         }
     }
 
     public <T> T getJson(String url, Class<T> responseType) {
-        return getJson(url, responseType, GSON);
+        return getJson(url, responseType, gson);
     }
 
     public <T> T getJson(String url, Class<T> responseType, Gson gson) {
@@ -113,7 +143,7 @@ public class HttpClient {
     }
 
     public <T> CompletableFuture<T> getJsonAsync(String url, Class<T> responseType) {
-        return getJsonAsync(url, responseType, GSON);
+        return getJsonAsync(url, responseType, gson);
     }
 
     public <T> CompletableFuture<T> getJsonAsync(String url, Class<T> responseType, Gson gson) {
