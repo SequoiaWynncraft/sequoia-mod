@@ -9,8 +9,6 @@ import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.minecraft.MojangService;
 import dev.lotnest.sequoia.utils.HttpUtils;
-
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -23,8 +21,7 @@ public final class PlayerService {
     private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private static final Gson GSON = new GsonBuilder().create();
 
-    private PlayerService() {
-    }
+    private PlayerService() {}
 
     public static CompletableFuture<PlayerResponse> getPlayer(String username) {
         String url = String.format(BASE_URL, username);

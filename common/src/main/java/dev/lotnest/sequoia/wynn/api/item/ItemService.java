@@ -13,8 +13,6 @@ import dev.lotnest.sequoia.json.adapters.ItemsResponseAdapter;
 import dev.lotnest.sequoia.json.typetokens.ItemsResponseTypeToken;
 import dev.lotnest.sequoia.utils.HttpUtils;
 import dev.lotnest.sequoia.utils.URLUtils;
-
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -30,8 +28,7 @@ public final class ItemService {
             .registerTypeAdapter(ItemResponse.Identification.class, new ItemResponseIdentificationAdapter())
             .create();
 
-    private ItemService() {
-    }
+    private ItemService() {}
 
     public static CompletableFuture<ItemsResponse> searchItem(String itemName) {
         String url = String.format(SEARCH_URL, URLUtils.sanitize(itemName));

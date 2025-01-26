@@ -8,8 +8,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.utils.HttpUtils;
-
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
