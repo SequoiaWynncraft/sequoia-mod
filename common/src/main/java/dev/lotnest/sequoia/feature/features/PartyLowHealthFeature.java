@@ -10,6 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wynntils.core.components.Models;
 import com.wynntils.mc.event.PlayerRenderEvent;
+import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.render.buffered.CustomRenderType;
 import com.wynntils.utils.type.ThrottledSupplier;
@@ -23,6 +24,7 @@ import java.util.regex.Pattern;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.Position;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 import org.joml.Matrix4f;
@@ -44,11 +46,15 @@ public class PartyLowHealthFeature extends Feature {
 
     @SubscribeEvent
     public void onPlayerRender(PlayerRenderEvent event) {
+        Entity entity = ((EntityRenderStateExtension) event.getPlayerRenderState()).getEntity();
+        if (!(entity instanceof AbstractClientPlayer player)) {
+            return;
+        }
+
         if (!Models.WorldState.onWorld() && !Models.WorldState.onHousing()) {
             return;
         }
 
-        AbstractClientPlayer player = event.getPlayer();
         if (PlayerUtils.isSelf(player)) {
             return;
         }
