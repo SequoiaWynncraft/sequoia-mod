@@ -11,6 +11,7 @@ import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
+import dev.lotnest.sequoia.http.HttpUtils;
 import dev.lotnest.sequoia.json.adapters.OffsetDateTimeAdapter;
 import dev.lotnest.sequoia.manager.managers.AccessTokenManager;
 import dev.lotnest.sequoia.upfixers.AccessTokenManagerUpfixer;
@@ -43,6 +44,11 @@ public class WebSocketFeature extends Feature {
     private boolean isAuthenticating;
 
     public void initClient() {
+        if (McUtils.player() == null || StringUtils.isBlank(McUtils.player().getStringUUID())) {
+            SequoiaMod.warn("Player UUID is not available. WebSocket connection will not be established.");
+            return;
+        }
+
         initClient(
                 URI.create(
                         SequoiaMod.isDevelopmentEnvironment()
@@ -53,7 +59,9 @@ public class WebSocketFeature extends Feature {
                         "Authoworization",
                         "Bearer meowmeowAG6v92hc23LK5rqrSD279",
                         "X-UUID",
-                        McUtils.player().getStringUUID()));
+                        McUtils.player().getStringUUID(),
+                        "User-Agent",
+                        HttpUtils.USER_AGENT));
     }
 
     private void initClient(URI serverUri, Map<String, String> httpHeaders) {
@@ -144,7 +152,7 @@ public class WebSocketFeature extends Feature {
             SequoiaMod.debug("Sending WebSocket message: " + json);
             client.send(json);
             return json;
-        } catch (Exception exception) {
+        } catch (RuntimeException exception) {
             SequoiaMod.error("Failed to send WebSocket message", exception);
             return null;
         }
@@ -156,6 +164,11 @@ public class WebSocketFeature extends Feature {
 
     public void authenticate(boolean receivedInvalidTokenResult) {
         if (!isEnabled()) {
+            return;
+        }
+
+        if (McUtils.player() == null || StringUtils.isBlank(McUtils.player().getStringUUID())) {
+            SequoiaMod.warn("Player UUID is not available. WebSocket connection will not be established.");
             return;
         }
 
@@ -240,7 +253,7 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
-        AccessTokenManagerUpfixer.fixLegacyFiles();
+        AccessTokenManagerUpfixer.fixLegacyFilesIfNeeded();
 
         try {
             webSocketFeature.initClient();

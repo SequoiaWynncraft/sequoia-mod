@@ -75,7 +75,7 @@ public final class WynnUtils {
             }
         }
 
-        return MinecraftUtils.isValidUsernameWithColor(name);
+        return MinecraftUtils.isValidUsername(name);
     }
 
     public static List<String> getTabList() {

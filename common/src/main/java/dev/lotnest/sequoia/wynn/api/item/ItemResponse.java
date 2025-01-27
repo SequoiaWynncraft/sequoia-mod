@@ -7,6 +7,9 @@ package dev.lotnest.sequoia.wynn.api.item;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.Map;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 public record ItemResponse(
         @SerializedName("internalName") String internalName,
@@ -86,4 +89,132 @@ public record ItemResponse(
             @SerializedName("raw") Integer rawIdentification,
             @SerializedName("min") Integer min,
             @SerializedName("max") Integer max) {}
+
+    public Component toComponent() {
+        MutableComponent result = Component.empty();
+
+        if (type != null) {
+            result = result.append(Component.literal("Type: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(type).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (subType != null) {
+            result = result.append(Component.literal("\nSubtype: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(subType).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (identifier != null) {
+            result = result.append(Component.literal("\nIdentifier: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(identifier.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (allowCraftsman != null) {
+            result = result.append(Component.literal("\nAllow Craftsman: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(allowCraftsman.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (armourMaterial != null) {
+            result = result.append(Component.literal("\nArmour Material: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(armourMaterial).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (attackSpeed != null) {
+            result = result.append(Component.literal("\nAttack Speed: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(attackSpeed).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (averageDPS != null) {
+            result = result.append(Component.literal("\nAverage DPS: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(averageDPS.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (gatheringSpeed != null) {
+            result = result.append(Component.literal("\nGathering Speed: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(gatheringSpeed.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (tier != null) {
+            result = result.append(Component.literal("\nTier: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(tier).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (rarity != null) {
+            result = result.append(Component.literal("\nRarity: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(rarity).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (consumableOnlyIDs != null) {
+            result = result.append(Component.literal("\nConsumable Only IDs: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(consumableOnlyIDs.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (ingredientPositionModifiers != null) {
+            result = result.append(Component.literal("\nIngredient Position Modifiers: ")
+                            .withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(ingredientPositionModifiers.toString())
+                            .withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (itemOnlyIDs != null) {
+            result = result.append(Component.literal("\nItem Only IDs: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(itemOnlyIDs.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (majorIds != null) {
+            result = result.append(Component.literal("\nMajor IDs: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(majorIds.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (craftable != null) {
+            result = result.append(Component.literal("\nCraftable: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(craftable.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (powderSlots != null) {
+            result = result.append(Component.literal("\nPowder Slots: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(powderSlots.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (lore != null) {
+            result = result.append(Component.literal("\nLore: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(lore).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (dropRestriction != null) {
+            result = result.append(Component.literal("\nDrop Restriction: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(dropRestriction).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (restriction != null) {
+            result = result.append(Component.literal("\nRestriction: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(restriction).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (raidReward != null) {
+            result = result.append(Component.literal("\nRaid Reward: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(raidReward.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (dropMeta != null) {
+            result = result.append(Component.literal("\nDrop Meta: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(dropMeta.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (base != null) {
+            result = result.append(Component.literal("\nBase: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(base.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (requirements != null) {
+            result = result.append(Component.literal("\nRequirements: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(requirements.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        if (identifications != null) {
+            result = result.append(Component.literal("\nIdentifications: ").withStyle(ChatFormatting.GREEN))
+                    .append(Component.literal(identifications.toString()).withStyle(ChatFormatting.YELLOW));
+        }
+
+        return result;
+    }
 }

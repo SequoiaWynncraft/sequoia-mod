@@ -187,12 +187,12 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new TestCommand());
         registerCommand(new PlayerWarsCommand());
         registerCommand(new DiscordCommand());
-        registerCommand(new SearchCommand());
         registerCommand(new ConnectCommand());
         registerCommand(new DisconnectCommand());
         registerCommand(new ReconnectCommand());
         registerCommand(new OuterVoidCommand());
         registerCommand(new PlayerRankCommand());
+        registerCommand(new SearchCommand());
 
         registerCommandWithCommandSet(new SequoiaCommand());
     }

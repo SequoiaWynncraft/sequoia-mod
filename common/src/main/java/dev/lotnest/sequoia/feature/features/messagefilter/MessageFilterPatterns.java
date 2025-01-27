@@ -11,7 +11,7 @@ public final class MessageFilterPatterns {
 
     public static final Pattern[] PARTY_FINDER = {
         Pattern.compile(
-                "^Party Finder: Hey [\\w ]+, over here! Join the [a-zA-Z' ]+ queue and match up with \\d{1,2} other players?!$")
+                "^Party Finder:\\s+Hey [\\w ]+, over here! Join the [a-zA-Z' ]+ queue and match up with \\d{1,2} other players?!$"),
     };
 
     public static final Pattern[] CRATE = {
