@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.feature.features.discordchatbridge;
 
 import com.google.common.collect.Maps;
@@ -165,5 +169,10 @@ public class DiscordChatBridgeFeature extends Feature {
             return hoverString.contains("real username");
         }
         return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.discordChatBridgeFeature.enabled();
     }
 }

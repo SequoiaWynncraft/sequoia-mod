@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.feature.features;
 
 import com.google.common.collect.Lists;
@@ -61,7 +65,7 @@ public class SequoiaOSTFeature extends Feature {
     public void playNextTrack() {
         stopCurrentTrack();
 
-        if (SequoiaMod.CONFIG.sequoiaOSTFeature.enabled()) {
+        if (isEnabled()) {
             SoundInstance nextTrack = getNextTrack();
             currentTrack = nextTrack;
 
@@ -74,6 +78,11 @@ public class SequoiaOSTFeature extends Feature {
             Minecraft.getInstance().getSoundManager().stop(currentTrack);
             currentTrack = null;
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.sequoiaOSTFeature.enabled();
     }
 
     @Override
@@ -95,7 +104,7 @@ public class SequoiaOSTFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onTickAlways(TickAlwaysEvent ignored) {
-        if (SequoiaMod.CONFIG.sequoiaOSTFeature.enabled() && !isPlaying()) {
+        if (isEnabled() && !isPlaying()) {
             playNextTrack();
         }
     }

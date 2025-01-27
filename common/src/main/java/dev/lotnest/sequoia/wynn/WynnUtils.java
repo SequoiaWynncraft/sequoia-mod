@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.wynn;
 
 import static com.wynntils.models.character.CharacterModel.GUILD_MENU_SLOT;

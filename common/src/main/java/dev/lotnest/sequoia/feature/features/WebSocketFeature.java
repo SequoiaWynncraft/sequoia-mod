@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.feature.features;
 
 import com.google.gson.Gson;
@@ -7,9 +11,10 @@ import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
+import dev.lotnest.sequoia.http.HttpUtils;
 import dev.lotnest.sequoia.json.adapters.OffsetDateTimeAdapter;
 import dev.lotnest.sequoia.manager.managers.AccessTokenManager;
-import dev.lotnest.sequoia.manager.managers.AccessTokenManagerUpfixer;
+import dev.lotnest.sequoia.upfixers.AccessTokenManagerUpfixer;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.WSMessageType;
 import dev.lotnest.sequoia.ws.handlers.SChannelMessageHandler;
@@ -54,7 +59,9 @@ public class WebSocketFeature extends Feature {
                         "Authoworization",
                         "Bearer meowmeowAG6v92hc23LK5rqrSD279",
                         "X-UUID",
-                        McUtils.player().getStringUUID()));
+                        McUtils.player().getStringUUID(),
+                        "User-Agent",
+                        HttpUtils.USER_AGENT));
     }
 
     private void initClient(URI serverUri, Map<String, String> httpHeaders) {
@@ -246,7 +253,7 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
-        AccessTokenManagerUpfixer.fixLegacyFiles();
+        AccessTokenManagerUpfixer.fixLegacyFilesIfNeeded();
 
         try {
             webSocketFeature.initClient();

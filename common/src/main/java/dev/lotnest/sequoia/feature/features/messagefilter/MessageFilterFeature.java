@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.feature.features.messagefilter;
 
 import com.google.common.collect.Maps;
@@ -46,7 +50,7 @@ public class MessageFilterFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        if (!SequoiaMod.CONFIG.messageFilterFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -76,5 +80,10 @@ public class MessageFilterFeature extends Feature {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.messageFilterFeature.enabled();
     }
 }

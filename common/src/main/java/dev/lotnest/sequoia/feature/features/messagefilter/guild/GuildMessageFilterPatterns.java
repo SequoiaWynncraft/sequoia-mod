@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.feature.features.messagefilter.guild;
 
 import java.util.regex.Pattern;
@@ -46,7 +50,8 @@ public final class GuildMessageFilterPatterns {
         Pattern.compile(
                 "^(?<guild1>.+?) scheduled (?<resourceIcon>.+?) (?<amount>.+?) (?<resource>.+?) per hour to (?<guild2>.+?)$"),
         Pattern.compile("^(?<player>.+?) changed the global borders to (?<style>.+?)$"),
-        Pattern.compile("^(?<player>.+?) changed the borders of (?<territory>.+?) to (?<style>.+?)$")
+        Pattern.compile("^(?<player>.+?) changed the borders of (?<territory>.+?) to (?<style>.+?)$"),
+        Pattern.compile("^(?<player>.+?) sent (?<guild>.+?) a request to be allied$")
     };
 
     public static final Pattern[] REWARD = {

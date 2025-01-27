@@ -1,21 +1,46 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.command;
 
+import com.wynntils.utils.mc.McUtils;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 public class ClientCommandSourceStack extends CommandSourceStack {
     public ClientCommandSourceStack(LocalPlayer player) {
         super(
-                player,
+                new CommandSource() {
+                    @Override
+                    public void sendSystemMessage(Component component) {
+                        McUtils.sendMessageToClient(component);
+                    }
+
+                    @Override
+                    public boolean acceptsSuccess() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean acceptsFailure() {
+                        return true;
+                    }
+
+                    @Override
+                    public boolean shouldInformAdmins() {
+                        return true;
+                    }
+                },
                 player.position(),
                 player.getRotationVector(),
                 null,
@@ -29,17 +54,12 @@ public class ClientCommandSourceStack extends CommandSourceStack {
     @Override
     public Collection<String> getOnlinePlayerNames() {
         return Minecraft.getInstance().getConnection().getOnlinePlayers().stream()
-                .map(e -> e.getProfile().getName())
+                .map(playerInfo -> playerInfo.getProfile().getName())
                 .collect(Collectors.toList());
     }
 
     @Override
     public Collection<String> getAllTeams() {
-        return null;
-    }
-
-    @Override
-    public Stream<ResourceLocation> getRecipeNames() {
         return null;
     }
 

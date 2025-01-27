@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.mixins;
 
 import dev.lotnest.sequoia.SequoiaMod;
@@ -57,7 +61,14 @@ public abstract class TitleScreenMixin {
         "llamadile rewarded 1024 Emeralds to llamadile",
         "Who is Blud?",
         "October 14th 2022",
-        "Please do not the cat"
+        "Please do not the cat",
+        "Lots of Nests!",
+        "Network Protocol Error",
+        "Vibrant Network Protocol Error for the next 60 challenges",
+        "Pan",
+        "can someone lend me 17stx",
+        "[QZZ] has taken control of Bloody Trail!",
+        "[GsW] has taken control of Entrance to Bucie!"
     };
 
     @Shadow

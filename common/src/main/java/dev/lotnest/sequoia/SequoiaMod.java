@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia;
 
 import com.google.common.collect.Maps;
@@ -8,6 +12,7 @@ import dev.lotnest.sequoia.component.CoreComponent;
 import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
+import dev.lotnest.sequoia.http.HttpClient;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
 import java.util.ArrayList;
@@ -40,22 +45,7 @@ public final class SequoiaMod {
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-
-    public static String getVersion() {
-        return version;
-    }
-
-    public static boolean isDevelopmentBuild() {
-        return isDevelopmentBuild;
-    }
-
-    public static boolean isDevelopmentEnvironment() {
-        return isDevelopmentEnvironment;
-    }
-
-    public static Logger getLogger() {
-        return LOGGER;
-    }
+    private static HttpClient httpClient;
 
     public static void error(String message) {
         LOGGER.error(message);
@@ -107,6 +97,7 @@ public final class SequoiaMod {
         isDevelopmentBuild = modVersion.contains("SNAPSHOT");
         SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
+        httpClient = HttpClient.newHttpClient();
 
         LOGGER.info(
                 "Sequoia: Starting version {} (using {} on Minecraft {})",
@@ -173,8 +164,28 @@ public final class SequoiaMod {
         return PREFIX.copy().append(component);
     }
 
+    public static String getVersion() {
+        return version;
+    }
+
+    public static boolean isDevelopmentBuild() {
+        return isDevelopmentBuild;
+    }
+
+    public static boolean isDevelopmentEnvironment() {
+        return isDevelopmentEnvironment;
+    }
+
+    public static Logger getLogger() {
+        return LOGGER;
+    }
+
     public static WebSocketFeature getWebSocketFeature() {
         return Managers.Feature.getFeatureInstance(WebSocketFeature.class);
+    }
+
+    public static HttpClient getHttpClient() {
+        return httpClient;
     }
 
     public enum ModLoader {

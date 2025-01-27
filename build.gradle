@@ -13,7 +13,7 @@ architectury {
 // or ~/.gradle/gradle.properties on Linux/MacOS.
 def usingHotswapAgent = project.hasProperty("sequoia.hotswap") ? project.getProperty("sequoia.hotswap") == "true" : false
 
-version = "0.5.3.0"
+version = "0.6.0.0"
 
 subprojects {
     apply plugin: "dev.architectury.loom"
@@ -32,9 +32,11 @@ subprojects {
                 property("devauth.configDir", getRootProject().file(".devauth").absolutePath)
                 if (usingHotswapAgent) {
                     vmArgs "-XX:+AllowEnhancedClassRedefinition"
+                    // https://youtrack.jetbrains.com/issue/JBR-7351/JVM-CodeCache-will-not-be-cleaned-using-G1GC-if-Hotswap-Agent-is-enabled-since-JBR-6419-jbr21.351
+                    vmArgs "-XX:+ClassUnloading"
                     vmArgs "-XX:HotswapAgent=fatjar"
                 }
-                vmArgs "-ea"
+                vmArgs "-ea" // run dev builds with asserts
                 client()
             }
         }
@@ -96,7 +98,11 @@ allprojects {
             custom "No empty line after opening curly brace", {
                 it.replaceAll(/\{\n\n/, '{\n')
             }
-            licenseHeader("")
+            licenseHeader("/*\n" +
+                    " * Copyright © sequoia-mod \$YEAR.\n" +
+                    " * This file is released under LGPLv3. See LICENSE for full license details.\n" +
+                    " */")
+                    .updateYearWithLatest(true)
         }
         json {
             target "src/**/*.json"

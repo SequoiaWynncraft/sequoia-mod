@@ -1,12 +1,17 @@
-package dev.lotnest.sequoia.manager.managers;
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
+package dev.lotnest.sequoia.upfixers;
 
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.manager.managers.AccessTokenManager;
 import java.io.File;
 
 public final class AccessTokenManagerUpfixer {
     private AccessTokenManagerUpfixer() {}
 
-    public static void fixLegacyFiles() {
+    public static void fixLegacyFilesIfNeeded() {
         String userFolderPath = AccessTokenManager.getUserSpecificFolderPath();
         File userFolder = new File(userFolderPath);
         if (!userFolder.exists()) {

@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.manager.managers;
 
 import com.mojang.brigadier.CommandDispatcher;
@@ -24,6 +28,7 @@ import dev.lotnest.sequoia.command.commands.OuterVoidCommand;
 import dev.lotnest.sequoia.command.commands.PlayerDungeonsCommand;
 import dev.lotnest.sequoia.command.commands.PlayerGuildCommand;
 import dev.lotnest.sequoia.command.commands.PlayerRaidsCommand;
+import dev.lotnest.sequoia.command.commands.PlayerRankCommand;
 import dev.lotnest.sequoia.command.commands.PlayerWarsCommand;
 import dev.lotnest.sequoia.command.commands.ReconnectCommand;
 import dev.lotnest.sequoia.command.commands.SearchCommand;
@@ -182,11 +187,12 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new TestCommand());
         registerCommand(new PlayerWarsCommand());
         registerCommand(new DiscordCommand());
-        registerCommand(new SearchCommand());
         registerCommand(new ConnectCommand());
         registerCommand(new DisconnectCommand());
         registerCommand(new ReconnectCommand());
         registerCommand(new OuterVoidCommand());
+        registerCommand(new PlayerRankCommand());
+        registerCommand(new SearchCommand());
 
         registerCommandWithCommandSet(new SequoiaCommand());
     }

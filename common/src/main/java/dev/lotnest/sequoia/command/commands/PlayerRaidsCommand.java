@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.command.commands;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -7,7 +11,6 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.command.Command;
 import dev.lotnest.sequoia.minecraft.MinecraftUtils;
 import dev.lotnest.sequoia.wynn.api.player.PlayerService;
-import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
@@ -17,11 +20,6 @@ public class PlayerRaidsCommand extends Command {
     @Override
     public String getCommandName() {
         return "playerRaids";
-    }
-
-    @Override
-    public List<String> getAliases() {
-        return List.of("pr");
     }
 
     @Override

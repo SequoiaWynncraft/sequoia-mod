@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.feature.features;
 
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
@@ -19,7 +23,7 @@ public class PlayerIgnoreFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
-        if (!SequoiaMod.CONFIG.playerIgnoreFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -61,5 +65,10 @@ public class PlayerIgnoreFeature extends Feature {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.playerIgnoreFeature.enabled();
     }
 }

@@ -1,3 +1,7 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.feature.features;
 
 import com.google.common.collect.Maps;
@@ -111,7 +115,7 @@ public class OuterVoidTrackerFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onTick(TickEvent event) {
-        if (!SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled()) {
+        if (!isEnabled()) {
             return;
         }
 
@@ -147,5 +151,10 @@ public class OuterVoidTrackerFeature extends Feature {
                 }
             }
         });
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled();
     }
 }
