@@ -11,7 +11,7 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.feature.features.messagefilter.guild.GuildMessageFilterPatterns;
-import dev.lotnest.sequoia.utils.IntegerUtils;
+import dev.lotnest.sequoia.utils.LongUtils;
 import dev.lotnest.sequoia.ws.WSMessage;
 import dev.lotnest.sequoia.ws.messages.GuildRaidWSMessage;
 import dev.lotnest.sequoia.wynn.WynnUtils;
@@ -89,9 +89,9 @@ public class GuildRaidTrackerFeature extends Feature {
                 raidType,
                 List.of(player1, player2, player3, player4),
                 reporterID,
-                Integer.parseInt(aspects),
-                Integer.parseInt(emeralds),
-                IntegerUtils.convertToInt(xp),
+                Long.parseLong(aspects),
+                Long.parseLong(emeralds),
+                LongUtils.convertToLong(xp),
                 StringUtils.isNotBlank(sr) ? Integer.parseInt(sr) : 0));
     }
 
