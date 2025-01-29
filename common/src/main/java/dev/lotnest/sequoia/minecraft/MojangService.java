@@ -27,7 +27,7 @@ public final class MojangService {
                                     .matcher(response.getId())
                                     .replaceFirst("$1-$2-$3-$4-$5"));
                         } catch (Exception exception) {
-                            SequoiaMod.error("Failed to parse UUID from player data: " + exception.getMessage());
+                            SequoiaMod.error("Failed to parse UUID from player data", exception);
                             return null;
                         }
                     } else {
