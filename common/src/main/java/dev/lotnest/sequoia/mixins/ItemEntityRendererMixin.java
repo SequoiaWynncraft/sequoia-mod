@@ -53,8 +53,7 @@ abstract class ItemEntityRendererMixin {
     @Inject(
             method =
                     "render(Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At("HEAD")
-    )
+            at = @At("HEAD"))
     private void onRender(
             ItemEntityRenderState itemEntityRenderState,
             PoseStack poseStack,
@@ -78,8 +77,7 @@ abstract class ItemEntityRendererMixin {
     @Inject(
             method =
                     "render(Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At("TAIL")
-    )
+            at = @At("TAIL"))
     private void afterRender(
             ItemEntityRenderState itemEntityRenderState,
             PoseStack poseStack,
