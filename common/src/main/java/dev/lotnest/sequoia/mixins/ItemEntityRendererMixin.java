@@ -53,37 +53,49 @@ abstract class ItemEntityRendererMixin {
     @Inject(
             method =
                     "render(Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At("HEAD"))
+            at = @At("HEAD")
+    )
     private void onRender(
             ItemEntityRenderState itemEntityRenderState,
             PoseStack poseStack,
             MultiBufferSource multiBufferSource,
             int i,
             CallbackInfo ci) {
-        poseStack.pushPose();
+        if (SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled()) {
+            Entity entity = ((EntityRenderStateExtension) itemEntityRenderState).getEntity();
+            int x = (int) entity.getX();
+            int y = (int) entity.getY();
+            int z = (int) entity.getZ();
 
-        Entity entity = ((EntityRenderStateExtension) itemEntityRenderState).getEntity();
-        int x = (int) entity.getX();
-        int y = (int) entity.getY();
-        int z = (int) entity.getZ();
-
-        if (SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled() && isWithinBox(x, y, z)) {
-            float scale = SequoiaMod.CONFIG.outerVoidTrackerFeature.scale();
-            poseStack.scale(scale, scale, scale);
+            if (isWithinBox(x, y, z)) {
+                poseStack.pushPose();
+                float scale = SequoiaMod.CONFIG.outerVoidTrackerFeature.scale();
+                poseStack.scale(scale, scale, scale);
+            }
         }
     }
 
     @Inject(
             method =
                     "render(Lnet/minecraft/client/renderer/entity/state/ItemEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
-            at = @At("TAIL"))
+            at = @At("TAIL")
+    )
     private void afterRender(
             ItemEntityRenderState itemEntityRenderState,
             PoseStack poseStack,
             MultiBufferSource multiBufferSource,
             int i,
             CallbackInfo ci) {
-        poseStack.popPose();
+        if (SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled()) {
+            Entity entity = ((EntityRenderStateExtension) itemEntityRenderState).getEntity();
+            int x = (int) entity.getX();
+            int y = (int) entity.getY();
+            int z = (int) entity.getZ();
+
+            if (isWithinBox(x, y, z)) {
+                poseStack.popPose();
+            }
+        }
     }
 
     @Unique
