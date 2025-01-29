@@ -60,7 +60,7 @@
   "sequoia.command.playerRaids.showingPlayerRaids": "§2%s §ahas completed a total of §e%s §araids.",
   "sequoia.command.playerRank.description": "Checks player's rank on the Wynncraft Network.",
   "sequoia.command.playerRank.errorLookingUpPlayer": "§cAn error occurred while looking up §e%s§c's rank, check the logs for more information.",
-  "sequoia.command.playerRank.lookingUpPlayer": "§eLooking up §2%s§e's last seen time...",
+  "sequoia.command.playerRank.lookingUpPlayer": "§eLooking up §2%s§e's rank...",
   "sequoia.command.playerRank.playerNotFound": "§e%s §cwas not found, check the username and try again.",
   "sequoia.command.playerRank.showingPlayerRank": "§2%s§a's rank is §e%s.",
   "sequoia.command.playerWars.description": "Checks the wars of a player and their leaderboard position.",
