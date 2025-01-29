@@ -57,15 +57,21 @@ public class OnlineMembersCommand extends Command {
                         context.getSource()
                                 .sendSuccess(
                                         () -> SequoiaMod.prefix(Component.translatable(
-                                                "sequoia.command.onlineMembers.showingGuildMembers",
-                                                guildResponse.getName(),
-                                                guildResponse.getPrefix(),
-                                                guildResponse.getOnline(),
-                                                guildResponse.getMembers().getTotal())),
+                                                        "sequoia.command.onlineMembers.showingGuildMembers",
+                                                        guildResponse.getName(),
+                                                        guildResponse.getPrefix(),
+                                                        guildResponse.getOnline(),
+                                                        guildResponse
+                                                                .getMembers()
+                                                                .getTotal())
+                                                .append(Component.literal("\n"))
+                                                .append(
+                                                        guildResponse.getOnline() > 0
+                                                                ? guildResponse
+                                                                        .getOnlineMembers()
+                                                                        .toPrettyMessage()
+                                                                : Component.empty())),
                                         false);
-                        context.getSource()
-                                .sendSuccess(
-                                        () -> guildResponse.getOnlineMembers().toPrettyMessage(), false);
                     }
                 }
             });
