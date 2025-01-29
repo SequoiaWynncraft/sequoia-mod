@@ -22,5 +22,5 @@ public class GIdentifyWSMessage extends WSMessage {
     public record Data(
             @SerializedName("access_token") String accessToken,
             String uuid,
-            @SerializedName("mod_version") String modVersion) {}
+            @SerializedName("mod_version") int modVersion) {}
 }

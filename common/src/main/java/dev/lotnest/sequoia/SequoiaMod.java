@@ -42,6 +42,7 @@ public final class SequoiaMod {
     private static final Map<Class<? extends CoreComponent>, List<CoreComponent>> componentMap = Maps.newHashMap();
     private static ModLoader modLoader;
     private static String version = "";
+    private static int versionInt = 0;
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
@@ -97,6 +98,7 @@ public final class SequoiaMod {
         isDevelopmentBuild = modVersion.contains("SNAPSHOT");
         SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
+        versionInt = Integer.parseInt(modVersion.replaceAll("[^0-9]", ""));
         httpClient = HttpClient.newHttpClient();
 
         LOGGER.info(
@@ -166,6 +168,10 @@ public final class SequoiaMod {
 
     public static String getVersion() {
         return version;
+    }
+
+    public static int getVersionInt() {
+        return versionInt;
     }
 
     public static boolean isDevelopmentBuild() {
