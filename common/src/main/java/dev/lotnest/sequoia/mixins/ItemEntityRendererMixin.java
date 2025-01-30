@@ -60,16 +60,17 @@ abstract class ItemEntityRendererMixin {
             MultiBufferSource multiBufferSource,
             int i,
             CallbackInfo ci) {
-        poseStack.pushPose();
+        if (SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled()) {
+            Entity entity = ((EntityRenderStateExtension) itemEntityRenderState).getEntity();
+            int x = (int) entity.getX();
+            int y = (int) entity.getY();
+            int z = (int) entity.getZ();
 
-        Entity entity = ((EntityRenderStateExtension) itemEntityRenderState).getEntity();
-        int x = (int) entity.getX();
-        int y = (int) entity.getY();
-        int z = (int) entity.getZ();
-
-        if (SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled() && isWithinBox(x, y, z)) {
-            float scale = SequoiaMod.CONFIG.outerVoidTrackerFeature.scale();
-            poseStack.scale(scale, scale, scale);
+            if (isWithinBox(x, y, z)) {
+                poseStack.pushPose();
+                float scale = SequoiaMod.CONFIG.outerVoidTrackerFeature.scale();
+                poseStack.scale(scale, scale, scale);
+            }
         }
     }
 
@@ -83,7 +84,16 @@ abstract class ItemEntityRendererMixin {
             MultiBufferSource multiBufferSource,
             int i,
             CallbackInfo ci) {
-        poseStack.popPose();
+        if (SequoiaMod.CONFIG.outerVoidTrackerFeature.enabled()) {
+            Entity entity = ((EntityRenderStateExtension) itemEntityRenderState).getEntity();
+            int x = (int) entity.getX();
+            int y = (int) entity.getY();
+            int z = (int) entity.getZ();
+
+            if (isWithinBox(x, y, z)) {
+                poseStack.popPose();
+            }
+        }
     }
 
     @Unique

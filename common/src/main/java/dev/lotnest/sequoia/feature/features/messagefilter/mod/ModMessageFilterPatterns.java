@@ -15,11 +15,11 @@ public final class ModMessageFilterPatterns {
     };
 
     public static final Pattern[] FUY_GG_CONNECTION = {
-        Pattern.compile("^([\\w ]+ ⋙ )?Connecting to Buster\\.$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^([\\w ]+ ⋙ )?Logging into Buster\\.$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^([\\w ]+ ⋙ )?You have been disconnected from Buster!$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^([\\w ]+ ⋙ )?Error while connecting to Buster!$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^([\\w ]+ ⋙ )?Successfully logged into buster!$", Pattern.CASE_INSENSITIVE)
+        Pattern.compile("^.* Connecting to Buster\\.$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^.* Logging into Buster\\.$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^.* You have been disconnected from Buster!$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^.* Error while connecting to Buster!$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^.* Successfully logged into buster!$", Pattern.CASE_INSENSITIVE)
     };
 
     private ModMessageFilterPatterns() {}

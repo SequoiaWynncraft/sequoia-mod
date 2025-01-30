@@ -17,7 +17,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class TNARaidFeature extends Feature {
-    private static final Pattern SHADOWLING_KILLED = Pattern.compile("A Shadowling has been killed! \\[\\d+/3]");
+    private static final Pattern SHADOWLING_KILLED = Pattern.compile("A Shadowling has been killed! \\[\\d+/\\d+\\]");
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
@@ -34,7 +34,7 @@ public class TNARaidFeature extends Feature {
                 event.setCanceled(true);
                 PlayerUtils.sendTitle(
                         Component.literal("Shadowling killed!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD),
-                        Component.literal(shadowlingKilledMatcher.group(1) + "/3")
+                        Component.literal(shadowlingKilledMatcher.group(1) + "/" + shadowlingKilledMatcher.group(2))
                                 .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
             }
         }
