@@ -11,7 +11,7 @@ import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.handlers.chat.type.RecipientType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.core.websocket.messages.discordchatbridge.GChatMessageWSMessage;
 import dev.lotnest.sequoia.utils.TimeUtils;
 import java.util.ArrayList;

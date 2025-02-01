@@ -2,9 +2,11 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.core.components;
+package dev.lotnest.sequoia.core.consumers.features;
 
 import com.google.common.collect.ComparisonChain;
+import dev.lotnest.sequoia.core.components.CoreComponent;
+import dev.lotnest.sequoia.core.components.Managers;
 
 public abstract class Feature extends CoreComponent implements Comparable<Feature> {
     @Override

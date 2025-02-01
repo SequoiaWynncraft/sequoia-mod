@@ -5,8 +5,8 @@
 package dev.lotnest.sequoia.features;
 
 import com.wynntils.mc.event.CommandSentEvent;
-import dev.lotnest.sequoia.core.components.Feature;
 import dev.lotnest.sequoia.core.components.Managers;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 

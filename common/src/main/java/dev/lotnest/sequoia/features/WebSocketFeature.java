@@ -10,7 +10,7 @@ import com.wynntils.core.components.Models;
 import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.core.http.HttpUtils;
 import dev.lotnest.sequoia.core.json.OffsetDateTimeAdapter;
 import dev.lotnest.sequoia.core.upfixers.AccessTokenManagerUpfixer;

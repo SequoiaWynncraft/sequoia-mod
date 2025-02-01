@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.managers;
+package dev.lotnest.sequoia.core.consumers.features;
 
 import com.google.common.collect.Maps;
 import com.wynntils.core.WynntilsMod;
@@ -12,7 +12,6 @@ import com.wynntils.mc.event.ClientsideMessageEvent;
 import com.wynntils.mc.event.CommandsAddedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
 import dev.lotnest.sequoia.core.components.Manager;
 import dev.lotnest.sequoia.core.components.Managers;
 import dev.lotnest.sequoia.features.CommandsFeature;

@@ -6,7 +6,7 @@ package dev.lotnest.sequoia.features;
 
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.neoforged.bus.api.EventPriority;

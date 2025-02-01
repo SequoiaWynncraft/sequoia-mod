@@ -9,7 +9,7 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.handlers.chat.type.RecipientType;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.features.messagefilter.MessageFilterDecisionType;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.Map;

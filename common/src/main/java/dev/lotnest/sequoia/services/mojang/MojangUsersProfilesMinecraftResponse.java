@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.mc;
+package dev.lotnest.sequoia.services.mojang;
 
 import java.util.Objects;
 

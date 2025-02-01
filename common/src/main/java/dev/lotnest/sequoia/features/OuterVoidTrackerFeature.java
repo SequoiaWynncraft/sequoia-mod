@@ -9,7 +9,7 @@ import com.wynntils.core.components.Models;
 import com.wynntils.mc.event.TickEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.Map;
 import java.util.Set;

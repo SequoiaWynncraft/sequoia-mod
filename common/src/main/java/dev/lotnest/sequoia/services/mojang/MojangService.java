@@ -2,21 +2,25 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.mc;
+package dev.lotnest.sequoia.services.mojang;
 
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Service;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
-public final class MojangService {
+public final class MojangService extends Service {
     private static final String USERS_PROFILES_MINECRAFT_BASE_URL =
             "https://api.mojang.com/users/profiles/minecraft/%s";
     private static final Pattern UNDASHED_UUID_PATTERN = Pattern.compile("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})");
 
-    private MojangService() {}
+    public MojangService() {
+        super(List.of());
+    }
 
-    public static CompletableFuture<UUID> getUuid(String username) {
+    public CompletableFuture<UUID> getUUID(String username) {
         String url = String.format(USERS_PROFILES_MINECRAFT_BASE_URL, username);
         return SequoiaMod.getHttpClient()
                 .getJsonAsync(url, MojangUsersProfilesMinecraftResponse.class)

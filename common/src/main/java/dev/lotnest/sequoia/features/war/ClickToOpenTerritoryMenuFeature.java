@@ -4,6 +4,6 @@
  */
 package dev.lotnest.sequoia.features.war;
 
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 
 public class ClickToOpenTerritoryMenuFeature extends Feature {}

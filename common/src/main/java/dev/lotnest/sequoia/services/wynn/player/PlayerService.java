@@ -6,7 +6,7 @@ package dev.lotnest.sequoia.services.wynn.player;
 
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Service;
-import dev.lotnest.sequoia.mc.MojangService;
+import dev.lotnest.sequoia.core.components.Services;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +25,7 @@ public final class PlayerService extends Service {
                 .getJsonAsync(url, PlayerResponse.class)
                 .thenCompose(playerResponse -> {
                     if (playerResponse == null) {
-                        UUID uuid = MojangService.getUuid(username).join();
+                        UUID uuid = Services.Mojang.getUUID(username).join();
                         return getPlayer(uuid.toString());
                     }
                     SequoiaMod.debug("Fetched player data for username: " + username);
@@ -39,7 +39,7 @@ public final class PlayerService extends Service {
                 .getJsonAsync(url, PlayerResponse.class)
                 .thenCompose(playerResponse -> {
                     if (playerResponse == null) {
-                        UUID uuid = MojangService.getUuid(username).join();
+                        UUID uuid = Services.Mojang.getUUID(username).join();
                         return getPlayerFullResult(uuid.toString());
                     }
                     SequoiaMod.debug("Fetched full player data for username: " + username);

@@ -10,7 +10,7 @@ import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.utils.colors.CommonColors;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.utils.mc.PlayerUtils;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import net.minecraft.client.player.AbstractClientPlayer;

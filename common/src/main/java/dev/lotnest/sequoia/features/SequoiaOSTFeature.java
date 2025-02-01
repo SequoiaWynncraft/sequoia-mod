@@ -7,7 +7,7 @@ package dev.lotnest.sequoia.features;
 import com.google.common.collect.Lists;
 import com.wynntils.mc.event.TickAlwaysEvent;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;

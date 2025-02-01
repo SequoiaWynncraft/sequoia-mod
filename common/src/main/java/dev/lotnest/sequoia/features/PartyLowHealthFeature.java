@@ -11,7 +11,7 @@ import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.type.ThrottledSupplier;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.utils.mc.PlayerUtils;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.time.Duration;

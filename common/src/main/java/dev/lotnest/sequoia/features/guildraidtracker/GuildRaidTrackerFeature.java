@@ -9,7 +9,7 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.core.websocket.WSMessage;
 import dev.lotnest.sequoia.core.websocket.messages.GuildRaidWSMessage;
 import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;

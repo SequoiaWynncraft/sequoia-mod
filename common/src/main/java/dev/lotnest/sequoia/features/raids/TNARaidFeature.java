@@ -6,7 +6,7 @@ package dev.lotnest.sequoia.features.raids;
 
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.utils.mc.PlayerUtils;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.regex.Matcher;
