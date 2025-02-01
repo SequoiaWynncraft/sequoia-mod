@@ -34,7 +34,6 @@ import dev.lotnest.sequoia.commands.SequoiaCommand;
 import dev.lotnest.sequoia.commands.TestCommand;
 import dev.lotnest.sequoia.commands.VersionCommand;
 import dev.lotnest.sequoia.core.components.Manager;
-
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
