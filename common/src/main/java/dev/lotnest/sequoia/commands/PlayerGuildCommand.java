@@ -8,11 +8,10 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.consumers.Command;
 import dev.lotnest.sequoia.mc.MinecraftUtils;
 import dev.lotnest.sequoia.utils.TimeUtils;
-import dev.lotnest.sequoia.utils.wynn.api.guild.GuildService;
-import dev.lotnest.sequoia.utils.wynn.api.player.PlayerService;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -44,7 +43,7 @@ public class PlayerGuildCommand extends Command {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.invalidUsername")));
         } else {
-            PlayerService.getPlayer(username).whenComplete((playerResponse, playerThrowable) -> {
+            Services.Player.getPlayer(username).whenComplete((playerResponse, playerThrowable) -> {
                 if (playerThrowable != null) {
                     SequoiaMod.error("Error looking up player: " + playerThrowable.getMessage());
                     context.getSource()
@@ -59,7 +58,7 @@ public class PlayerGuildCommand extends Command {
                         if (playerResponse.getGuild() != null
                                 && !StringUtils.isBlank(
                                         playerResponse.getGuild().getName())) {
-                            GuildService.getGuild(playerResponse.getGuild().getName())
+                            Services.Guild.getGuild(playerResponse.getGuild().getName())
                                     .whenComplete((guild, guildThrowable) -> {
                                         if (guildThrowable != null) {
                                             context.getSource()

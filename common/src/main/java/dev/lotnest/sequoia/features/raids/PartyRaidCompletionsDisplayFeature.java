@@ -13,10 +13,10 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Feature;
+import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.events.PartyPlayerJoinedEvent;
 import dev.lotnest.sequoia.mc.MinecraftUtils;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
-import dev.lotnest.sequoia.utils.wynn.api.player.PlayerService;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,7 +92,7 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
     }
 
     private void handleAutomaticDisplay(String playerName) {
-        PlayerService.getPlayer(playerName).thenAccept(playerResponse -> {
+        Services.Player.getPlayer(playerName).thenAccept(playerResponse -> {
             if (playerResponse == null) {
                 return;
             }

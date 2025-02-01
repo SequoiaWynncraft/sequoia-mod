@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.utils.wynn.api.item;
+package dev.lotnest.sequoia.services.wynn.item;
 
 import com.google.gson.annotations.SerializedName;
 import java.util.List;

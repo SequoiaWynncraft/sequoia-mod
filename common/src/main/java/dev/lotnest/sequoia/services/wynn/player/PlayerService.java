@@ -2,20 +2,24 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.utils.wynn.api.player;
+package dev.lotnest.sequoia.services.wynn.player;
 
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Service;
 import dev.lotnest.sequoia.mc.MojangService;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public final class PlayerService {
+public final class PlayerService extends Service {
     private static final String BASE_URL = "https://api.wynncraft.com/v3/player/%s";
     private static final String FULL_RESULT_URL = BASE_URL + "?fullResult";
 
-    private PlayerService() {}
+    public PlayerService() {
+        super(List.of());
+    }
 
-    public static CompletableFuture<PlayerResponse> getPlayer(String username) {
+    public CompletableFuture<PlayerResponse> getPlayer(String username) {
         String url = String.format(BASE_URL, username);
         return SequoiaMod.getHttpClient()
                 .getJsonAsync(url, PlayerResponse.class)
@@ -29,7 +33,7 @@ public final class PlayerService {
                 });
     }
 
-    public static CompletableFuture<PlayerResponse> getPlayerFullResult(String username) {
+    public CompletableFuture<PlayerResponse> getPlayerFullResult(String username) {
         String url = String.format(FULL_RESULT_URL, username);
         return SequoiaMod.getHttpClient()
                 .getJsonAsync(url, PlayerResponse.class)

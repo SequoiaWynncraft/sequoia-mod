@@ -3,10 +3,10 @@
     "ClientCommonPacketListenerImplMixin",
     "ClientLevelMixin",
     "CrashReportMixin",
+    "ItemEntityRendererMixin",
     "ResourceLoadStateTrackerMixin",
     "ScreenMixin",
-    "TitleScreenMixin",
-    "ItemEntityRendererMixin"
+    "TitleScreenMixin"
   ],
   "compatibilityLevel": "JAVA_17",
   "injectors": {

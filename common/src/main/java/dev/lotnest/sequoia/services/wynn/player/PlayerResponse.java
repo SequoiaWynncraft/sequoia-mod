@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.utils.wynn.api.player;
+package dev.lotnest.sequoia.services.wynn.player;
 
 import java.util.List;
 import java.util.Map;

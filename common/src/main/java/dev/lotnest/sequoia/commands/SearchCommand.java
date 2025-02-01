@@ -8,9 +8,9 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.consumers.Command;
-import dev.lotnest.sequoia.utils.wynn.api.item.ItemResponse;
-import dev.lotnest.sequoia.utils.wynn.api.item.ItemService;
+import dev.lotnest.sequoia.services.wynn.item.ItemResponse;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.ChatFormatting;
@@ -47,7 +47,7 @@ public class SearchCommand extends Command {
             return 0;
         }
 
-        ItemService.searchItem(itemName).whenComplete((itemsResponse, throwable) -> {
+        Services.Item.searchItem(itemName).whenComplete((itemsResponse, throwable) -> {
             if (throwable != null) {
                 SequoiaMod.error("Error searching item: " + itemName, throwable);
                 context.getSource()

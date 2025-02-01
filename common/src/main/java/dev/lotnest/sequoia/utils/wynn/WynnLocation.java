@@ -4,4 +4,4 @@
  */
 package dev.lotnest.sequoia.utils.wynn;
 
-public record Location(int x, int z, String server) {}
+public record WynnLocation(int x, int z, String server) {}

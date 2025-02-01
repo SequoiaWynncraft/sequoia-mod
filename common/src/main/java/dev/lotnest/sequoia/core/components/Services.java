@@ -4,6 +4,14 @@
  */
 package dev.lotnest.sequoia.core.components;
 
+import dev.lotnest.sequoia.services.wynn.guild.GuildService;
+import dev.lotnest.sequoia.services.wynn.item.ItemService;
+import dev.lotnest.sequoia.services.wynn.player.PlayerService;
+
 public final class Services {
+    public static final PlayerService Player = new PlayerService();
+    public static final GuildService Guild = new GuildService();
+    public static final ItemService Item = new ItemService();
+
     private Services() {}
 }

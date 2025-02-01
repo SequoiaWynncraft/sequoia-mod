@@ -12,8 +12,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
-import dev.lotnest.sequoia.utils.wynn.api.item.ItemResponse;
-import dev.lotnest.sequoia.utils.wynn.api.item.ItemsResponse;
+import dev.lotnest.sequoia.services.wynn.item.ItemResponse;
+import dev.lotnest.sequoia.services.wynn.item.ItemsResponse;
 import java.lang.reflect.Type;
 import java.util.Map;
 

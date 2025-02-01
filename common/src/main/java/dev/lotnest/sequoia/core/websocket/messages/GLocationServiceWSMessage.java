@@ -8,7 +8,7 @@ import static dev.lotnest.sequoia.features.WebSocketFeature.GSON;
 
 import dev.lotnest.sequoia.core.websocket.WSMessage;
 import dev.lotnest.sequoia.core.websocket.WSMessageType;
-import dev.lotnest.sequoia.utils.wynn.Location;
+import dev.lotnest.sequoia.utils.wynn.WynnLocation;
 import java.util.Map;
 
 public class GLocationServiceWSMessage extends WSMessage {
@@ -20,5 +20,5 @@ public class GLocationServiceWSMessage extends WSMessage {
         return GSON.fromJson(getData(), Data.class);
     }
 
-    public record Data(Map<String, Location> locations) {}
+    public record Data(Map<String, WynnLocation> locations) {}
 }
