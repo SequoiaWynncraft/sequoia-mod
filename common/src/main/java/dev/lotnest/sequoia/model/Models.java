@@ -4,10 +4,11 @@
  */
 package dev.lotnest.sequoia.model;
 
-import dev.lotnest.sequoia.model.models.WarModel;
+import dev.lotnest.sequoia.model.models.TerritoryModel;
 
 public final class Models {
-    public static final WarModel War = new WarModel();
+    public static final TerritoryModel Territory = new TerritoryModel();
 
-    private Models() {}
+    private Models() {
+    }
 }

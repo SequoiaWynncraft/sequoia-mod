@@ -68,6 +68,7 @@ public class RaidsFeature extends Feature {
         if (!isEnabled()) {
             return;
         }
+
         Entity entity = ((EntityRenderStateExtension) event.getPlayerRenderState()).getEntity();
         if (!(entity instanceof AbstractClientPlayer player)) {
             return;
