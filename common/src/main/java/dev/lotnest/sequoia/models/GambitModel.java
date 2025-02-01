@@ -23,6 +23,7 @@ public class GambitModel extends Model {
     private static final String GAMBIT_CONTAINER_TITLE = "\uDAFF\uDFE1\uE00C";
 
     private final Map<String, Boolean> chosenGambits = Maps.newHashMap();
+    private final Map<String, Boolean> dummyGambits = Maps.newHashMap();
 
     public GambitModel() {
         super(List.of());
@@ -35,20 +36,29 @@ public class GambitModel extends Model {
             return;
         }
 
-        chosenGambits.clear();
+        boolean isGambitLocked = false;
+        dummyGambits.clear();
 
         for (ItemStack stack : containerScreen.getMenu().getItems()) {
-            if (stack.getHoverName().getString().contains("Gambit")) {
+            String hoverName = stack.getHoverName().getString();
+            if (hoverName.contains("Gambit")) {
                 boolean isGambitEnabled = false;
 
                 for (StyledText line : LoreUtils.getLore(stack)) {
                     if (line.contains("Disable")) {
                         isGambitEnabled = true;
+                        break;
                     }
                 }
-
-                chosenGambits.put(stack.getHoverName().getString(), isGambitEnabled);
+                dummyGambits.put(hoverName, isGambitEnabled);
+            } else if (hoverName.contains("Waiting")) {
+                isGambitLocked = true;
             }
+        }
+
+        if (!isGambitLocked) {
+            chosenGambits.clear();
+            chosenGambits.putAll(dummyGambits);
         }
     }
 
@@ -61,7 +71,7 @@ public class GambitModel extends Model {
     }
 
     public enum GambitType {
-        ANEMIC("Anemic's Gambit"),
+        ANEMIC("Anemics Gambit"),
         ARCANE("Arcane Incontinent's Gambit"),
         BLEEDING("Bleeding Warrior's Gambit"),
         BURDENED("Burdened Pacifist's Gambit"),
