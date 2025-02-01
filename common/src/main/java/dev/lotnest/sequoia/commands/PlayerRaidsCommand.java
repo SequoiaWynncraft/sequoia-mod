@@ -9,7 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Services;
-import dev.lotnest.sequoia.core.consumers.Command;
+import dev.lotnest.sequoia.core.consumers.command.Command;
 import dev.lotnest.sequoia.mc.MinecraftUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;

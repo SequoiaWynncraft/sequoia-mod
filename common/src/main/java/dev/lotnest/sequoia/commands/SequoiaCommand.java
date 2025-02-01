@@ -9,7 +9,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Managers;
-import dev.lotnest.sequoia.core.consumers.Command;
+import dev.lotnest.sequoia.core.consumers.command.Command;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.ChatFormatting;

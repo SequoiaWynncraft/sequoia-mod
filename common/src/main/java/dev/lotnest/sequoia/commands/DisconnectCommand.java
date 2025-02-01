@@ -8,7 +8,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.consumers.Command;
+import dev.lotnest.sequoia.core.consumers.command.Command;
 import dev.lotnest.sequoia.features.WebSocketFeature;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import net.minecraft.commands.CommandSourceStack;

@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.managers;
+package dev.lotnest.sequoia.core.consumers.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
@@ -34,8 +34,7 @@ import dev.lotnest.sequoia.commands.SequoiaCommand;
 import dev.lotnest.sequoia.commands.TestCommand;
 import dev.lotnest.sequoia.commands.VersionCommand;
 import dev.lotnest.sequoia.core.components.Manager;
-import dev.lotnest.sequoia.core.consumers.ClientCommandSourceStack;
-import dev.lotnest.sequoia.core.consumers.Command;
+
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;

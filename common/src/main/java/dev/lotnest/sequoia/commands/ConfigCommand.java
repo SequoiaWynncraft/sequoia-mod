@@ -8,7 +8,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.consumers.Command;
+import dev.lotnest.sequoia.core.consumers.command.Command;
 import io.wispforest.owo.config.ui.ConfigScreen;
 import java.lang.reflect.Method;
 import java.util.List;

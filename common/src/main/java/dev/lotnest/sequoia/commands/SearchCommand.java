@@ -9,7 +9,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Services;
-import dev.lotnest.sequoia.core.consumers.Command;
+import dev.lotnest.sequoia.core.consumers.command.Command;
 import dev.lotnest.sequoia.services.wynn.item.ItemResponse;
 import java.util.List;
 import java.util.Map;

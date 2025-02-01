@@ -4,7 +4,7 @@
  */
 package dev.lotnest.sequoia.core.components;
 
-import dev.lotnest.sequoia.managers.ClientCommandManager;
+import dev.lotnest.sequoia.core.consumers.command.ClientCommandManager;
 import dev.lotnest.sequoia.managers.CrashReportManager;
 import dev.lotnest.sequoia.managers.FeatureManager;
 

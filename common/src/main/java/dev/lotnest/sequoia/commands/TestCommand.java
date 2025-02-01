@@ -7,7 +7,7 @@ package dev.lotnest.sequoia.commands;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import dev.lotnest.sequoia.core.consumers.Command;
+import dev.lotnest.sequoia.core.consumers.command.Command;
 import dev.lotnest.sequoia.core.text.FormattedTextMessageParser;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
