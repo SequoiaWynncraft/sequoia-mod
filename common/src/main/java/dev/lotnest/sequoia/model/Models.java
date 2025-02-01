@@ -9,6 +9,5 @@ import dev.lotnest.sequoia.model.models.TerritoryModel;
 public final class Models {
     public static final TerritoryModel Territory = new TerritoryModel();
 
-    private Models() {
-    }
+    private Models() {}
 }

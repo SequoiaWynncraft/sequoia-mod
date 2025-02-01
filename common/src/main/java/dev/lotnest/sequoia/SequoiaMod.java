@@ -6,24 +6,27 @@ package dev.lotnest.sequoia;
 
 import com.google.common.collect.Maps;
 import com.wynntils.core.WynntilsMod;
-import com.wynntils.core.components.Handlers;
 import com.wynntils.core.mod.type.CrashType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.component.CoreComponent;
 import dev.lotnest.sequoia.configs.SequoiaConfig;
 import dev.lotnest.sequoia.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.feature.features.WebSocketFeature;
+import dev.lotnest.sequoia.handler.Handler;
+import dev.lotnest.sequoia.handler.Handlers;
 import dev.lotnest.sequoia.http.HttpClient;
 import dev.lotnest.sequoia.manager.Manager;
 import dev.lotnest.sequoia.manager.Managers;
+import dev.lotnest.sequoia.model.Model;
+import dev.lotnest.sequoia.model.Models;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import dev.lotnest.sequoia.model.Model;
-import dev.lotnest.sequoia.model.Models;
+import dev.lotnest.sequoia.service.Service;
+import dev.lotnest.sequoia.service.Services;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
@@ -88,9 +91,9 @@ public final class SequoiaMod {
 
         try {
             registerComponents(Managers.class, Manager.class);
-//            registerComponents(Handlers.class, Handler.class);
+            registerComponents(Handlers.class, Handler.class);
             registerComponents(Models.class, Model.class);
-//            registerComponents(Services.class, Service.class);
+            registerComponents(Services.class, Service.class);
 
             addCrashCallbacks();
 
