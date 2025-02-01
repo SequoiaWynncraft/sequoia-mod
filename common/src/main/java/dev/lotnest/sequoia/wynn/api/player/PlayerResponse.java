@@ -249,8 +249,7 @@ public class PlayerResponse {
                 MutableComponent result = Component.empty();
 
                 if (list == null || list.isEmpty()) {
-                    return result.append(
-                            Component.translatable("sequoia.command.playerRaids.playerHasNoRaidsCompleted"));
+                    return result;
                 }
 
                 list.forEach((raidName, count) -> {

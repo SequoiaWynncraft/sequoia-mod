@@ -50,22 +50,27 @@ public class PlayerRaidsCommand extends Command {
                                 .sendFailure(SequoiaMod.prefix(Component.translatable(
                                         "sequoia.command.playerRaids.playerNotFound", username)));
                     } else {
+                        if (playerResponse.getGlobalData().getRaids().getTotal() == 0) {
+                            context.getSource()
+                                    .sendFailure(SequoiaMod.prefix(Component.translatable(
+                                            "sequoia.command.playerRaids.noRaidsCompleted", username)));
+                            return;
+                        }
+
                         context.getSource()
                                 .sendSuccess(
                                         () -> SequoiaMod.prefix(Component.translatable(
-                                                "sequoia.command.playerRaids.showingPlayerRaids",
-                                                playerResponse.getUsername(),
-                                                playerResponse
+                                                        "sequoia.command.playerRaids.showingPlayerRaids",
+                                                        playerResponse.getUsername(),
+                                                        playerResponse
+                                                                .getGlobalData()
+                                                                .getRaids()
+                                                                .getTotal())
+                                                .append("\n")
+                                                .append(playerResponse
                                                         .getGlobalData()
                                                         .getRaids()
-                                                        .getTotal())),
-                                        false);
-                        context.getSource()
-                                .sendSuccess(
-                                        () -> playerResponse
-                                                .getGlobalData()
-                                                .getRaids()
-                                                .toPrettyMessage(playerResponse.getRanking()),
+                                                        .toPrettyMessage(playerResponse.getRanking()))),
                                         false);
                     }
                 }

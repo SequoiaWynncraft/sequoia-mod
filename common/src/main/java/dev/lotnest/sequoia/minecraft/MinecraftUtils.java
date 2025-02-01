@@ -10,6 +10,7 @@ public final class MinecraftUtils {
     private static final Pattern MINECRAFT_NAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,16}");
     private static final Pattern MINECRAFT_NAME_PATTERN_WITH_COLOR =
             Pattern.compile("§[a-fA-F0-9 ]+[a-zA-Z0-9_]{3,16}");
+    private static final Pattern NON_MINECRAFT_NAME_PATTERN = Pattern.compile("[^a-zA-Z0-9_]");
 
     private MinecraftUtils() {}
 
@@ -19,5 +20,9 @@ public final class MinecraftUtils {
 
     public static boolean isValidUsernameWithColor(String username) {
         return MINECRAFT_NAME_PATTERN_WITH_COLOR.matcher(username).matches();
+    }
+
+    public static String cleanUsername(String username) {
+        return NON_MINECRAFT_NAME_PATTERN.matcher(username).replaceAll("");
     }
 }

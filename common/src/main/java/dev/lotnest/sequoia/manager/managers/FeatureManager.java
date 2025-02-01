@@ -25,6 +25,7 @@ import dev.lotnest.sequoia.feature.features.messagefilter.MessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.guild.GuildMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.messagefilter.mod.ModMessageFilterFeature;
 import dev.lotnest.sequoia.feature.features.raids.NOLRaidFeature;
+import dev.lotnest.sequoia.feature.features.raids.PartyRaidCompletionsDisplayFeature;
 import dev.lotnest.sequoia.feature.features.raids.RaidsFeature;
 import dev.lotnest.sequoia.feature.features.raids.TNARaidFeature;
 import dev.lotnest.sequoia.manager.Manager;
@@ -69,6 +70,7 @@ public final class FeatureManager extends Manager {
         registerFeature(new RaidsFeature());
         registerFeature(new NOLRaidFeature());
         registerFeature(new TNARaidFeature());
+        registerFeature(new PartyRaidCompletionsDisplayFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();
