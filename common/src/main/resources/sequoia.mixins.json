@@ -6,7 +6,8 @@
     "ItemEntityRendererMixin",
     "ResourceLoadStateTrackerMixin",
     "ScreenMixin",
-    "TitleScreenMixin"
+    "TitleScreenMixin",
+    "KeyMappingMixin"
   ],
   "compatibilityLevel": "JAVA_17",
   "injectors": {
@@ -14,6 +15,6 @@
   },
   "minVersion": "0.8.5",
   "mixins": [],
-  "package": "dev.lotnest.sequoia.mc.mixins",
+  "package": "dev.lotnest.sequoia.mc.mixin",
   "required": true
 }

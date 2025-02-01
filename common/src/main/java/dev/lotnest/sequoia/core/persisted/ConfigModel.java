@@ -67,6 +67,10 @@ public class ConfigModel {
     @Expanded
     public RaidsFeature raidsFeature = new RaidsFeature();
 
+    @Nest
+    @Expanded
+    public TerritoryFeature territoryFeature = new TerritoryFeature();
+
     public static class MessageFilterFeature {
         public boolean enabled = false;
         public MessageFilterDecisionType eventMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
@@ -137,8 +141,9 @@ public class ConfigModel {
     public static class RaidsFeature {
         public boolean enabled = true;
         public boolean trackChosenPartyBuffs = true;
-        public boolean farsightedOverlay = false;
-        public boolean myopicOverlay = false;
+        public boolean farsightedGambitOverlay = false;
+        public boolean myopicGambitOverlay = false;
+        public boolean showGluttonGambitWarning = true;
 
         @Nest
         @Expanded
@@ -179,5 +184,11 @@ public class ConfigModel {
                     displayType = dev.lotnest.sequoia.features.raids.PartyRaidCompletionsDisplayFeature
                             .PartyRaidCompletionsDisplayType.MANUAL;
         }
+    }
+
+    public static class TerritoryFeature {
+        public boolean enabled = true;
+        public boolean showCapturedTerritoryInfo = true;
+        public boolean territoryMenuHotkey = true;
     }
 }
