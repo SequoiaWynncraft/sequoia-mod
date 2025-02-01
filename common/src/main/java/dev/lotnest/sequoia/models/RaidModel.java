@@ -6,7 +6,9 @@ package dev.lotnest.sequoia.models;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import com.wynntils.mc.event.TitleSetTextEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Model;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
@@ -16,6 +18,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,6 +27,9 @@ import org.apache.commons.lang3.tuple.Pair;
 public class RaidModel extends Model {
     private static final Pattern PLAYER_BUFF_CHOSEN_PATTERN =
             Pattern.compile("^(?<player>.+) chosen the (?<buff>.+) (?<buffTier>I|II|III) buff!$");
+
+    private static final Pattern RAID_COMPLETED_PATTERN = Pattern.compile("§f§lR§#4d4d4dff§laid Completed!");
+    private static final Pattern RAID_FAILED_PATTERN = Pattern.compile("§4§kRa§c§lid Failed!");
 
     private final Map<String, Set<Pair<String, String>>> raidBuffs = Maps.newHashMap();
 
@@ -46,6 +53,15 @@ public class RaidModel extends Model {
 
                 SequoiaMod.debug("raidBuffs: " + raidBuffs);
             }
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onTitle(TitleSetTextEvent event) {
+        Component component = event.getComponent();
+        StyledText styledText = StyledText.fromComponent(component);
+        if (styledText.matches(RAID_COMPLETED_PATTERN) || styledText.matches(RAID_FAILED_PATTERN)) {
+            raidBuffs.clear();
         }
     }
 
