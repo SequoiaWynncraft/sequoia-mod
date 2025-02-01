@@ -109,7 +109,7 @@
   "sequoia.feature.playerIgnore.name": "Player Ignore",
   "sequoia.feature.raids.description": "Provides QOL features for raids",
   "sequoia.feature.raids.name": "Raids",
-  "sequoia.feature.raidsFeature.gluttonGambitWarning": "§c§lGlutton gambit warning! §6Taking any more buffs will result in a §c-6 §6pull reward penalty.",
+  "sequoia.feature.raidsFeature.gluttonGambitWarning": "§c§lGlutton's Gambit warning! §6Taking any more buffs will result in a §c-6 §6pull reward penalty.",
   "sequoia.feature.sequoiaOST.description": "Plays the Sequoia OST in game",
   "sequoia.feature.sequoiaOST.name": "Sequoia OST",
   "sequoia.feature.tNARaid.description": "Provides QOL features for the Nameless Anomaly raid",
