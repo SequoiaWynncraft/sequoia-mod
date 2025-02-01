@@ -5,18 +5,19 @@
 package dev.lotnest.sequoia.core.keybinds;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.wynntils.core.mod.type.CrashType;
 import com.wynntils.mc.event.InventoryKeyPressEvent;
 import com.wynntils.mc.event.InventoryMouseClickedEvent;
 import com.wynntils.mc.event.TickEvent;
-import com.wynntils.mc.mixin.accessors.OptionsAccessor;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Manager;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.core.consumers.features.properties.RegisterKeyBind;
+import dev.lotnest.sequoia.mc.mixin.accessors.OptionsAccessor;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 
 public final class KeyBindManager extends Manager {
     private final Set<KeyBind> enabledKeyBinds = ConcurrentHashMap.newKeySet();
-    private final Map<Feature, List<Pair<KeyBind, String>>> keyBinds = new ConcurrentHashMap<>();
+    private final Map<Feature, List<Pair<KeyBind, String>>> keyBinds = Maps.newConcurrentMap();
 
     public KeyBindManager() {
         super(List.of());
@@ -46,6 +47,9 @@ public final class KeyBindManager extends Manager {
                 KeyBind keyBind = (KeyBind) FieldUtils.readField(field, feature, true);
                 keyBinds.putIfAbsent(feature, Lists.newLinkedList());
                 keyBinds.get(feature).add(Pair.of(keyBind, field.getName()));
+
+                SequoiaMod.debug("Discovered KeyBind " + field.getName() + " in "
+                        + feature.getClass().getName());
             } catch (Exception exception) {
                 SequoiaMod.error(
                         "Failed to register KeyBind " + field.getName() + " in "
@@ -89,23 +93,25 @@ public final class KeyBindManager extends Manager {
     }
 
     public void disableFeatureKeyBinds(Feature feature) {
-        if (!keyBinds.containsKey(feature)) return;
+        if (!keyBinds.containsKey(feature)) {
+            return;
+        }
 
         for (Pair<KeyBind, String> keyBind : keyBinds.get(feature)) {
             unregisterKeybind(feature, keyBind.getKey());
         }
     }
 
-    private void registerKeybind(Feature parent, KeyBind toAdd, String fieldName) {
-        if (hasName(toAdd.getName())) {
+    private void registerKeybind(Feature featureParent, KeyBind keyBind, String fieldName) {
+        if (hasName(keyBind.getName())) {
             throw new IllegalStateException(
-                    "Can not add keybind " + toAdd.getName() + " since the name already exists");
+                    "Can not add keybind " + keyBind.getName() + " since the name already exists");
         }
 
-        KeyMapping keyMapping = toAdd.getKeyMapping();
+        KeyMapping keyMapping = keyBind.getKeyMapping();
 
         synchronized (McUtils.options()) {
-            enabledKeyBinds.add(toAdd);
+            enabledKeyBinds.add(keyBind);
 
             Options options = McUtils.options();
             KeyMapping[] keyMappings = options.keyMappings;
@@ -120,19 +126,19 @@ public final class KeyBindManager extends Manager {
         KeyMapping.resetMapping();
     }
 
-    private void unregisterKeybind(Feature parent, KeyBind toRemove) {
-        if (!enabledKeyBinds.remove(toRemove)) {
+    private void unregisterKeybind(Feature featureParent, KeyBind keyBind) {
+        if (!enabledKeyBinds.remove(keyBind)) {
             return;
         }
 
-        KeyMapping keyMapping = toRemove.getKeyMapping();
+        KeyMapping keyMapping = keyBind.getKeyMapping();
 
         synchronized (McUtils.options()) {
             Options options = McUtils.options();
             KeyMapping[] keyMappings = options.keyMappings;
 
             List<KeyMapping> newKeyMappings = Lists.newArrayList(keyMappings);
-            newKeyMappings.remove(toRemove.getKeyMapping());
+            newKeyMappings.remove(keyBind.getKeyMapping());
 
             ((OptionsAccessor) options).setKeyBindMixins(newKeyMappings.toArray(KeyMapping[]::new));
         }

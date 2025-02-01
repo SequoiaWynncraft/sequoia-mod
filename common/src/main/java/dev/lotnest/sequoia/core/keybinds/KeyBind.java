@@ -108,13 +108,17 @@ public class KeyBind {
     }
 
     public void onPress() {
-        if (onPress == null) return;
+        if (onPress == null) {
+            return;
+        }
 
         onPress.run();
     }
 
     public void onInventoryPress(Slot hoveredSlot) {
-        if (onInventoryPress == null) return;
+        if (onInventoryPress == null) {
+            return;
+        }
 
         onInventoryPress.accept(hoveredSlot);
     }

@@ -35,7 +35,7 @@ public class TerritoryModel extends Model {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onMenuOpenPre(MenuEvent.MenuOpenedEvent.Pre event) {
+    public void onMenuOpenedPre(MenuEvent.MenuOpenedEvent.Pre event) {
         if (!isTerritoryMenuOpened) {
             return;
         }

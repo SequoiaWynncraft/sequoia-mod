@@ -7,7 +7,8 @@
     "ResourceLoadStateTrackerMixin",
     "ScreenMixin",
     "TitleScreenMixin",
-    "KeyMappingMixin"
+    "KeyMappingMixin",
+    "accessors.OptionsAccessor"
   ],
   "compatibilityLevel": "JAVA_17",
   "injectors": {
