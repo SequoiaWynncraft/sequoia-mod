@@ -4,16 +4,13 @@
  */
 package dev.lotnest.sequoia.feature.features;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wynntils.core.components.Models;
 import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.utils.colors.CommonColors;
-import com.wynntils.utils.render.buffered.CustomRenderType;
 import com.wynntils.utils.type.ThrottledSupplier;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.feature.Feature;
 import dev.lotnest.sequoia.utils.PlayerUtils;
 import dev.lotnest.sequoia.wynn.WynnUtils;
@@ -23,11 +20,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.Position;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
-import org.joml.Matrix4f;
 
 public class PartyLowHealthFeature extends Feature {
     private static final MultiBufferSource.BufferSource BUFFER_SOURCE =
@@ -85,9 +80,12 @@ public class PartyLowHealthFeature extends Feature {
             if (scoreboardHealthMatcher.find()) {
                 String healthSegmentsSection = scoreboardHealthMatcher.group(1);
                 double healthPercentage = calculateHealthPercentage(healthSegmentsSection);
-
+                SequoiaMod.debug(String.format("%s, %s %f", player.getName(), playerName, healthPercentage));
                 if (healthPercentage <= 37.5 && player.getName().getString().contains(playerName)) {
-                    renderCircle(
+                    WynnUtils.renderCircle(
+                            BUFFER_SOURCE,
+                            CIRCLE_SEGMENTS,
+                            CIRCLE_HEIGHT,
                             event.getPoseStack(),
                             player.position(),
                             7.9F,
@@ -119,49 +117,5 @@ public class PartyLowHealthFeature extends Feature {
 
         double percentage = totalSegments > 0 ? (redSegments / (double) totalSegments) * 100 : 100.0;
         return percentage;
-    }
-
-    /**
-     * Renders a circle with the given radius. Some notes for future reference:<p>
-     * - The circle is rendered at the player's feet, from the ground to HEIGHT blocks above the ground.<p>
-     * - .color() takes floats from 0-1, but ints from 0-255<p>
-     * - Increase SEGMENTS to make the circle smoother, but it will also increase the amount of vertices (and thus the amount of memory used and the amount of time it takes to render)<p>
-     * - The order of the consumer.vertex() calls matter. Here, we draw a quad, so we do bottom left corner, top left corner, top right corner, bottom right corner. This is filled in with the color we set.<p>
-     *
-     * @param poseStack The pose stack to render with. This is supposed to be the pose stack from the event.
-     *                  We do the translation here, so no need to do it before passing it in.
-     * @param radius
-     * @param color
-     */
-    private void renderCircle(PoseStack poseStack, Position position, float radius, int color) {
-        // Circle must be rendered on both sides, otherwise it will be invisible when looking at
-        // it from the outside
-        RenderSystem.disableCull();
-
-        poseStack.pushPose();
-        poseStack.translate(-position.x(), -position.y(), -position.z());
-        VertexConsumer consumer = BUFFER_SOURCE.getBuffer(CustomRenderType.POSITION_COLOR_QUAD);
-
-        Matrix4f matrix4f = poseStack.last().pose();
-        double angleStep = 2 * Math.PI / CIRCLE_SEGMENTS;
-        double startingAngle = -(System.currentTimeMillis() % 40000) * 2 * Math.PI / 40000.0;
-        double angle = startingAngle;
-        for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
-            float x = (float) (position.x() + Math.sin(angle) * radius);
-            float z = (float) (position.z() + Math.cos(angle) * radius);
-            consumer.addVertex(matrix4f, x, (float) position.y(), z).setColor(color);
-            consumer.addVertex(matrix4f, x, (float) position.y() + CIRCLE_HEIGHT, z)
-                    .setColor(color);
-            angle += angleStep;
-            float x2 = (float) (position.x() + Math.sin(angle) * radius);
-            float z2 = (float) (position.z() + Math.cos(angle) * radius);
-            consumer.addVertex(matrix4f, x2, (float) position.y() + CIRCLE_HEIGHT, z2)
-                    .setColor(color);
-            consumer.addVertex(matrix4f, x2, (float) position.y(), z2).setColor(color);
-        }
-
-        BUFFER_SOURCE.endBatch();
-        poseStack.popPose();
-        RenderSystem.enableCull();
     }
 }

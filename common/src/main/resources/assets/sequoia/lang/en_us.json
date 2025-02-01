@@ -162,6 +162,8 @@
   "text.config.sequoia.option.raidsFeature.TNARaidFeature.showShadowlingKilledTitle": "Show shadowling killed title",
   "text.config.sequoia.option.raidsFeature.TNARaidFeature.showShadowlingKilledTitle.tooltip": "Whenever a shadowling is killed, a title\nwill be shown in the middle of the screen.",
   "text.config.sequoia.option.raidsFeature.enabled": "Status",
+  "text.config.sequoia.option.raidsFeature.farsightedOverlay": "Show farsighted range overlay",
+  "text.config.sequoia.option.raidsFeature.myopicOverlay": "Show myopic range overlay",
   "text.config.sequoia.option.raidsFeature.trackChosenPartyBuffs": "Track chosen party buffs",
   "text.config.sequoia.option.raidsFeature.trackChosenPartyBuffs.tooltip": "Keeps track of what your party members have chosen\nfor their raid buffs. As of now, it is not\nused for anything.",
   "text.config.sequoia.option.renderSequoiaPanorama": "Render Sequoia panorama",

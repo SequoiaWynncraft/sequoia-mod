@@ -6,6 +6,9 @@ package dev.lotnest.sequoia.wynn;
 
 import static com.wynntils.models.character.CharacterModel.GUILD_MENU_SLOT;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.wynntils.core.WynntilsMod;
 import com.wynntils.core.components.Models;
 import com.wynntils.handlers.container.scriptedquery.QueryBuilder;
@@ -14,6 +17,7 @@ import com.wynntils.handlers.container.scriptedquery.ScriptedContainerQuery;
 import com.wynntils.handlers.container.type.ContainerContent;
 import com.wynntils.models.containers.ContainerModel;
 import com.wynntils.utils.mc.McUtils;
+import com.wynntils.utils.render.buffered.CustomRenderType;
 import com.wynntils.utils.wynn.InventoryUtils;
 import dev.lotnest.sequoia.minecraft.MinecraftUtils;
 import java.util.Collections;
@@ -25,9 +29,12 @@ import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.Position;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import org.apache.commons.lang3.StringUtils;
+import org.joml.Matrix4f;
 
 public final class WynnUtils {
     private static final Pattern WYNNCRAFT_SERVER_PATTERN =
@@ -145,5 +152,56 @@ public final class WynnUtils {
     private static void parseCharacterContainer(ContainerContent container) {
         ItemStack guildInfoItem = container.items().get(GUILD_MENU_SLOT);
         Models.Guild.parseGuildInfoFromGuildMenu(guildInfoItem);
+    }
+
+    /**
+     * Renders a circle with the given radius. Some notes for future reference:<p>
+     * - The circle is rendered at the player's feet, from the ground to HEIGHT blocks above the ground.<p>
+     * - .color() takes floats from 0-1, but ints from 0-255<p>
+     * - Increase SEGMENTS to make the circle smoother, but it will also increase the amount of vertices (and thus the amount of memory used and the amount of time it takes to render)<p>
+     * - The order of the consumer.vertex() calls matter. Here, we draw a quad, so we do bottom left corner, top left corner, top right corner, bottom right corner. This is filled in with the color we set.<p>
+     *
+     * @param poseStack The pose stack to render with. This is supposed to be the pose stack from the event.
+     *                  We do the translation here, so no need to do it before passing it in.
+     * @param radius
+     * @param color
+     */
+    public static void renderCircle(
+            MultiBufferSource.BufferSource BUFFER_SOURCE,
+            int CIRCLE_SEGMENTS,
+            float CIRCLE_HEIGHT,
+            PoseStack poseStack,
+            Position position,
+            float radius,
+            int color) {
+        // Circle must be rendered on both sides, otherwise it will be invisible when looking at
+        // it from the outside
+        RenderSystem.disableCull();
+
+        poseStack.pushPose();
+        poseStack.translate(-position.x(), -position.y(), -position.z());
+        VertexConsumer consumer = BUFFER_SOURCE.getBuffer(CustomRenderType.POSITION_COLOR_QUAD);
+
+        Matrix4f matrix4f = poseStack.last().pose();
+        double angleStep = 2 * Math.PI / CIRCLE_SEGMENTS;
+        double startingAngle = -(System.currentTimeMillis() % 40000) * 2 * Math.PI / 40000.0;
+        double angle = startingAngle;
+        for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
+            float x = (float) (position.x() + Math.sin(angle) * radius);
+            float z = (float) (position.z() + Math.cos(angle) * radius);
+            consumer.addVertex(matrix4f, x, (float) position.y(), z).setColor(color);
+            consumer.addVertex(matrix4f, x, (float) position.y() + CIRCLE_HEIGHT, z)
+                    .setColor(color);
+            angle += angleStep;
+            float x2 = (float) (position.x() + Math.sin(angle) * radius);
+            float z2 = (float) (position.z() + Math.cos(angle) * radius);
+            consumer.addVertex(matrix4f, x2, (float) position.y() + CIRCLE_HEIGHT, z2)
+                    .setColor(color);
+            consumer.addVertex(matrix4f, x2, (float) position.y(), z2).setColor(color);
+        }
+
+        BUFFER_SOURCE.endBatch();
+        poseStack.popPose();
+        RenderSystem.enableCull();
     }
 }

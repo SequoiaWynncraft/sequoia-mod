@@ -137,6 +137,8 @@ public class SequoiaConfigModel {
     public static class RaidsFeature {
         public boolean enabled = true;
         public boolean trackChosenPartyBuffs = true;
+        public boolean farsightedOverlay = false;
+        public boolean myopicOverlay = false;
 
         @Nest
         @Expanded
