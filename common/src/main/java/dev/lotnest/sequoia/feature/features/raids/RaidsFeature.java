@@ -38,7 +38,7 @@ public class RaidsFeature extends Feature {
 
     private static final int CIRCLE_SEGMENTS = 128;
 
-    private static final float CIRCLE_HEIGHT = 0.1F;
+    private static final float CIRCLE_HEIGHT = 0.2F;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
