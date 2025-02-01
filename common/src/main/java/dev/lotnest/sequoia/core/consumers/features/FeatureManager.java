@@ -29,6 +29,7 @@ import dev.lotnest.sequoia.features.raids.NOLRaidFeature;
 import dev.lotnest.sequoia.features.raids.PartyRaidCompletionsDisplayFeature;
 import dev.lotnest.sequoia.features.raids.RaidsFeature;
 import dev.lotnest.sequoia.features.raids.TNARaidFeature;
+import dev.lotnest.sequoia.features.war.TerritoryCapturedFeature;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +71,7 @@ public final class FeatureManager extends Manager {
         registerFeature(new NOLRaidFeature());
         registerFeature(new TNARaidFeature());
         registerFeature(new PartyRaidCompletionsDisplayFeature());
+        registerFeature(new TerritoryCapturedFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();

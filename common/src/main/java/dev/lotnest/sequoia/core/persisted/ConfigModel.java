@@ -67,6 +67,10 @@ public class ConfigModel {
     @Expanded
     public RaidsFeature raidsFeature = new RaidsFeature();
 
+    @Nest
+    @Expanded
+    public TerritoryCapturedFeature territoryCapturedFeature = new TerritoryCapturedFeature();
+
     public static class MessageFilterFeature {
         public boolean enabled = false;
         public MessageFilterDecisionType eventMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
@@ -179,5 +183,10 @@ public class ConfigModel {
                     displayType = dev.lotnest.sequoia.features.raids.PartyRaidCompletionsDisplayFeature
                             .PartyRaidCompletionsDisplayType.MANUAL;
         }
+    }
+
+    public static class TerritoryCapturedFeature {
+        public boolean enabled = true;
+        public boolean showCapturedTerritoryInfo = true;
     }
 }

@@ -6,9 +6,7 @@ package dev.lotnest.sequoia.models;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
-import com.wynntils.mc.event.TitleSetTextEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Model;
@@ -19,8 +17,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.tuple.Pair;
@@ -51,14 +47,18 @@ public class RaidModel extends Model {
                 String buffTier = playerBuffChosenMatcher.group("buffTier");
 
                 raidBuffs.computeIfAbsent(player, k -> Sets.newHashSet()).add(Pair.of(buff, buffTier));
-
                 SequoiaMod.debug("raidBuffs: " + raidBuffs);
             }
         }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void raidEndedEvent(RaidEndedEvent event) {
+    public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
+        raidBuffs.clear();
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
         raidBuffs.clear();
     }
 

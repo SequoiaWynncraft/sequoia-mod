@@ -1,21 +1,23 @@
+/*
+ * Copyright © sequoia-mod 2025.
+ * This file is released under LGPLv3. See LICENSE for full license details.
+ */
 package dev.lotnest.sequoia.models;
 
 import com.wynntils.core.text.StyledText;
 import com.wynntils.mc.event.ContainerSetContentEvent;
 import com.wynntils.utils.mc.LoreUtils;
 import com.wynntils.utils.mc.McUtils;
-import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Model;
+import java.util.HashMap;
+import java.util.List;
 import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
-import java.util.HashMap;
-import java.util.List;
-
 public class GambitModel extends Model {
-    private static HashMap<String, Boolean> gambits = new HashMap<String, Boolean>();;
+    private final HashMap<String, Boolean> chosenGambits = new HashMap<>();
 
     public GambitModel() {
         super(List.of());
@@ -23,27 +25,31 @@ public class GambitModel extends Model {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onContainerSetContentPost(ContainerSetContentEvent.Post event) {
-        if (!(McUtils.mc().screen instanceof ContainerScreen containerScreen) || !containerScreen.getTitle().getString().contains("\uDAFF\uDFE1\uE00C")) {
+        if (!(McUtils.mc().screen instanceof ContainerScreen containerScreen)
+                || !containerScreen.getTitle().getString().contains("\uDAFF\uDFE1\uE00C")) {
             return;
         }
-        gambits.clear();
+
+        chosenGambits.clear();
+
         for (ItemStack stack : containerScreen.getMenu().getItems()) {
             if (stack.getHoverName().getString().contains("Gambit")) {
-                boolean enabled = false;
+                boolean isGambitEnabled = false;
+
                 for (StyledText line : LoreUtils.getLore(stack)) {
                     if (line.contains("Disable")) {
-                        enabled = true;
+                        isGambitEnabled = true;
                     }
                 }
-                gambits.put(stack.getHoverName().getString(), enabled);
+
+                chosenGambits.put(stack.getHoverName().getString(), isGambitEnabled);
             }
         }
     }
 
-    public static boolean GetGambit(GambitType Gambit) {
-     return gambits.getOrDefault(Gambit.displayName, false);
+    public boolean getGambit(GambitType gambitType) {
+        return chosenGambits.getOrDefault(gambitType.displayName, false);
     }
-
 
     public enum GambitType {
         ANEMIC("Anemics Gambit"),
