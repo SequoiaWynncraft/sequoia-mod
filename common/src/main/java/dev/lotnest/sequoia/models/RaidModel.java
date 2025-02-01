@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.mc.event.TitleSetTextEvent;
+import com.wynntils.models.raid.event.RaidEndedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Model;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
@@ -57,12 +58,8 @@ public class RaidModel extends Model {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onTitle(TitleSetTextEvent event) {
-        Component component = event.getComponent();
-        StyledText styledText = StyledText.fromComponent(component);
-        if (styledText.matches(RAID_COMPLETED_PATTERN) || styledText.matches(RAID_FAILED_PATTERN)) {
-            raidBuffs.clear();
-        }
+    public void raidEndedEvent(RaidEndedEvent event) {
+        raidBuffs.clear();
     }
 
     public Map<String, Set<Pair<String, String>>> getRaidBuffs() {
