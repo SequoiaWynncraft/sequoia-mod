@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.mc.mixins;
+package dev.lotnest.sequoia.mc.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.wynntils.mc.extension.EntityRenderStateExtension;

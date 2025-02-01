@@ -31,6 +31,7 @@ import dev.lotnest.sequoia.commands.PlayerWarsCommand;
 import dev.lotnest.sequoia.commands.ReconnectCommand;
 import dev.lotnest.sequoia.commands.SearchCommand;
 import dev.lotnest.sequoia.commands.SequoiaCommand;
+import dev.lotnest.sequoia.commands.TerritoryMenuCommand;
 import dev.lotnest.sequoia.commands.TestCommand;
 import dev.lotnest.sequoia.commands.VersionCommand;
 import dev.lotnest.sequoia.core.components.Manager;
@@ -191,6 +192,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new OuterVoidCommand());
         registerCommand(new PlayerRankCommand());
         registerCommand(new SearchCommand());
+        registerCommand(new TerritoryMenuCommand());
 
         registerCommandWithCommandSet(new SequoiaCommand());
     }

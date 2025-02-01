@@ -31,26 +31,27 @@ public class RaidsFeature extends Feature {
     private static final int CIRCLE_SEGMENTS = 128;
 
     private static final float CIRCLE_HEIGHT = 0.2F;
-    private static boolean displayed = false;
+
+    private boolean isGluttonWarningDisplayed = false;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onTick(TickEvent event) {
-        if (Models.Raid.getCurrentRoom() != RaidRoomType.BUFF_3
-                || dev.lotnest.sequoia.core.components.Models.Gambit.getGambit(GambitModel.GambitType.GLUTTON)) {
-            displayed = false;
+    public void checkGluttonGambing(TickEvent event) {
+        if (!SequoiaMod.CONFIG.raidsFeature.showGluttonGambitWarning()) {
             return;
         }
-        if (!displayed
+
+        if (Models.Raid.getCurrentRoom() != RaidRoomType.BUFF_3
+                || !dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
+            isGluttonWarningDisplayed = false;
+            return;
+        }
+        if (!isGluttonWarningDisplayed
                 && dev.lotnest.sequoia.core.components.Models.Raid.getRaidBuffs(McUtils.playerName())
                                 .size()
                         == 2) {
-            displayed = true;
-            McUtils.player()
-                    .displayClientMessage(
-                            SequoiaMod.prefix(
-                                    Component.literal(
-                                            "§cGluton warning! §6Taking any more buffs will result in a §b-6 §6pull reward penalty.")),
-                            false);
+            isGluttonWarningDisplayed = true;
+            McUtils.sendMessageToClient(
+                    SequoiaMod.prefix(Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarning")));
         }
     }
 
@@ -73,8 +74,8 @@ public class RaidsFeature extends Feature {
             return;
         }
 
-        if (SequoiaMod.CONFIG.raidsFeature.farsightedOverlay()
-                && dev.lotnest.sequoia.core.components.Models.Gambit.getGambit(GambitModel.GambitType.FARSIGHTED)
+        if (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlay()
+                && dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.FARSIGHTED)
                 && Models.Raid.getCurrentRaid() != null) {
             WynnUtils.renderCircle(
                     BUFFER_SOURCE,
@@ -85,8 +86,8 @@ public class RaidsFeature extends Feature {
                     3.0F,
                     CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
         }
-        if (SequoiaMod.CONFIG.raidsFeature.myopicOverlay()
-                && dev.lotnest.sequoia.core.components.Models.Gambit.getGambit(GambitModel.GambitType.MYOPIC)
+        if (SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlay()
+                && dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
                 && Models.Raid.getCurrentRaid() != null) {
             WynnUtils.renderCircle(
                     BUFFER_SOURCE,

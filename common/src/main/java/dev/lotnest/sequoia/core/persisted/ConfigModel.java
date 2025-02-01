@@ -69,7 +69,7 @@ public class ConfigModel {
 
     @Nest
     @Expanded
-    public TerritoryCapturedFeature territoryCapturedFeature = new TerritoryCapturedFeature();
+    public TerritoryFeature territoryFeature = new TerritoryFeature();
 
     public static class MessageFilterFeature {
         public boolean enabled = false;
@@ -141,8 +141,9 @@ public class ConfigModel {
     public static class RaidsFeature {
         public boolean enabled = true;
         public boolean trackChosenPartyBuffs = true;
-        public boolean farsightedOverlay = false;
-        public boolean myopicOverlay = false;
+        public boolean farsightedGambitOverlay = false;
+        public boolean myopicGambitOverlay = false;
+        public boolean showGluttonGambitWarning = true;
 
         @Nest
         @Expanded
@@ -185,8 +186,9 @@ public class ConfigModel {
         }
     }
 
-    public static class TerritoryCapturedFeature {
+    public static class TerritoryFeature {
         public boolean enabled = true;
         public boolean showCapturedTerritoryInfo = true;
+        public boolean territoryMenuHotkey = true;
     }
 }

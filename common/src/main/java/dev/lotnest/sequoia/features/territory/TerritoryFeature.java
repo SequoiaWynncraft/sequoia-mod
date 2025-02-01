@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.features.war;
+package dev.lotnest.sequoia.features.territory;
 
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 import com.wynntils.core.WynntilsMod;
@@ -26,7 +26,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.compress.utils.Lists;
 
-public class TerritoryCapturedFeature extends Feature {
+public class TerritoryFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onTerritoryCaptured(ChatMessageReceivedEvent event) {
         if (!isEnabled()) {
@@ -59,7 +59,7 @@ public class TerritoryCapturedFeature extends Feature {
         WynntilsMod.postEvent(new TerritoryCapturedEvent(
                 territoryCapturer, territoryName, territoryInfo.getGenerators(), territoryInfo.getTreasury()));
 
-        if (SequoiaMod.CONFIG.territoryCapturedFeature.showCapturedTerritoryInfo()) {
+        if (SequoiaMod.CONFIG.territoryFeature.showCapturedTerritoryInfo()) {
             List<MutableComponent> generatorComponents = Lists.newArrayList();
             for (Map.Entry<GuildResource, Integer> generator :
                     territoryInfo.getGenerators().entrySet()) {
@@ -101,6 +101,6 @@ public class TerritoryCapturedFeature extends Feature {
 
     @Override
     public boolean isEnabled() {
-        return SequoiaMod.CONFIG.territoryCapturedFeature.enabled();
+        return SequoiaMod.CONFIG.territoryFeature.enabled();
     }
 }

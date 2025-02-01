@@ -14,8 +14,8 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Manager;
 import dev.lotnest.sequoia.core.components.Managers;
+import dev.lotnest.sequoia.core.consumers.command.FeatureCommands;
 import dev.lotnest.sequoia.features.CommandsFeature;
-import dev.lotnest.sequoia.features.FeatureCommands;
 import dev.lotnest.sequoia.features.OuterVoidTrackerFeature;
 import dev.lotnest.sequoia.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.features.SequoiaOSTFeature;
@@ -29,7 +29,8 @@ import dev.lotnest.sequoia.features.raids.NOLRaidFeature;
 import dev.lotnest.sequoia.features.raids.PartyRaidCompletionsDisplayFeature;
 import dev.lotnest.sequoia.features.raids.RaidsFeature;
 import dev.lotnest.sequoia.features.raids.TNARaidFeature;
-import dev.lotnest.sequoia.features.war.TerritoryCapturedFeature;
+import dev.lotnest.sequoia.features.territory.TerritoryFeature;
+import dev.lotnest.sequoia.features.territory.TerritoryMenuHotkeyFeature;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,7 +72,8 @@ public final class FeatureManager extends Manager {
         registerFeature(new NOLRaidFeature());
         registerFeature(new TNARaidFeature());
         registerFeature(new PartyRaidCompletionsDisplayFeature());
-        registerFeature(new TerritoryCapturedFeature());
+        registerFeature(new TerritoryFeature());
+        registerFeature(new TerritoryMenuHotkeyFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();
@@ -108,6 +110,7 @@ public final class FeatureManager extends Manager {
 
     private void initializeFeature(Feature feature) {
         commands.discoverCommands(feature);
+        Managers.KeyBind.discoverKeyBinds(feature);
 
         assert !feature.getTranslatedName().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedName();
@@ -125,13 +128,17 @@ public final class FeatureManager extends Manager {
 
         FeatureState state = FEATURES.get(feature);
 
-        if (state != FeatureState.DISABLED && state != FeatureState.CRASHED) return;
+        if (state != FeatureState.DISABLED && state != FeatureState.CRASHED) {
+            return;
+        }
 
         feature.onEnable();
 
         FEATURES.put(feature, FeatureState.ENABLED);
 
         WynntilsMod.registerEventListener(feature);
+
+        Managers.KeyBind.enableFeatureKeyBinds(feature);
     }
 
     public void disableFeature(Feature feature) {
@@ -148,6 +155,8 @@ public final class FeatureManager extends Manager {
         FEATURES.put(feature, FeatureState.DISABLED);
 
         WynntilsMod.unregisterEventListener(feature);
+
+        Managers.KeyBind.disableFeatureKeyBinds(feature);
     }
 
     public void crashFeature(Feature feature) {
@@ -188,12 +197,13 @@ public final class FeatureManager extends Manager {
                 .findFirst();
     }
 
-    public void handleExceptionInEventListener(Event event, String featureClassName, Throwable t) {
+    public void handleExceptionInEventListener(Event event, String featureClassName, Throwable throwable) {
         String featureName = featureClassName.substring(featureClassName.lastIndexOf('.') + 1);
 
         Optional<Feature> featureOptional = getFeatureFromString(featureName);
         if (featureOptional.isEmpty()) {
-            SequoiaMod.error("Exception in event listener in feature that cannot be located: " + featureClassName, t);
+            SequoiaMod.error(
+                    "Exception in event listener in feature that cannot be located: " + featureClassName, throwable);
             return;
         }
 
@@ -210,7 +220,7 @@ public final class FeatureManager extends Manager {
                 "event listener",
                 shouldSendChat,
                 true,
-                t);
+                throwable);
 
         if (shouldSendChat) {
             MutableComponent enableMessage = Component.literal("Click here to enable it again.")
