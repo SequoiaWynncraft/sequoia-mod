@@ -156,6 +156,11 @@ public class SequoiaConfigModel {
         @Expanded
         public TNARaidFeature TNARaidFeature = new TNARaidFeature();
 
+        @Nest
+        @Expanded
+        public PartyRaidCompletionsDisplayFeature PartyRaidCompletionsDisplayFeature =
+                new PartyRaidCompletionsDisplayFeature();
+
         public static class NOTGRaidFeature {}
 
         public static class TCCRaidFeature {}
@@ -167,6 +172,13 @@ public class SequoiaConfigModel {
 
         public static class TNARaidFeature {
             public boolean showShadowlingKilledTitle = true;
+        }
+
+        public static class PartyRaidCompletionsDisplayFeature {
+            public dev.lotnest.sequoia.feature.features.raids.PartyRaidCompletionsDisplayFeature
+                            .PartyRaidCompletionsDisplayType
+                    displayType = dev.lotnest.sequoia.feature.features.raids.PartyRaidCompletionsDisplayFeature
+                            .PartyRaidCompletionsDisplayType.MANUAL;
         }
     }
 }
