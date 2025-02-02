@@ -40,7 +40,9 @@ public class RaidsFeature extends Feature {
             return;
         }
 
-        if (!Models.Raid.isInBuffRoom() || !Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
+        if (!Models.Raid.isInBuffRoom()
+                || Models.Raid.getBuffRoom() != 3
+                || !Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
             isGluttonWarningDisplayed = false;
             return;
         }

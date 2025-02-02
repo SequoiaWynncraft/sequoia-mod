@@ -41,7 +41,8 @@ public class WebSocketFeature extends Feature {
 
     private WebSocketClient client;
     private boolean isFirstConnection = false;
-    private boolean isAuthenticating;
+    private boolean isAuthenticating = false;
+    private boolean isAuthenticated = false;
 
     public void initClient() {
         if (McUtils.player() == null || StringUtils.isBlank(McUtils.player().getStringUUID())) {
@@ -147,6 +148,11 @@ public class WebSocketFeature extends Feature {
             return null;
         }
 
+        if (!isAuthenticating && !isAuthenticated && (Models.WorldState.onWorld() || Models.WorldState.onHousing())) {
+            authenticate();
+            return null;
+        }
+
         try {
             String json = GSON.toJson(object);
             SequoiaMod.debug("Sending WebSocket message: " + json);
@@ -181,6 +187,7 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
+        setAuthenticating(true);
         SequoiaMod.debug("Authenticating with WebSocket server.");
 
         if (receivedInvalidTokenResult) {
@@ -206,6 +213,20 @@ public class WebSocketFeature extends Feature {
             return;
         }
         this.isAuthenticating = isAuthenticating;
+    }
+
+    public boolean isAuthenticated() {
+        if (!isEnabled()) {
+            return false;
+        }
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(boolean isAuthenticated) {
+        if (!isEnabled()) {
+            return;
+        }
+        this.isAuthenticated = isAuthenticated;
     }
 
     public void connectIfNeeded() {

@@ -24,12 +24,14 @@ public class SSessionResultHandler extends WSMessageHandler {
 
         if (StringUtils.equals(sSessionResultWSMessageData.result(), "Authentication pending.")) {
             SequoiaMod.getWebSocketFeature().setAuthenticating(true);
+            SequoiaMod.getWebSocketFeature().setAuthenticated(false);
             SequoiaMod.debug("Authentication pending, waiting for successful authentication.");
             return;
         }
 
         if (!sSessionResultWSMessageData.error()) {
             SequoiaMod.getWebSocketFeature().setAuthenticating(false);
+            SequoiaMod.getWebSocketFeature().setAuthenticated(true);
             SequoiaMod.debug("Authenticated with WebSocket server.");
 
             if (!StringUtils.equals(AccessTokenManager.retrieveAccessToken(), sSessionResultWSMessageData.result())) {
