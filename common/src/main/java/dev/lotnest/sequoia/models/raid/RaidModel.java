@@ -13,7 +13,6 @@ import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Handlers;
 import dev.lotnest.sequoia.core.components.Model;
 import dev.lotnest.sequoia.models.raid.scoreboard.RaidScoreboardPart;
-import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,8 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class RaidModel extends Model {
     private static final Pattern RAID_BUFF_CHOSEN_PATTERN = Pattern.compile(
-            "§#d6401eff(\\uE009\\uE002|\\uE001) §#fa7f63ff((§o)?(\\w+))§#d6401eff has chosen the §#fa7f63ff(\\w+ \\w+)§#d6401eff buff!");
+            "§#d6401eff(\\uE009\\uE002|\\uE001) §#fa7f63ff((§o)?(\\w+))§#d6401eff has chosen the §#fa7f63ff(\\w+) (\\w+)§#d6401eff buff!");
+
     private static final RaidScoreboardPart RAID_SCOREBOARD_PART = new RaidScoreboardPart();
 
     private final Map<String, Set<Pair<String, String>>> raidBuffs = Maps.newHashMap();
@@ -41,11 +41,9 @@ public class RaidModel extends Model {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidBuffChosen(ChatMessageReceivedEvent event) {
-        String unfomattedMessage =
-                WynnUtils.getUnformattedString(event.getStyledText().getStringWithoutFormatting());
-
         if (SequoiaMod.CONFIG.raidsFeature.trackChosenPartyBuffs()) {
-            Matcher raidBuffChosenMatcher = RAID_BUFF_CHOSEN_PATTERN.matcher(unfomattedMessage);
+            Matcher raidBuffChosenMatcher =
+                    event.getOriginalStyledText().stripAlignment().getMatcher(RAID_BUFF_CHOSEN_PATTERN);
             if (raidBuffChosenMatcher.matches()) {
                 String playerName = raidBuffChosenMatcher.group(4);
                 if (raidBuffChosenMatcher.group(3) != null) {
@@ -56,8 +54,8 @@ public class RaidModel extends Model {
                     }
                 }
 
-                String buff = raidBuffChosenMatcher.group("buff");
-                String buffTier = raidBuffChosenMatcher.group("buffTier");
+                String buff = raidBuffChosenMatcher.group(5);
+                String buffTier = raidBuffChosenMatcher.group(6);
 
                 raidBuffs.computeIfAbsent(playerName, k -> Sets.newHashSet()).add(Pair.of(buff, buffTier));
                 SequoiaMod.debug("raidBuffs: " + raidBuffs);
