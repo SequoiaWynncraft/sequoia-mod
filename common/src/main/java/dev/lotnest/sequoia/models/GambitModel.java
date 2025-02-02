@@ -9,6 +9,7 @@ import com.wynntils.core.text.StyledText;
 import com.wynntils.mc.event.ContainerSetContentEvent;
 import com.wynntils.utils.mc.LoreUtils;
 import com.wynntils.utils.mc.McUtils;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Model;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class GambitModel extends Model {
             return;
         }
 
-        boolean isGambitLocked = false;
+        boolean isGambitLocked = true;
         dummyGambits.clear();
 
         for (ItemStack stack : containerScreen.getMenu().getItems()) {
@@ -51,8 +52,9 @@ public class GambitModel extends Model {
                     }
                 }
                 dummyGambits.put(hoverName, isGambitEnabled);
-            } else if (hoverName.contains("Waiting")) {
-                isGambitLocked = true;
+            } else if (hoverName.contains("Ready Up!")) {
+                SequoiaMod.debug(hoverName);
+                isGambitLocked = false;
             }
         }
 
