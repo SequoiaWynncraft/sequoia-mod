@@ -39,11 +39,12 @@ public class RaidsFeature extends Feature {
         if (!SequoiaMod.CONFIG.raidsFeature.showGluttonGambitWarning()) {
             return;
         }
-
         if (Models.Raid.getCurrentRoom() != RaidRoomType.BUFF_3
                 || !dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
             isGluttonWarningDisplayed = false;
             return;
+        } else {
+            McUtils.sendMessageToClient(SequoiaMod.prefix(Component.literal("§eYou are in the 3rd buff room.")));
         }
         if (!isGluttonWarningDisplayed
                 && dev.lotnest.sequoia.core.components.Models.Raid.getRaidBuffs(McUtils.playerName())
@@ -52,6 +53,12 @@ public class RaidsFeature extends Feature {
             isGluttonWarningDisplayed = true;
             McUtils.sendMessageToClient(
                     SequoiaMod.prefix(Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarning")));
+        } else {
+            McUtils.sendMessageToClient(SequoiaMod.prefix(Component.literal(String.format(
+                    "You have picked %s buffs so far",
+                    dev.lotnest.sequoia.core.components.Models.Raid.getRaidBuffs(McUtils.playerName())
+                            .size()))));
+            isGluttonWarningDisplayed = true;
         }
     }
 
@@ -75,8 +82,7 @@ public class RaidsFeature extends Feature {
         }
 
         if (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlay()
-                && dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.FARSIGHTED)
-                && Models.Raid.getCurrentRaid() != null) {
+                && dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
             WynnUtils.renderCircle(
                     BUFFER_SOURCE,
                     CIRCLE_SEGMENTS,

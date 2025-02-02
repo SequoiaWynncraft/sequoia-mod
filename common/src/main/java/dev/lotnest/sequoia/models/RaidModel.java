@@ -30,6 +30,8 @@ public class RaidModel extends Model {
 
     private final Map<String, Set<Pair<String, String>>> raidBuffs = Maps.newHashMap();
 
+    private static boolean buffRoom = false;
+
     public RaidModel() {
         super(List.of());
     }
@@ -68,5 +70,13 @@ public class RaidModel extends Model {
 
     public Set<Pair<String, String>> getRaidBuffs(String player) {
         return raidBuffs.getOrDefault(player, Collections.emptySet());
+    }
+
+    public boolean isInBuffRoom() {
+        return buffRoom;
+    }
+
+    public void setBuffRoom(boolean value) {
+        buffRoom = value;
     }
 }
