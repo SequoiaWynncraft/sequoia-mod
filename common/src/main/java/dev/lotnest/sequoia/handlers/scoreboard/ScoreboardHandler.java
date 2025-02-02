@@ -21,7 +21,6 @@ import com.wynntils.models.worlds.event.WorldStateEvent;
 import com.wynntils.models.worlds.type.WorldState;
 import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.type.Pair;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -37,6 +36,7 @@ import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 public final class ScoreboardHandler extends Handler {
@@ -49,9 +49,9 @@ public final class ScoreboardHandler extends Handler {
     private static final ScoreboardPart FALLBACK_SCOREBOARD_PART = new FallbackScoreboardPart();
 
     private String currentScoreboardName = "";
-    private List<Pair<ScoreboardPart, ScoreboardSegment>> scoreboardSegments = new ArrayList<>();
+    private List<Pair<ScoreboardPart, ScoreboardSegment>> scoreboardSegments = Lists.newArrayList();
 
-    private final List<ScoreboardPart> scoreboardParts = new ArrayList<>();
+    private final List<ScoreboardPart> scoreboardParts = Lists.newArrayList();
 
     public void addPart(ScoreboardPart scoreboardPart) {
         scoreboardParts.add(scoreboardPart);
@@ -102,7 +102,7 @@ public final class ScoreboardHandler extends Handler {
 
         scoreboardSegments.forEach(pair -> pair.key().reset());
 
-        scoreboardSegments = new ArrayList<>();
+        scoreboardSegments = Lists.newArrayList();
         currentScoreboardName = "";
     }
 
@@ -157,7 +157,7 @@ public final class ScoreboardHandler extends Handler {
         }
 
         // 1. Check for duplicate lines
-        List<StyledText> lines = new ArrayList<>();
+        List<StyledText> lines = Lists.newArrayList();
         for (ScoreboardLine line : reconstructedScoreboard) {
             if (lines.contains(line.line())) {
                 // We found a duplicate line, so the scoreboard is invalid
@@ -204,7 +204,7 @@ public final class ScoreboardHandler extends Handler {
         int currentIndex = 1;
         List<ScoreboardLine> scoreboardLines = reconstructedScoreboard.stream().toList();
 
-        List<ScoreboardPart> scoreboardParts = new ArrayList<>();
+        List<ScoreboardPart> scoreboardParts = Lists.newArrayList();
         while (currentIndex < scoreboardLines.size()) {
             ScoreboardPart part = getScoreboardPartForHeader(scoreboardLines.get(currentIndex));
 
@@ -258,7 +258,7 @@ public final class ScoreboardHandler extends Handler {
         List<ScoreboardLine> scoreboardLines = reconstructedScoreboard.stream().toList();
 
         List<Pair<ScoreboardPart, ScoreboardSegment>> oldSegments = ImmutableList.copyOf(scoreboardSegments);
-        scoreboardSegments = new ArrayList<>();
+        scoreboardSegments = Lists.newArrayList();
 
         int validPartIndex = 0;
         while (currentIndex < scoreboardLines.size() && validPartIndex < validParts.size()) {
@@ -284,7 +284,7 @@ public final class ScoreboardHandler extends Handler {
 
             validPartIndex++;
 
-            List<StyledText> contentLines = new ArrayList<>();
+            List<StyledText> contentLines = Lists.newArrayList();
             for (currentIndex = currentIndex + 1; currentIndex < scoreboardLines.size(); currentIndex++) {
                 ScoreboardLine line = scoreboardLines.get(currentIndex);
 

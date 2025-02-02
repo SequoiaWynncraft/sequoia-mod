@@ -29,7 +29,7 @@ public class RaidModel extends Model {
     private static final RaidScoreboardPart RAID_SCOREBOARD_PART = new RaidScoreboardPart();
 
     private final Map<String, Set<Pair<String, String>>> raidBuffs = Maps.newHashMap();
-    private boolean isInBuffRoom = false;
+    private int buffRoom = 0;
 
     public RaidModel() {
         super(List.of());
@@ -74,10 +74,15 @@ public class RaidModel extends Model {
     }
 
     public boolean isInBuffRoom() {
-        return isInBuffRoom;
+        return buffRoom > 0;
     }
 
-    public void setBuffRoom(boolean value) {
-        isInBuffRoom = value;
+    public int getBuffRoom() {
+        return buffRoom;
+    }
+
+    public void setBuffRoom(int buffRoom) {
+        this.buffRoom = buffRoom;
+        SequoiaMod.debug("buffRoom: " + buffRoom);
     }
 }

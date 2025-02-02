@@ -9,6 +9,7 @@ import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.scoreboard.ScoreboardPart;
 import com.wynntils.handlers.scoreboard.ScoreboardSegment;
 import com.wynntils.handlers.scoreboard.type.SegmentMatcher;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Models;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -30,8 +31,12 @@ public class RaidScoreboardPart extends ScoreboardPart {
             return;
         }
 
+        SequoiaMod.debug("RaidScoreboardPart: " + content);
+
         StyledText currentStateLine = content.getFirst();
-        Models.Raid.setBuffRoom(currentStateLine.matches(BUFF_PATTERN, PartStyle.StyleType.NONE));
+        if (currentStateLine.matches(BUFF_PATTERN, PartStyle.StyleType.NONE)) {
+            Models.Raid.setBuffRoom(Models.Raid.getBuffRoom() + 1);
+        }
     }
 
     @Override
