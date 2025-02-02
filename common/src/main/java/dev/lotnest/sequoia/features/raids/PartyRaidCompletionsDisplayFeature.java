@@ -27,7 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PartyRaidCompletionsDisplayFeature extends Feature {
     private static final Pattern PARTY_PLAYER_JOINED_PATTERN =
-            Pattern.compile(".*((§o)?(\\w+)) has joined your party, say hello!");
+            Pattern.compile("(?:§e)?(?:.*?) (?:§o)?(\\w+)(?:§r)?(?:§e)? has joined your party, say(?:\\s*.*?)?hello!");
 
     private final Cache<String, Long> cachedPartyMembers =
             CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
@@ -50,8 +50,10 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
             return;
         }
 
-        String playerName = partyPlayerJoinedMatcher.group(3);
-        if (partyPlayerJoinedMatcher.group(2) != null) {
+        String playerName = partyPlayerJoinedMatcher.group(1);
+
+        boolean isNickname = event.getOriginalStyledText().contains("§o");
+        if (isNickname) {
             playerName = StyledTextUtils.extractNameAndNick(event.getOriginalStyledText())
                     .key();
         }

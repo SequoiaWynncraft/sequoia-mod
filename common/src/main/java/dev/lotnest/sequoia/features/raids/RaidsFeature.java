@@ -5,9 +5,7 @@
 package dev.lotnest.sequoia.features.raids;
 
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.wynntils.handlers.scoreboard.event.ScoreboardSegmentAdditionEvent;
 import com.wynntils.mc.event.PlayerRenderEvent;
-import com.wynntils.mc.event.ScoreboardSetObjectiveEvent;
 import com.wynntils.mc.event.TickEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.models.raid.event.RaidEndedEvent;
@@ -37,17 +35,6 @@ public class RaidsFeature extends Feature {
 
     private boolean isGluttonWarningDisplayed = false;
 
-    @SubscribeEvent
-    public void onScoreboardSegmentAddition(ScoreboardSegmentAdditionEvent event) {
-        SequoiaMod.debug("ScoreboardSegmentAdditionEvent: " + event.getSegment());
-    }
-
-    @SubscribeEvent
-    public void onScoreboardSetObjective(ScoreboardSetObjectiveEvent event) {
-        SequoiaMod.debug("ScoreboardSetObjectiveEvent: diplayName: "
-                + event.getDisplayName().getString() + ", objectiveName: " + event.getObjectiveName());
-    }
-
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGluttonGambitCheck(TickEvent event) {
         if (!SequoiaMod.CONFIG.raidsFeature.showGluttonGambitWarning()) {
@@ -62,7 +49,6 @@ public class RaidsFeature extends Feature {
 
         if (!isGluttonWarningDisplayed
                 && Models.Raid.getRaidBuffs(McUtils.playerName()).size() == 2) {
-            SequoiaMod.debug("Displaying glutton warning as player has 2 buffs");
             isGluttonWarningDisplayed = true;
             McUtils.sendMessageToClient(
                     SequoiaMod.prefix(Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarning")));
@@ -118,14 +104,18 @@ public class RaidsFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
-        SequoiaMod.debug("Clearing glutton warning as raid has completed");
-        isGluttonWarningDisplayed = false;
+        if (isGluttonWarningDisplayed) {
+            SequoiaMod.debug("Clearing glutton warning as raid has completed");
+            isGluttonWarningDisplayed = false;
+        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
-        SequoiaMod.debug("Clearing glutton warning as raid has failed");
-        isGluttonWarningDisplayed = false;
+        if (isGluttonWarningDisplayed) {
+            SequoiaMod.debug("Clearing glutton warning as raid has failed");
+            isGluttonWarningDisplayed = false;
+        }
     }
 
     @Override
