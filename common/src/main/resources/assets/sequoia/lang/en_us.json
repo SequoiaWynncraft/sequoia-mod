@@ -183,7 +183,7 @@
   "text.config.sequoia.option.raidsFeature.myopicGambitOverlay": "Myopic's Gambit overlay",
   "text.config.sequoia.option.raidsFeature.partyRaidCompletionsDisplayFeature.displayType.tooltip": "Automatic: Always send a request to Wynn API for\nraid stats upon joining a party.\n\nManual: Append a message in the player's chat\nthat, when clicked, will query and display\nthe raid stats for party members.",
   "text.config.sequoia.option.raidsFeature.showGluttonGambitWarning": "Show Glutton's Gambit warning",
-  "text.config.sequoia.option.raidsFeature.showGluttonGambitWarning.tooltip": "Reminds you to not pick additional buffs\nto avoid a pull reward penalty.",
+  "text.config.sequoia.option.raidsFeature.showGluttonGambitWarning.tooltip": "Reminds you to not pick additional buffs\nto avoid a pull reward penalty.\n\nRequires the 'Track chosen party buffs' option to be enabled.",
   "text.config.sequoia.option.raidsFeature.trackChosenPartyBuffs": "Track chosen party buffs",
   "text.config.sequoia.option.raidsFeature.trackChosenPartyBuffs.tooltip": "Keeps track of what your party members have chosen\nfor their raid buffs. As of now, it is not\nused for anything.",
   "text.config.sequoia.option.renderSequoiaPanorama": "Render Sequoia panorama",
