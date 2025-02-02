@@ -59,12 +59,14 @@ public class RaidModel extends Model {
     public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
         raidBuffs.clear();
         buffRoom = 0;
+        SequoiaMod.debug("Clearing raidBuffs and buffRoom as raid has completed");
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
         raidBuffs.clear();
         buffRoom = 0;
+        SequoiaMod.debug("Clearing raidBuffs and buffRoom as raid has failed");
     }
 
     public Map<String, Set<Pair<String, String>>> getRaidBuffs() {

@@ -5,22 +5,21 @@
 package dev.lotnest.sequoia.handlers.scoreboard;
 
 import com.google.common.collect.ImmutableList;
+import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
 import com.wynntils.core.WynntilsMod;
-import com.wynntils.core.components.Handler;
 import com.wynntils.core.text.PartStyle;
 import com.wynntils.core.text.StyledText;
-import com.wynntils.handlers.scoreboard.ScoreboardPart;
-import com.wynntils.handlers.scoreboard.ScoreboardSegment;
-import com.wynntils.handlers.scoreboard.event.ScoreboardSegmentAdditionEvent;
-import com.wynntils.handlers.scoreboard.type.ScoreboardLine;
-import com.wynntils.handlers.scoreboard.type.SegmentMatcher;
-import com.wynntils.mc.event.ScoreboardEvent;
-import com.wynntils.mc.event.ScoreboardSetDisplayObjectiveEvent;
-import com.wynntils.mc.event.ScoreboardSetObjectiveEvent;
 import com.wynntils.models.worlds.event.WorldStateEvent;
 import com.wynntils.models.worlds.type.WorldState;
 import com.wynntils.utils.mc.McUtils;
-import com.wynntils.utils.type.Pair;
+import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Handler;
+import dev.lotnest.sequoia.handlers.scoreboard.event.ScoreboardSegmentAdditionEvent;
+import dev.lotnest.sequoia.handlers.scoreboard.type.ScoreboardLine;
+import dev.lotnest.sequoia.handlers.scoreboard.type.SegmentMatcher;
+import dev.lotnest.sequoia.mc.event.ScoreboardEvent;
+import dev.lotnest.sequoia.mc.event.ScoreboardSetDisplayObjectiveEvent;
+import dev.lotnest.sequoia.mc.event.ScoreboardSetObjectiveEvent;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -100,7 +99,7 @@ public final class ScoreboardHandler extends Handler {
     public void onWorldStateChange(WorldStateEvent event) {
         if (event.getNewState() == WorldState.WORLD) return;
 
-        scoreboardSegments.forEach(pair -> pair.key().reset());
+        scoreboardSegments.forEach(pair -> pair.getKey().reset());
 
         scoreboardSegments = Lists.newArrayList();
         currentScoreboardName = "";
@@ -126,15 +125,15 @@ public final class ScoreboardHandler extends Handler {
         Objective currentObjective = scoreboard.getObjective(currentScoreboardName);
 
         if (currentObjective == null) {
-            WynntilsMod.warn("Could not find the current scoreboard objective: " + currentScoreboardName);
+            SequoiaMod.warn("Could not find the current scoreboard objective: " + currentScoreboardName);
             return List.of();
         }
 
         return scoreboard.playerScores.entrySet().stream()
                 .map(entry -> Pair.of(entry.getKey(), entry.getValue().get(currentObjective)))
-                .filter(pair -> pair.value() != null)
+                .filter(pair -> pair.getValue() != null)
                 .map(entry -> new ScoreboardLine(
-                        StyledText.fromString(entry.key()), entry.value().value()))
+                        StyledText.fromString(entry.getKey()), entry.getValue().value()))
                 .sorted(Comparator.comparing(ScoreboardLine::score).reversed())
                 .toList();
     }
@@ -267,7 +266,7 @@ public final class ScoreboardHandler extends Handler {
 
             // We could not find a suitable part for the header
             if (calculatedPart == null) {
-                WynntilsMod.error(
+                SequoiaMod.error(
                         "Scoreboard passed validness check, but we could not find a scoreboard part for the line: "
                                 + scoreboardLines.get(currentIndex).line());
                 return;
@@ -275,7 +274,7 @@ public final class ScoreboardHandler extends Handler {
 
             // Check if we calculate the same part as during the validation
             if (calculatedPart != validParts.get(validPartIndex)) {
-                WynntilsMod.error("Scoreboard passed validness check, but the scoreboard part for the line: "
+                SequoiaMod.error("Scoreboard passed validness check, but the scoreboard part for the line: "
                         + scoreboardLines.get(currentIndex).line()
                         + " does not match the valid part: "
                         + validParts.get(validPartIndex));
@@ -300,32 +299,32 @@ public final class ScoreboardHandler extends Handler {
             boolean eventCanceled = WynntilsMod.postEvent(new ScoreboardSegmentAdditionEvent(segment));
 
             segment.setVisibility(!eventCanceled);
-            scoreboardSegments.add(new Pair<>(calculatedPart, segment));
+            scoreboardSegments.add(Pair.of(calculatedPart, segment));
         }
 
         // Handle segment removals
         for (Pair<ScoreboardPart, ScoreboardSegment> oldPair : oldSegments) {
             // Special case for the fallback part, don't call onSegmentRemove
-            if (oldPair.key() == FALLBACK_SCOREBOARD_PART) continue;
+            if (oldPair.getKey() == FALLBACK_SCOREBOARD_PART) continue;
 
             Optional<Pair<ScoreboardPart, ScoreboardSegment>> segmentOpt = scoreboardSegments.stream()
-                    .filter(pair -> pair.key() == oldPair.key())
+                    .filter(pair -> pair.getKey() == oldPair.getKey())
                     .findFirst();
             if (segmentOpt.isEmpty()) {
-                oldPair.key().onSegmentRemove(oldPair.value());
+                oldPair.getKey().onSegmentRemove(oldPair.getValue());
             }
         }
 
         // Handle segment changes
         for (Pair<ScoreboardPart, ScoreboardSegment> pair : scoreboardSegments) {
             // Special case for the fallback part, don't call onSegmentChange
-            if (pair.key() == FALLBACK_SCOREBOARD_PART) continue;
+            if (pair.getKey() == FALLBACK_SCOREBOARD_PART) continue;
 
             Optional<Pair<ScoreboardPart, ScoreboardSegment>> oldSegmentOpt = oldSegments.stream()
-                    .filter(oldPair -> oldPair.key() == pair.key())
+                    .filter(oldPair -> oldPair.getKey() == pair.getKey())
                     .findFirst();
-            if (oldSegmentOpt.isEmpty() || !oldSegmentOpt.get().value().equals(pair.value())) {
-                pair.key().onSegmentChange(pair.value());
+            if (oldSegmentOpt.isEmpty() || !oldSegmentOpt.get().getValue().equals(pair.getValue())) {
+                pair.getKey().onSegmentChange(pair.getValue());
             }
         }
     }
@@ -346,7 +345,7 @@ public final class ScoreboardHandler extends Handler {
                 true,
                 BlankFormat.INSTANCE);
 
-        if (scoreboardSegments.stream().map(Pair::value).noneMatch(ScoreboardSegment::isVisible)) return;
+        if (scoreboardSegments.stream().map(Pair::getValue).noneMatch(ScoreboardSegment::isVisible)) return;
 
         // Only display the scoreboard if there is at least one visible segment
         scoreboard.setDisplayObjective(DisplaySlot.SIDEBAR, wynntilsObjective);
@@ -363,7 +362,7 @@ public final class ScoreboardHandler extends Handler {
 
         // Insert the visible segments
         List<ScoreboardSegment> segments =
-                scoreboardSegments.stream().map(Pair::value).toList();
+                scoreboardSegments.stream().map(Pair::getValue).toList();
         for (int i = 0; i < segments.size(); i++) {
             ScoreboardSegment scoreboardSegment = segments.get(i);
             if (!scoreboardSegment.isVisible()) continue;
