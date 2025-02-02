@@ -185,7 +185,7 @@
   "text.config.sequoia.option.raidsFeature.showGluttonGambitWarning": "Show Glutton's Gambit warning",
   "text.config.sequoia.option.raidsFeature.showGluttonGambitWarning.tooltip": "Reminds you to not pick additional buffs\nto avoid a pull reward penalty.\n\nRequires the 'Track chosen party buffs' option to be enabled.",
   "text.config.sequoia.option.raidsFeature.trackChosenPartyBuffs": "Track chosen party buffs",
-  "text.config.sequoia.option.raidsFeature.trackChosenPartyBuffs.tooltip": "Keeps track of what your party members have chosen\nfor their raid buffs. As of now, it is not\nused for anything.",
+  "text.config.sequoia.option.raidsFeature.trackChosenPartyBuffs.tooltip": "Keeps track of what your party members have chosen\nfor their raid buffs.",
   "text.config.sequoia.option.renderSequoiaPanorama": "Render Sequoia panorama",
   "text.config.sequoia.option.renderSequoiaSplashes": "Render Sequoia splashes",
   "text.config.sequoia.option.sequoiaOSTFeature.enabled": "Status",

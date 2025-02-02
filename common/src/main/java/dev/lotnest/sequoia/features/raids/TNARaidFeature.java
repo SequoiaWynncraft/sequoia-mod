@@ -8,7 +8,6 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.utils.mc.PlayerUtils;
-import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.ChatFormatting;
@@ -17,7 +16,8 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class TNARaidFeature extends Feature {
-    private static final Pattern SHADOWLING_KILLED = Pattern.compile("A Shadowling has been killed! \\[\\d+/\\d+\\]");
+    private static final Pattern SHADOWLING_KILLED = Pattern.compile(
+            "&#d6401eff\uDAFF\uDFFC\uE009\uDAFF\uDFFF\uE002\uDAFF\uDFFE A &#ffc85fffShadowling&#d6401eff has been killed! &#ffc85fff\\[(\\d+)/(\\d+)\\]");
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
@@ -25,12 +25,11 @@ public class TNARaidFeature extends Feature {
             return;
         }
 
-        String unfomattedMessage =
-                WynnUtils.getUnformattedString(event.getStyledText().getStringWithoutFormatting());
-
         if (SequoiaMod.CONFIG.raidsFeature.TNARaidFeature.showShadowlingKilledTitle()) {
-            Matcher shadowlingKilledMatcher = SHADOWLING_KILLED.matcher(unfomattedMessage);
+            Matcher shadowlingKilledMatcher = event.getOriginalStyledText().getMatcher(SHADOWLING_KILLED);
             if (shadowlingKilledMatcher.matches()) {
+                SequoiaMod.debug("Shadowling killed: " + shadowlingKilledMatcher.group(1) + "/"
+                        + shadowlingKilledMatcher.group(2));
                 event.setCanceled(true);
                 PlayerUtils.sendTitle(
                         Component.literal("Shadowling killed!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD),
