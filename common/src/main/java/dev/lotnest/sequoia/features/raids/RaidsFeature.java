@@ -35,7 +35,7 @@ public class RaidsFeature extends Feature {
     private boolean isGluttonWarningDisplayed = false;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void checkGluttonGambing(TickEvent event) {
+    public void onGluttonGambitCheck(TickEvent event) {
         if (!SequoiaMod.CONFIG.raidsFeature.showGluttonGambitWarning()) {
             return;
         }

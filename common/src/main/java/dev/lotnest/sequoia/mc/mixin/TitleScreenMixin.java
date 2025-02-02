@@ -68,7 +68,9 @@ public abstract class TitleScreenMixin {
         "Pan",
         "can someone lend me 17stx",
         "[QZZ] has taken control of Bloody Trail!",
-        "[GsW] has taken control of Entrance to Bucie!"
+        "[GsW] has taken control of Entrance to Bucie!",
+        "I broke into Lotnest's code to say mewo - Ninja",
+        "\"tyfr\""
     };
 
     @Shadow
