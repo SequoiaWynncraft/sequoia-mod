@@ -74,7 +74,8 @@ public class RaidsFeature extends Feature {
         }
 
         if (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlay()
-                && Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
+                && Models.Gambit.hasChosenGambit(GambitModel.GambitType.FARSIGHTED)
+                && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
             WynnUtils.renderCircle(
                     BUFFER_SOURCE,
                     CIRCLE_SEGMENTS,
