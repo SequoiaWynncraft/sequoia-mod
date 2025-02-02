@@ -50,10 +50,10 @@ public class RaidsFeature extends Feature {
         if (!isGluttonWarningDisplayed
                 && com.wynntils.core.components.Models.Raid.getCurrentRoom() == RaidRoomType.BUFF_3
                 && Models.Raid.getRaidBuffs(McUtils.playerName()).size() == 2) {
-            isGluttonWarningDisplayed = true;
             McUtils.sendMessageToClient(
                     SequoiaMod.prefix(Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarning")));
         }
+        isGluttonWarningDisplayed = true;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
