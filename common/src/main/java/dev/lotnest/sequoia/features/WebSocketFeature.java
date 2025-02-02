@@ -6,6 +6,8 @@ package dev.lotnest.sequoia.features;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.wynntils.core.components.Models;
 import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
@@ -155,7 +157,19 @@ public class WebSocketFeature extends Feature {
 
         try {
             String json = GSON.toJson(object);
-            SequoiaMod.debug("Sending WebSocket message: " + json);
+            if (StringUtils.isBlank(json)) {
+                return null;
+            }
+
+            JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
+            if (jsonObject.has("data")) {
+                JsonObject data = jsonObject.getAsJsonObject("data");
+                if (data.has("access_token")) {
+                    data.addProperty("access_token", "REDACTED");
+                }
+            }
+
+            SequoiaMod.debug("Sending WebSocket message: " + jsonObject);
             client.send(json);
             return json;
         } catch (RuntimeException exception) {

@@ -24,6 +24,8 @@ public class FeatureCommands {
     }
 
     public void discoverCommands(Feature feature) {
+        SequoiaMod.debug("Discovering commands for " + feature.getClass().getName());
+
         for (Field field : FieldUtils.getFieldsWithAnnotation(feature.getClass(), RegisterCommand.class)) {
             if (!field.getType().equals(LiteralCommandNode.class)) {
                 SequoiaMod.error("Incorrect type for @RegisterCommand " + field.getName() + " in "

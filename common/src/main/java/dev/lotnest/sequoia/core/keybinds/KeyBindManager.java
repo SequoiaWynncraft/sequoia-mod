@@ -38,6 +38,8 @@ public final class KeyBindManager extends Manager {
     }
 
     public void discoverKeyBinds(Feature feature) {
+        SequoiaMod.debug("Discovering KeyBinds for " + feature.getClass().getName());
+
         for (Field field : FieldUtils.getFieldsWithAnnotation(feature.getClass(), RegisterKeyBind.class)) {
             if (!field.getType().equals(KeyBind.class)) {
                 continue;

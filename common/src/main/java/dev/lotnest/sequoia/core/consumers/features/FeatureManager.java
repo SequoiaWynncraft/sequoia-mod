@@ -85,6 +85,8 @@ public final class FeatureManager extends Manager {
     }
 
     private void registerFeature(Feature feature) {
+        SequoiaMod.debug("Registering feature: " + feature.getClass().getSimpleName());
+
         FEATURES.put(feature, FeatureState.DISABLED);
         FEATURE_INSTANCES.put(feature.getClass(), feature);
 
@@ -109,6 +111,8 @@ public final class FeatureManager extends Manager {
     }
 
     private void initializeFeature(Feature feature) {
+        SequoiaMod.debug("Initializing feature: " + feature.getClass().getSimpleName());
+
         commands.discoverCommands(feature);
         Managers.KeyBind.discoverKeyBinds(feature);
 
@@ -139,6 +143,8 @@ public final class FeatureManager extends Manager {
         WynntilsMod.registerEventListener(feature);
 
         Managers.KeyBind.enableFeatureKeyBinds(feature);
+
+        SequoiaMod.debug("Enabled feature: " + feature.getClass().getSimpleName());
     }
 
     public void disableFeature(Feature feature) {
@@ -157,6 +163,8 @@ public final class FeatureManager extends Manager {
         WynntilsMod.unregisterEventListener(feature);
 
         Managers.KeyBind.disableFeatureKeyBinds(feature);
+
+        SequoiaMod.debug("Disabled feature: " + feature.getClass().getSimpleName());
     }
 
     public void crashFeature(Feature feature) {
@@ -167,6 +175,8 @@ public final class FeatureManager extends Manager {
         disableFeature(feature);
 
         FEATURES.put(feature, FeatureState.CRASHED);
+
+        SequoiaMod.debug("Crashed feature: " + feature.getClass().getSimpleName());
     }
 
     private FeatureState getFeatureState(Feature feature) {

@@ -9,6 +9,7 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.features.messagefilter.MessageFilterDecisionType;
+import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,11 +50,16 @@ public class ModMessageFilterFeature extends Feature {
             return;
         }
 
+        SequoiaMod.debug(
+                "[ModMessageFilterFeature] Checking " + event.getStyledText().toString());
+
         for (Map.Entry<Pattern, String> patternEntry : PATTERN_ACTIONS.entrySet()) {
             Pattern pattern = patternEntry.getKey();
             String category = patternEntry.getValue();
             MessageFilterDecisionType messageFilterDecisionType = getUserDecisionType(category);
-            Matcher matcher = event.getOriginalStyledText().getMatcher(pattern);
+            String unformattedMessage =
+                    WynnUtils.getUnformattedString(event.getOriginalStyledText().getStringWithoutFormatting());
+            Matcher matcher = pattern.matcher(unformattedMessage);
 
             if (matcher.find()) {
                 SequoiaMod.debug("[" + ModMessageFilterFeature.class.getSimpleName() + "] Pattern in category '"
