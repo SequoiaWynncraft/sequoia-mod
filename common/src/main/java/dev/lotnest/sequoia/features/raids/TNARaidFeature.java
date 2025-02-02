@@ -16,8 +16,8 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class TNARaidFeature extends Feature {
-    private static final Pattern SHADOWLING_KILLED =
-            Pattern.compile(".*A\\s+Shadowling\\s+has\\s+been\\s+killed!\\s+\\[(\\d+)/(\\d+)\\]");
+    private static final Pattern SHADOWLING_KILLED_PATTERN = Pattern.compile(
+            ".*?A(?:§.#......)?\\s+Shadowling(?:§.#......)?\\s+has\\s+been\\s+killed!\\s+\\[(\\d+)/(\\d+)\\]");
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {
@@ -26,7 +26,7 @@ public class TNARaidFeature extends Feature {
         }
 
         if (SequoiaMod.CONFIG.raidsFeature.TNARaidFeature.showShadowlingKilledTitle()) {
-            Matcher shadowlingKilledMatcher = event.getOriginalStyledText().getMatcher(SHADOWLING_KILLED);
+            Matcher shadowlingKilledMatcher = event.getOriginalStyledText().getMatcher(SHADOWLING_KILLED_PATTERN);
             if (shadowlingKilledMatcher.matches()) {
                 SequoiaMod.debug("Shadowling killed: " + shadowlingKilledMatcher.group(1) + "/"
                         + shadowlingKilledMatcher.group(2));
