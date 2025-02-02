@@ -34,7 +34,7 @@ public class TNARaidFeature extends Feature {
                 PlayerUtils.sendTitle(
                         Component.literal("Shadowling killed!").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD),
                         Component.literal(shadowlingKilledMatcher.group(1) + "/" + shadowlingKilledMatcher.group(2))
-                                .withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD));
+                                .withStyle(ChatFormatting.YELLOW, ChatFormatting.YELLOW));
             }
         }
     }
