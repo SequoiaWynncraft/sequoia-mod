@@ -51,14 +51,11 @@ public class RaidsFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGluttonGambitCheck(TickEvent event) {
         if (!SequoiaMod.CONFIG.raidsFeature.showGluttonGambitWarning()) {
-            SequoiaMod.debug("Glutton gambit warning is disabled");
             return;
         }
 
         if (com.wynntils.core.components.Models.Raid.getCurrentRoom() != RaidRoomType.BUFF_3
                 || !Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
-            SequoiaMod.debug("Current room: " + com.wynntils.core.components.Models.Raid.getCurrentRoom());
-            SequoiaMod.debug("Has glutton gambit: " + Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON));
             isGluttonWarningDisplayed = false;
             return;
         }

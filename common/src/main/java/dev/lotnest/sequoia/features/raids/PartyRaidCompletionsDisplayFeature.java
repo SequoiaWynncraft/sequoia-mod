@@ -11,12 +11,11 @@ import com.wynntils.core.components.Managers;
 import com.wynntils.core.components.Models;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.utils.mc.McUtils;
+import com.wynntils.utils.mc.StyledTextUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.core.events.PartyPlayerJoinedEvent;
-import dev.lotnest.sequoia.mc.MinecraftUtils;
-import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,10 +27,10 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PartyRaidCompletionsDisplayFeature extends Feature {
     private static final Pattern PARTY_PLAYER_JOINED_PATTERN =
-            Pattern.compile("(.+) has joined your party, say hello!");
+            Pattern.compile(".*((§o)?(\\w+)) has joined your party, say hello!");
 
     private final Cache<String, Long> cachedPartyMembers =
-            CacheBuilder.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+            CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
 
     public enum PartyRaidCompletionsDisplayType {
         MANUAL,
@@ -45,20 +44,23 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
             return;
         }
 
-        String unformattedMessage =
-                WynnUtils.getUnformattedString(event.getStyledText().getStringWithoutFormatting());
-        Matcher partyPlayerJoinedMatcher = PARTY_PLAYER_JOINED_PATTERN.matcher(unformattedMessage);
-
+        Matcher partyPlayerJoinedMatcher =
+                event.getOriginalStyledText().stripAlignment().getMatcher(PARTY_PLAYER_JOINED_PATTERN);
         if (!partyPlayerJoinedMatcher.matches()) {
             return;
         }
 
-        String playerName = MinecraftUtils.cleanUsername(partyPlayerJoinedMatcher.group(1));
+        String playerName = partyPlayerJoinedMatcher.group(3);
+        if (partyPlayerJoinedMatcher.group(2) != null) {
+            playerName = StyledTextUtils.extractNameAndNick(event.getOriginalStyledText())
+                    .key();
+        }
+
         if (StringUtils.isBlank(playerName)) {
             return;
         }
 
-        if (playerName.equals(McUtils.playerName())) {
+        if (StringUtils.equals(playerName, McUtils.playerName())) {
             Models.Party.requestData();
             return;
         }

@@ -34,7 +34,7 @@ public class RaidModel extends Model {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidBuffChosen(ChatMessageReceivedEvent event) {
-        if (SequoiaMod.CONFIG.raidsFeature.trackChosenPartyBuffs()) {
+        if (SequoiaMod.CONFIG.raidsFeature.enabled() && SequoiaMod.CONFIG.raidsFeature.trackChosenPartyBuffs()) {
             Matcher raidBuffChosenMatcher =
                     event.getOriginalStyledText().stripAlignment().getMatcher(RAID_BUFF_CHOSEN_PATTERN);
             if (raidBuffChosenMatcher.matches()) {
