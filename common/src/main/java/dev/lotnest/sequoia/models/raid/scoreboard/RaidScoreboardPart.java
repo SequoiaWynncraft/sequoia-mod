@@ -6,11 +6,11 @@ package dev.lotnest.sequoia.models.raid.scoreboard;
 
 import com.wynntils.core.text.PartStyle;
 import com.wynntils.core.text.StyledText;
+import com.wynntils.handlers.scoreboard.ScoreboardPart;
+import com.wynntils.handlers.scoreboard.ScoreboardSegment;
+import com.wynntils.handlers.scoreboard.type.SegmentMatcher;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Models;
-import dev.lotnest.sequoia.handlers.scoreboard.ScoreboardPart;
-import dev.lotnest.sequoia.handlers.scoreboard.ScoreboardSegment;
-import dev.lotnest.sequoia.handlers.scoreboard.type.SegmentMatcher;
 import java.util.List;
 import java.util.regex.Pattern;
 

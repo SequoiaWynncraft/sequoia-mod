@@ -8,7 +8,6 @@
     "ScreenMixin",
     "TitleScreenMixin",
     "KeyMappingMixin",
-    "ClientPacketListenerMixin",
     "accessors.OptionsAccessor"
   ],
   "compatibilityLevel": "JAVA_17",
