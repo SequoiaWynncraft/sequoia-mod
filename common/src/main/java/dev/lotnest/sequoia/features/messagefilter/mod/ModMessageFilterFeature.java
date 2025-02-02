@@ -59,7 +59,7 @@ public class ModMessageFilterFeature extends Feature {
             MessageFilterDecisionType messageFilterDecisionType = getUserDecisionType(category);
             Matcher matcher = pattern.matcher(unformattedMessage);
 
-            if (matcher.matches()) {
+            if (matcher.find()) {
                 SequoiaMod.debug("[" + ModMessageFilterFeature.class.getSimpleName() + "] Pattern in category '"
                         + category + "' matched: " + MessageFilterDecisionType.class.getSimpleName() + "."
                         + messageFilterDecisionType.name());

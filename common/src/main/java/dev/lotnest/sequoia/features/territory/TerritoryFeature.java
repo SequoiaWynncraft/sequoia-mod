@@ -18,7 +18,6 @@ import dev.lotnest.sequoia.core.events.TerritoryCapturedEvent;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -93,10 +92,10 @@ public class TerritoryFeature extends Feature {
                                     .withStyle(territoryInfo.getDefences().getDefenceColor())));
         }
 
-        event.setMessage(resultMessage.append(StyledText.fromComponent(
-                Component.literal("\n[Click here to open the territory menu]").withStyle(style -> style.withColor(
-                                ChatFormatting.GOLD)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/seq territoryMenu"))))));
+        event.setMessage(
+                resultMessage.append(StyledText.fromComponent(Component.literal("sequoia.feature.territory.clickToOpen")
+                        .withStyle(style -> style.withClickEvent(
+                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/seq territoryMenu"))))));
     }
 
     @Override

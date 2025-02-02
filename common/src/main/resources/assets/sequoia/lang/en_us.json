@@ -114,6 +114,7 @@
   "sequoia.feature.sequoiaOST.name": "Sequoia OST",
   "sequoia.feature.tNARaid.description": "Provides QOL features for the Nameless Anomaly raid",
   "sequoia.feature.tNARaid.name": "The Nameless Anomaly Raid",
+  "sequoia.feature.territory.clickToOpen": "\n§6[Click to open the territory menu]",
   "sequoia.feature.territory.description": "Adds extra information to the captured territory message and allows to quickly view the territory menu.",
   "sequoia.feature.territory.name": "Territory",
   "sequoia.feature.territoryMenuHotkey.description": "Allows to quickly view the territory menu by pressing the hotkey.",

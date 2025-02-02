@@ -87,6 +87,7 @@ public class RaidsFeature extends Feature {
                     3.0F,
                     CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
         }
+
         if (SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlay()
                 && Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
                 && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
