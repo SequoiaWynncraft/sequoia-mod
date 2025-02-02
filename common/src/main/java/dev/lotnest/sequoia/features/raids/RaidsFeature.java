@@ -5,14 +5,13 @@
 package dev.lotnest.sequoia.features.raids;
 
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
-import com.wynntils.core.components.Models;
 import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.event.TickEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
-import com.wynntils.models.raid.type.RaidRoomType;
 import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Models;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.models.GambitModel;
 import dev.lotnest.sequoia.utils.mc.PlayerUtils;
@@ -39,25 +38,21 @@ public class RaidsFeature extends Feature {
         if (!SequoiaMod.CONFIG.raidsFeature.showGluttonGambitWarning()) {
             return;
         }
-        if (Models.Raid.getCurrentRoom() != RaidRoomType.BUFF_3
-                || !dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
+        if (Models.Raid.isInBuffRoom() || !Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
             isGluttonWarningDisplayed = false;
             return;
         } else {
             McUtils.sendMessageToClient(SequoiaMod.prefix(Component.literal("§eYou are in the 3rd buff room.")));
         }
         if (!isGluttonWarningDisplayed
-                && dev.lotnest.sequoia.core.components.Models.Raid.getRaidBuffs(McUtils.playerName())
-                                .size()
-                        == 2) {
+                && Models.Raid.getRaidBuffs(McUtils.playerName()).size() == 2) {
             isGluttonWarningDisplayed = true;
             McUtils.sendMessageToClient(
                     SequoiaMod.prefix(Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarning")));
         } else {
             McUtils.sendMessageToClient(SequoiaMod.prefix(Component.literal(String.format(
                     "You have picked %s buffs so far",
-                    dev.lotnest.sequoia.core.components.Models.Raid.getRaidBuffs(McUtils.playerName())
-                            .size()))));
+                    Models.Raid.getRaidBuffs(McUtils.playerName()).size()))));
             isGluttonWarningDisplayed = true;
         }
     }
@@ -73,7 +68,8 @@ public class RaidsFeature extends Feature {
             return;
         }
 
-        if (!Models.WorldState.onWorld() && !Models.WorldState.onHousing()) {
+        if (!com.wynntils.core.components.Models.WorldState.onWorld()
+                && !com.wynntils.core.components.Models.WorldState.onHousing()) {
             return;
         }
 
@@ -82,7 +78,7 @@ public class RaidsFeature extends Feature {
         }
 
         if (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlay()
-                && dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
+                && Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
             WynnUtils.renderCircle(
                     BUFFER_SOURCE,
                     CIRCLE_SEGMENTS,
@@ -93,8 +89,8 @@ public class RaidsFeature extends Feature {
                     CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
         }
         if (SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlay()
-                && dev.lotnest.sequoia.core.components.Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
-                && Models.Raid.getCurrentRaid() != null) {
+                && Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
+                && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
             WynnUtils.renderCircle(
                     BUFFER_SOURCE,
                     CIRCLE_SEGMENTS,

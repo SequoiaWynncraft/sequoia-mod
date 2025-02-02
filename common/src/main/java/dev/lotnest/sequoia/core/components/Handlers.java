@@ -4,6 +4,10 @@
  */
 package dev.lotnest.sequoia.core.components;
 
+import com.wynntils.handlers.scoreboard.ScoreboardHandler;
+
 public final class Handlers {
+    public static final ScoreboardHandler Scoreboard = new ScoreboardHandler();
+
     private Handlers() {}
 }

@@ -5,8 +5,8 @@
 package dev.lotnest.sequoia.core.components;
 
 import dev.lotnest.sequoia.models.GambitModel;
-import dev.lotnest.sequoia.models.RaidModel;
 import dev.lotnest.sequoia.models.TerritoryModel;
+import dev.lotnest.sequoia.models.raid.RaidModel;
 
 public final class Models {
     public static final TerritoryModel Territory = new TerritoryModel();

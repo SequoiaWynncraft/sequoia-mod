@@ -2,14 +2,16 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.models;
+package dev.lotnest.sequoia.models.raid;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Handlers;
 import dev.lotnest.sequoia.core.components.Model;
+import dev.lotnest.sequoia.models.raid.scoreboard.RaidScoreboardPart;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.Collections;
 import java.util.List;
@@ -24,16 +26,15 @@ import org.apache.commons.lang3.tuple.Pair;
 public class RaidModel extends Model {
     private static final Pattern PLAYER_BUFF_CHOSEN_PATTERN =
             Pattern.compile("^(?<player>.+) chosen the (?<buff>.+) (?<buffTier>I|II|III) buff!$");
-
-    private static final Pattern RAID_COMPLETED_PATTERN = Pattern.compile("§f§lR§#4d4d4dff§laid Completed!");
-    private static final Pattern RAID_FAILED_PATTERN = Pattern.compile("§4§kRa§c§lid Failed!");
+    private static final RaidScoreboardPart RAID_SCOREBOARD_PART = new RaidScoreboardPart();
 
     private final Map<String, Set<Pair<String, String>>> raidBuffs = Maps.newHashMap();
-
-    private static boolean buffRoom = false;
+    private boolean isInBuffRoom = false;
 
     public RaidModel() {
         super(List.of());
+
+        Handlers.Scoreboard.addPart(RAID_SCOREBOARD_PART);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -73,10 +74,10 @@ public class RaidModel extends Model {
     }
 
     public boolean isInBuffRoom() {
-        return buffRoom;
+        return isInBuffRoom;
     }
 
     public void setBuffRoom(boolean value) {
-        buffRoom = value;
+        isInBuffRoom = value;
     }
 }

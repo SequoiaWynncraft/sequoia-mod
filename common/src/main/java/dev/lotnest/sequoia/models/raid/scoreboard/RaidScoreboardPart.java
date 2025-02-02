@@ -31,12 +31,7 @@ public class RaidScoreboardPart extends ScoreboardPart {
         }
 
         StyledText currentStateLine = content.getFirst();
-
-        if (currentStateLine.matches(BUFF_PATTERN, PartStyle.StyleType.NONE)) {
-            Models.Raid.setBuffRoom(true);
-        } else {
-            Models.Raid.setBuffRoom(false);
-        }
+        Models.Raid.setBuffRoom(currentStateLine.matches(BUFF_PATTERN, PartStyle.StyleType.NONE));
     }
 
     @Override
