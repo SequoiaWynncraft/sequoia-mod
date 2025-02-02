@@ -42,7 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public final class ScoreboardHandler extends Handler {
     private static final Pattern NEXT_LINE_PATTERN = Pattern.compile("À+");
-    private static final String SCOREBOARD_KEY = "wynntilsSB";
+    private static final String SCOREBOARD_KEY = "sequoiaSB";
     private static final MutableComponent SCOREBOARD_TITLE_COMPONENT = Component.literal("play.wynncraft.com")
             .withStyle(ChatFormatting.BOLD)
             .withStyle(ChatFormatting.GOLD);
@@ -339,7 +339,7 @@ public final class ScoreboardHandler extends Handler {
             scoreboard.removeObjective(oldObjective);
         }
 
-        Objective wynntilsObjective = scoreboard.addObjective(
+        Objective sequoiaObjective = scoreboard.addObjective(
                 SCOREBOARD_KEY,
                 ObjectiveCriteria.DUMMY,
                 SCOREBOARD_TITLE_COMPONENT,
@@ -350,13 +350,13 @@ public final class ScoreboardHandler extends Handler {
         if (scoreboardSegments.stream().map(Pair::getValue).noneMatch(ScoreboardSegment::isVisible)) return;
 
         // Only display the scoreboard if there is at least one visible segment
-        scoreboard.setDisplayObjective(DisplaySlot.SIDEBAR, wynntilsObjective);
+        scoreboard.setDisplayObjective(DisplaySlot.SIDEBAR, sequoiaObjective);
 
         int currentScoreboardLine = MAX_SCOREBOARD_LINE;
 
         // Insert the first line at the top
         scoreboard
-                .getOrCreatePlayerScore(ScoreHolder.forNameOnly("À"), wynntilsObjective)
+                .getOrCreatePlayerScore(ScoreHolder.forNameOnly("À"), sequoiaObjective)
                 .set(currentScoreboardLine);
         currentScoreboardLine--;
 
@@ -373,13 +373,13 @@ public final class ScoreboardHandler extends Handler {
                     .getOrCreatePlayerScore(
                             ScoreHolder.forNameOnly(
                                     scoreboardSegment.getHeader().getString()),
-                            wynntilsObjective)
+                            sequoiaObjective)
                     .set(currentScoreboardLine);
             currentScoreboardLine--;
 
             for (StyledText line : scoreboardSegment.getContent()) {
                 scoreboard
-                        .getOrCreatePlayerScore(ScoreHolder.forNameOnly(line.getString()), wynntilsObjective)
+                        .getOrCreatePlayerScore(ScoreHolder.forNameOnly(line.getString()), sequoiaObjective)
                         .set(currentScoreboardLine);
                 currentScoreboardLine--;
             }
@@ -387,7 +387,7 @@ public final class ScoreboardHandler extends Handler {
             if (i != segments.size() - 1) {
                 scoreboard
                         .getOrCreatePlayerScore(
-                                ScoreHolder.forNameOnly(StringUtils.repeat('À', separatorCount)), wynntilsObjective)
+                                ScoreHolder.forNameOnly(StringUtils.repeat('À', separatorCount)), sequoiaObjective)
                         .set(currentScoreboardLine);
                 currentScoreboardLine--;
                 separatorCount++;
