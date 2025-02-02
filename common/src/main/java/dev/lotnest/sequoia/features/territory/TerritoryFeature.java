@@ -92,8 +92,8 @@ public class TerritoryFeature extends Feature {
                                     .withStyle(territoryInfo.getDefences().getDefenceColor())));
         }
 
-        event.setMessage(
-                resultMessage.append(StyledText.fromComponent(Component.literal("sequoia.feature.territory.clickToOpen")
+        event.setMessage(resultMessage.append(
+                StyledText.fromComponent(Component.translatable("sequoia.feature.territory.clickToOpen")
                         .withStyle(style -> style.withClickEvent(
                                 new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/seq territoryMenu"))))));
     }
