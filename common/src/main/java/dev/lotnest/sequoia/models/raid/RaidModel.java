@@ -58,11 +58,13 @@ public class RaidModel extends Model {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
         raidBuffs.clear();
+        buffRoom = 0;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
         raidBuffs.clear();
+        buffRoom = 0;
     }
 
     public Map<String, Set<Pair<String, String>>> getRaidBuffs() {
