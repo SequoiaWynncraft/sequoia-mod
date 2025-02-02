@@ -16,8 +16,8 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class TNARaidFeature extends Feature {
-    private static final Pattern SHADOWLING_KILLED = Pattern.compile(
-            "&#d6401eff.+? A &#ffc85fffShadowling&#d6401eff has been killed! &#ffc85fff\\[(\\d+)/(\\d+)\\]");
+    private static final Pattern SHADOWLING_KILLED =
+            Pattern.compile(".*A\\s+Shadowling\\s+has\\s+been\\s+killed!\\s+\\[(\\d+)/(\\d+)\\]");
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChatMessageReceived(ChatMessageReceivedEvent event) {

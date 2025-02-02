@@ -10,9 +10,7 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
 import com.wynntils.utils.mc.StyledTextUtils;
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.core.components.Handlers;
 import dev.lotnest.sequoia.core.components.Model;
-import dev.lotnest.sequoia.models.raid.scoreboard.RaidScoreboardPart;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,15 +26,10 @@ public class RaidModel extends Model {
     private static final Pattern RAID_BUFF_CHOSEN_PATTERN = Pattern.compile(
             "§#d6401eff(\\uE009\\uE002|\\uE001) §#fa7f63ff((§o)?(\\w+))§#d6401eff has chosen the §#fa7f63ff(\\w+) (\\w+)§#d6401eff buff!");
 
-    private static final RaidScoreboardPart RAID_SCOREBOARD_PART = new RaidScoreboardPart();
-
     private final Map<String, Set<Pair<String, String>>> raidBuffs = Maps.newHashMap();
-    private int buffRoom = 0;
 
     public RaidModel() {
         super(List.of());
-
-        Handlers.Scoreboard.addPart(RAID_SCOREBOARD_PART);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -66,15 +59,13 @@ public class RaidModel extends Model {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
         raidBuffs.clear();
-        buffRoom = 0;
-        SequoiaMod.debug("Clearing raidBuffs and buffRoom as raid has completed");
+        SequoiaMod.debug("Clearing raidBuffs as raid has completed");
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
         raidBuffs.clear();
-        buffRoom = 0;
-        SequoiaMod.debug("Clearing raidBuffs and buffRoom as raid has failed");
+        SequoiaMod.debug("Clearing raidBuffs as raid has failed");
     }
 
     public Map<String, Set<Pair<String, String>>> getRaidBuffs() {
@@ -83,18 +74,5 @@ public class RaidModel extends Model {
 
     public Set<Pair<String, String>> getRaidBuffs(String player) {
         return raidBuffs.getOrDefault(player, Collections.emptySet());
-    }
-
-    public boolean isInBuffRoom() {
-        return buffRoom > 0;
-    }
-
-    public int getBuffRoom() {
-        return buffRoom;
-    }
-
-    public void setBuffRoom(int buffRoom) {
-        this.buffRoom = buffRoom;
-        SequoiaMod.debug("buffRoom: " + buffRoom);
     }
 }

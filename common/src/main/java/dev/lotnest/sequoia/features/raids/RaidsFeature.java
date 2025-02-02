@@ -9,6 +9,7 @@ import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.event.TickEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.models.raid.event.RaidEndedEvent;
+import com.wynntils.models.raid.type.RaidRoomType;
 import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
@@ -40,8 +41,7 @@ public class RaidsFeature extends Feature {
             return;
         }
 
-        if (!Models.Raid.isInBuffRoom()
-                || Models.Raid.getBuffRoom() != 3
+        if (com.wynntils.core.components.Models.Raid.getCurrentRoom() != RaidRoomType.BUFF_3
                 || !Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
             isGluttonWarningDisplayed = false;
             return;
