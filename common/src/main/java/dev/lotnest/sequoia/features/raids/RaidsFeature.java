@@ -37,7 +37,7 @@ public class RaidsFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGluttonGambitCheck(TickEvent event) {
-        if (!SequoiaMod.CONFIG.raidsFeature.showGluttonGambitWarning()) {
+        if (SequoiaMod.CONFIG.raidsFeature.gluttonyDisplayType() == GluttonyWarningType.DISABLED) {
             return;
         }
 
@@ -50,8 +50,14 @@ public class RaidsFeature extends Feature {
         if (!isGluttonWarningDisplayed
                 && com.wynntils.core.components.Models.Raid.getCurrentRoom() == RaidRoomType.BUFF_3
                 && Models.Raid.getRaidBuffs(McUtils.playerName()).size() == 2) {
-            McUtils.sendMessageToClient(
-                    SequoiaMod.prefix(Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarning")));
+            switch (SequoiaMod.CONFIG.raidsFeature.gluttonyDisplayType()) {
+                case TEXT -> McUtils.sendMessageToClient(SequoiaMod.prefix(
+                        Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarningText")));
+                case TITLE -> PlayerUtils.sendTitle(
+                        Component.translatable("sequoia.feature.raidsFeature.gluttonGambitWarningTitle"));
+                default -> throw new IllegalStateException(
+                        "Unexpected value: " + SequoiaMod.CONFIG.raidsFeature.gluttonyDisplayType());
+            }
         }
         isGluttonWarningDisplayed = true;
     }
@@ -76,30 +82,63 @@ public class RaidsFeature extends Feature {
             return;
         }
 
-        if (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlay()
-                && Models.Gambit.hasChosenGambit(GambitModel.GambitType.FARSIGHTED)
-                && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
-            WynnUtils.renderCircle(
-                    BUFFER_SOURCE,
-                    CIRCLE_SEGMENTS,
-                    CIRCLE_HEIGHT,
-                    event.getPoseStack(),
-                    player.position(),
-                    3.0F,
-                    CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
+        switch (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlayDisplayType()) {
+            case AUTOMATIC -> {
+                if (Models.Gambit.hasChosenGambit(GambitModel.GambitType.FARSIGHTED)
+                        && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
+                    WynnUtils.renderCircle(
+                            BUFFER_SOURCE,
+                            CIRCLE_SEGMENTS,
+                            CIRCLE_HEIGHT,
+                            event.getPoseStack(),
+                            player.position(),
+                            3.0F,
+                            CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
+                }
+            }
+            case FORCED -> {
+                WynnUtils.renderCircle(
+                        BUFFER_SOURCE,
+                        CIRCLE_SEGMENTS,
+                        CIRCLE_HEIGHT,
+                        event.getPoseStack(),
+                        player.position(),
+                        3.0F,
+                        CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
+            }
+
+            case DISABLED -> {}
+            default -> throw new IllegalStateException(
+                    "Unexpected value: " + SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlayDisplayType());
         }
 
-        if (SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlay()
-                && Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
-                && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
-            WynnUtils.renderCircle(
-                    BUFFER_SOURCE,
-                    CIRCLE_SEGMENTS,
-                    CIRCLE_HEIGHT,
-                    event.getPoseStack(),
-                    player.position(),
-                    12.0F,
-                    CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
+        switch (SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlayDisplayType()) {
+            case AUTOMATIC -> {
+                if (Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
+                        && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
+                    WynnUtils.renderCircle(
+                            BUFFER_SOURCE,
+                            CIRCLE_SEGMENTS,
+                            CIRCLE_HEIGHT,
+                            event.getPoseStack(),
+                            player.position(),
+                            12.0F,
+                            CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
+                }
+            }
+            case FORCED -> {
+                WynnUtils.renderCircle(
+                        BUFFER_SOURCE,
+                        CIRCLE_SEGMENTS,
+                        CIRCLE_HEIGHT,
+                        event.getPoseStack(),
+                        player.position(),
+                        12.0F,
+                        CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
+            }
+            case DISABLED -> {}
+            default -> throw new IllegalStateException(
+                    "Unexpected value: " + SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlayDisplayType());
         }
     }
 
@@ -122,5 +161,17 @@ public class RaidsFeature extends Feature {
     @Override
     public boolean isEnabled() {
         return SequoiaMod.CONFIG.raidsFeature.enabled();
+    }
+
+    public enum RangeIndicatorDisplayType {
+        AUTOMATIC,
+        FORCED,
+        DISABLED
+    }
+
+    public enum GluttonyWarningType {
+        TEXT,
+        TITLE,
+        DISABLED
     }
 }
