@@ -8,13 +8,19 @@ import com.google.common.collect.Maps;
 import com.wynntils.core.WynntilsMod;
 import com.wynntils.core.mod.type.CrashType;
 import com.wynntils.utils.mc.McUtils;
-import dev.lotnest.sequoia.component.CoreComponent;
-import dev.lotnest.sequoia.configs.SequoiaConfig;
-import dev.lotnest.sequoia.events.SequoiaCrashEvent;
-import dev.lotnest.sequoia.feature.features.WebSocketFeature;
-import dev.lotnest.sequoia.http.HttpClient;
-import dev.lotnest.sequoia.manager.Manager;
-import dev.lotnest.sequoia.manager.Managers;
+import dev.lotnest.sequoia.core.components.CoreComponent;
+import dev.lotnest.sequoia.core.components.Handler;
+import dev.lotnest.sequoia.core.components.Handlers;
+import dev.lotnest.sequoia.core.components.Manager;
+import dev.lotnest.sequoia.core.components.Managers;
+import dev.lotnest.sequoia.core.components.Model;
+import dev.lotnest.sequoia.core.components.Models;
+import dev.lotnest.sequoia.core.components.Service;
+import dev.lotnest.sequoia.core.components.Services;
+import dev.lotnest.sequoia.core.events.SequoiaCrashEvent;
+import dev.lotnest.sequoia.core.http.HttpClient;
+import dev.lotnest.sequoia.core.persisted.SequoiaConfig;
+import dev.lotnest.sequoia.features.WebSocketFeature;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -46,7 +52,7 @@ public final class SequoiaMod {
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-    private static HttpClient httpClient;
+    private static HttpClient httpClient = null;
 
     public static void error(String message) {
         LOGGER.error(message);
@@ -83,6 +89,9 @@ public final class SequoiaMod {
 
         try {
             registerComponents(Managers.class, Manager.class);
+            registerComponents(Handlers.class, Handler.class);
+            registerComponents(Models.class, Model.class);
+            registerComponents(Services.class, Service.class);
 
             addCrashCallbacks();
 
