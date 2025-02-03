@@ -89,6 +89,8 @@
   "sequoia.feature.guildMessageFilter.name": "Guild Message Filter",
   "sequoia.feature.guildRaidTracker.description": "Reports completed SEQ Guild Raids to the Discord server",
   "sequoia.feature.guildRaidTracker.name": "Guild Raid Tracker (SEQ member exclusive)",
+  "sequoia.feature.guildRewardStorageFullAlert.description": "Guild Reward Storage Full Warning",
+  "sequoia.feature.guildRewardStorageFullAlert.name": "Guild Reward Storage Full Warning",
   "sequoia.feature.messageFilter.description": "Filters out specified messages from the chat",
   "sequoia.feature.messageFilter.name": "Message Filter",
   "sequoia.feature.modMessageFilter.description": "Filters out specified mod messages from mods like Wynntils, fuy.gg, etc. from the chat",

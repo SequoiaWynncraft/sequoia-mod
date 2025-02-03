@@ -72,6 +72,11 @@ public class ConfigModel {
     @Expanded
     public TerritoryFeature territoryFeature = new TerritoryFeature();
 
+    @Nest
+    @Expanded
+    public GuildRewardStorageFullAlertFeature guildRewardStorageFullAlertFeature =
+            new GuildRewardStorageFullAlertFeature();
+
     public static class MessageFilterFeature {
         public boolean enabled = false;
         public MessageFilterDecisionType eventMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
@@ -129,6 +134,11 @@ public class ConfigModel {
         public boolean enabled = true;
         public boolean sendInGameGuildChatMessagesToDiscord = true;
         public boolean sendDiscordMessagesToInGameChat = true;
+    }
+
+    public static class GuildRewardStorageFullAlertFeature {
+        public boolean enabled = true;
+        public boolean sendWarning = true;
     }
 
     public static class OuterVoidTrackerFeature {
