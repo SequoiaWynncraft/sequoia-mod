@@ -6,6 +6,7 @@ package dev.lotnest.sequoia.features;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.wynntils.core.components.Models;
@@ -126,6 +127,7 @@ public class WebSocketFeature extends Feature {
 
                 SequoiaMod.error("Error occurred in WebSocket connection", e);
                 setAuthenticating(false);
+                setAuthenticated(false);
                 if (StringUtils.equals(e.getMessage(), "java.net.ConnectException: Connection refused: connect")) {
                     client.close();
                 }
@@ -163,9 +165,12 @@ public class WebSocketFeature extends Feature {
 
             JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
             if (jsonObject.has("data")) {
-                JsonObject data = jsonObject.getAsJsonObject("data");
-                if (data.has("access_token")) {
-                    data.addProperty("access_token", "REDACTED");
+                JsonElement dataElement = jsonObject.get("data");
+                if (dataElement.isJsonObject()) {
+                    JsonObject data = dataElement.getAsJsonObject();
+                    if (data.has("access_token")) {
+                        data.addProperty("access_token", "REDACTED");
+                    }
                 }
             }
 
@@ -202,6 +207,7 @@ public class WebSocketFeature extends Feature {
         }
 
         setAuthenticating(true);
+        setAuthenticated(false);
         SequoiaMod.debug("Authenticating with WebSocket server.");
 
         if (receivedInvalidTokenResult) {
@@ -272,7 +278,9 @@ public class WebSocketFeature extends Feature {
         if (client.isOpen()) {
             client.close();
         }
+
         setAuthenticating(false);
+        setAuthenticated(false);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

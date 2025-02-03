@@ -1,4 +1,9 @@
 {
+  "sequoia.command.auth.alreadyAuthenticated": "§cYou are already authenticated with the server.",
+  "sequoia.command.auth.authenticating": "§eAuthenticating you with the server using the provided code...",
+  "sequoia.command.auth.description": "Allows you to authenticate with the Sequoia WebSocket server using a code.",
+  "sequoia.command.auth.invalidCode": "§cInvalid code provided, check the code and try again.",
+  "sequoia.command.auth.pleaseWaitBeforeRetrying": "§cPlease wait a minute before sending another authentication request.",
   "sequoia.command.config.description": "Opens the config GUI.",
   "sequoia.command.config.errorOpeningConfig": "&cAn error occurred while opening the config, check the logs for more information.",
   "sequoia.command.config.installOwOLib": "&cIt seems like you don't have owo-lib installed, please download it from &ehttps://modrinth.com/mod/owo-lib/version/0.12.15+1.21 &cfirst and try this command again.",
@@ -79,6 +84,7 @@
   "sequoia.command.search.itemNotFound": "§e%s §cwas not found, check the item name and try again.",
   "sequoia.command.search.searchingItem": "§eSearching for §2%s §eitem...",
   "sequoia.command.syntaxError": "§cInvalid arguments, please check the syntax and try again.",
+  "sequoia.command.territoryMenu.description": "Opens the territory menu.",
   "sequoia.command.test.description": "Tests various components of the mod, not very useful for regular users.",
   "sequoia.command.version.description": "Shows the version of Sequoia currently installed.",
   "sequoia.feature.commands.description": "Provides commands for managing the mod",
