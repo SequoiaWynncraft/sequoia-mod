@@ -138,7 +138,9 @@ public class ConfigModel {
 
     public static class GuildRewardStorageFullAlertFeature {
         public boolean enabled = true;
-        public boolean sendWarning = true;
+
+        @RangeConstraint(min = 1, max = 100)
+        public int value = 90;
     }
 
     public static class OuterVoidTrackerFeature {

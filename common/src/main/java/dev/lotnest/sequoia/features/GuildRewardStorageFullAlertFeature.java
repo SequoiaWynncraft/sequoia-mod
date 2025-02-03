@@ -4,6 +4,7 @@
  */
 package dev.lotnest.sequoia.features;
 
+import com.ibm.icu.impl.Pair;
 import com.wynntils.core.WynntilsMod;
 import com.wynntils.core.components.Models;
 import com.wynntils.core.text.StyledText;
@@ -18,6 +19,7 @@ import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.wynn.InventoryUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
+import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,20 +45,31 @@ public class GuildRewardStorageFullAlertFeature extends Feature {
         if (!isEnabled()) {
             return;
         }
-
-        if (event.getStyledText().contains("a")) {
+        Component message = event.getStyledText().getComponent();
+        String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
+        Matcher guildRaidCompletionMatcher = GuildMessageFilterPatterns.RAID[0].matcher(unformattedMessage);
+        if (guildRaidCompletionMatcher.matches()) {
             checkGuildRewards().thenAccept(rewardStorage -> {
-                int emeralds = rewardStorage.getOrDefault(GuildRewardType.EMERALD, -1);
-                int aspects = rewardStorage.getOrDefault(GuildRewardType.ASPECT, -1);
-                int tomes = rewardStorage.getOrDefault(GuildRewardType.TOME, -1);
-                McUtils.sendMessageToClient(Component.literal(
-                        String.format("Emeralds : %d, Aspects : %d, Tomes : %d", emeralds, aspects, tomes)));
+                Pair<Integer, Integer> emeralds = rewardStorage.getOrDefault(GuildRewardType.EMERALD, Pair.of(-1, -1));
+                Pair<Integer, Integer> aspects = rewardStorage.getOrDefault(GuildRewardType.ASPECT, Pair.of(-1, -1));
+                Pair<Integer, Integer> tomes = rewardStorage.getOrDefault(GuildRewardType.TOME, Pair.of(-1, -1));
+                if ((emeralds.first * 100 / emeralds.second)
+                        >= SequoiaMod.CONFIG.guildRewardStorageFullAlertFeature.value())
+                    McUtils.sendMessageToClient(
+                            SequoiaMod.prefix(Component.literal("§cWarning! §aEmerald §estorage is low.")));
+                if ((aspects.first * 100 / aspects.second)
+                        >= SequoiaMod.CONFIG.guildRewardStorageFullAlertFeature.value())
+                    McUtils.sendMessageToClient(
+                            SequoiaMod.prefix(Component.literal("§cWarning! §#d6401effAspect §estorage is low.")));
+                if ((tomes.first * 100 / tomes.second) >= SequoiaMod.CONFIG.guildRewardStorageFullAlertFeature.value())
+                    McUtils.sendMessageToClient(
+                            SequoiaMod.prefix(Component.literal("§cWarning! §5Tome §estorage is low.")));
             });
         }
     }
 
-    private CompletableFuture<Map<GuildRewardType, Integer>> checkGuildRewards() {
-        CompletableFuture<Map<GuildRewardType, Integer>> future = new CompletableFuture<>();
+    private CompletableFuture<Map<GuildRewardType, Pair<Integer, Integer>>> checkGuildRewards() {
+        CompletableFuture<Map<GuildRewardType, Pair<Integer, Integer>>> future = new CompletableFuture<>();
 
         QueryBuilder queryBuilder = ScriptedContainerQuery.builder("Guild Reward Query");
         queryBuilder.onError(message -> {
@@ -73,10 +86,10 @@ public class GuildRewardStorageFullAlertFeature extends Feature {
                         content -> StringUtils.isNotBlank(Models.Guild.getGuildName()),
                         QueryStep.clickOnSlot(26).expectContainerTitle("[a-zA-Z\\s]+: Manage"))
                 .then(QueryStep.clickOnSlot(0).expectContainerTitle("[a-zA-Z\\s]+: Members"))
-                .then(QueryStep.clickOnSlot(28)
+                .then(QueryStep.clickOnSlot(2)
                         .expectContainerTitle("[a-zA-Z\\s]+: Members")
                         .processIncomingContainer(content -> {
-                            Map<GuildRewardType, Integer> rewardStorage = getRewardsValue(content);
+                            Map<GuildRewardType, Pair<Integer, Integer>> rewardStorage = getRewardsValue(content);
                             future.complete(rewardStorage);
                         }));
 
@@ -87,9 +100,9 @@ public class GuildRewardStorageFullAlertFeature extends Feature {
         return future;
     }
 
-    private Map<GuildRewardType, Integer> getRewardsValue(ContainerContent content) {
+    private Map<GuildRewardType, Pair<Integer, Integer>> getRewardsValue(ContainerContent content) {
         SequoiaMod.debug("Verifying if enough emeralds are available for claim");
-        Map<GuildRewardType, Integer> rewardStorage = new HashMap<>();
+        Map<GuildRewardType, Pair<Integer, Integer>> rewardStorage = new HashMap<>();
         ItemStack guildRewardsItem = content.items().get(GUILD_REWARDS_ITEM_SLOT);
         Matcher guildRewardsItemMatcher = StyledText.fromComponent(guildRewardsItem.getHoverName())
                 .getNormalized()
@@ -106,16 +119,19 @@ public class GuildRewardStorageFullAlertFeature extends Feature {
             Matcher aspectsMatcher = GUILD_REWARDS_ASPECTS_PATTERN.matcher(loreLine.getString());
             if (emeraldsMatcher.matches()) {
                 int emeralds = Integer.parseInt(emeraldsMatcher.group(1));
+                int emeraldsMax = Integer.parseInt(emeraldsMatcher.group(2));
                 SequoiaMod.debug("Emeralds found: " + emeralds);
-                rewardStorage.put(GuildRewardType.EMERALD, emeralds);
+                rewardStorage.put(GuildRewardType.EMERALD, Pair.of(emeralds, emeraldsMax));
             } else if (aspectsMatcher.matches()) {
                 int aspects = Integer.parseInt(aspectsMatcher.group(1));
+                int aspectsMax = Integer.parseInt(aspectsMatcher.group(2));
                 SequoiaMod.debug("Aspects found: " + aspects);
-                rewardStorage.put(GuildRewardType.ASPECT, aspects);
+                rewardStorage.put(GuildRewardType.ASPECT, Pair.of(aspects, aspectsMax));
             } else if (tomesMatcher.matches()) {
                 int tomes = Integer.parseInt(tomesMatcher.group(1));
+                int tomesMax = Integer.parseInt(tomesMatcher.group(2));
                 SequoiaMod.debug("Tomes found: " + tomes);
-                rewardStorage.put(GuildRewardType.TOME, tomes);
+                rewardStorage.put(GuildRewardType.TOME, Pair.of(tomes, tomesMax));
             }
         }
         return rewardStorage;
