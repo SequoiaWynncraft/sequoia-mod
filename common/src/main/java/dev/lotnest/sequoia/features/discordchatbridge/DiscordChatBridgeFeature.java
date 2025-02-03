@@ -59,7 +59,7 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        if (SequoiaMod.getWebSocketFeature().isAuthenticating()) {
+        if (!SequoiaMod.getWebSocketFeature().isAuthenticated()) {
             return;
         }
 
