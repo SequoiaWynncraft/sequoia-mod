@@ -74,8 +74,8 @@ public class ConfigModel {
 
     @Nest
     @Expanded
-    public GuildRewardStorageFullAlertFeature guildRewardStorageFullAlertFeature =
-            new GuildRewardStorageFullAlertFeature();
+    public GuildRewardStorageTrackerFeature guildRewardStorageTrackerFeature =
+            new GuildRewardStorageTrackerFeature();
 
     public static class MessageFilterFeature {
         public boolean enabled = false;
@@ -136,7 +136,7 @@ public class ConfigModel {
         public boolean sendDiscordMessagesToInGameChat = true;
     }
 
-    public static class GuildRewardStorageFullAlertFeature {
+    public static class GuildRewardStorageTrackerFeature {
         public boolean enabled = true;
 
         @RangeConstraint(min = 1, max = 100)

@@ -32,7 +32,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 
-public class GuildRewardStorageFullAlertFeature extends Feature {
+public class GuildRewardStorageTrackerFeature extends Feature {
     private static final int GUILD_REWARDS_ITEM_SLOT = 27;
     private static final Pattern GUILD_REWARDS_EMERALDS_PATTERN = Pattern.compile("^§aEmeralds: §f(\\d+)§7/(\\d+)$");
     private static final Pattern GUILD_REWARDS_TOMES_PATTERN = Pattern.compile("^§5Guild Tomes: §f(\\d+)§7/(\\d+)$");
@@ -54,16 +54,16 @@ public class GuildRewardStorageFullAlertFeature extends Feature {
                 Pair<Integer, Integer> aspects = rewardStorage.getOrDefault(GuildRewardType.ASPECT, Pair.of(-1, -1));
                 Pair<Integer, Integer> tomes = rewardStorage.getOrDefault(GuildRewardType.TOME, Pair.of(-1, -1));
                 if ((emeralds.first * 100 / emeralds.second)
-                        >= SequoiaMod.CONFIG.guildRewardStorageFullAlertFeature.value())
+                        >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
                     McUtils.sendMessageToClient(
-                            SequoiaMod.prefix(Component.literal("§cWarning! §aEmerald §estorage is low.")));
+                            SequoiaMod.prefix(Component.translatable( "sequoia.feature.guildRewardStorageFullAlert.EmeraldStorageLow")));
                 if ((aspects.first * 100 / aspects.second)
-                        >= SequoiaMod.CONFIG.guildRewardStorageFullAlertFeature.value())
+                        >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
                     McUtils.sendMessageToClient(
-                            SequoiaMod.prefix(Component.literal("§cWarning! §#d6401effAspect §estorage is low.")));
-                if ((tomes.first * 100 / tomes.second) >= SequoiaMod.CONFIG.guildRewardStorageFullAlertFeature.value())
+                            SequoiaMod.prefix(Component.translatable( "sequoia.feature.guildRewardStorageFullAlert.AspectStorageLow")));
+                if ((tomes.first * 100 / tomes.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
                     McUtils.sendMessageToClient(
-                            SequoiaMod.prefix(Component.literal("§cWarning! §5Tome §estorage is low.")));
+                            SequoiaMod.prefix(Component.translatable( "sequoia.feature.guildRewardStorageFullAlert.TomeStorageLow")));
             });
         }
     }
@@ -142,8 +142,8 @@ public class GuildRewardStorageFullAlertFeature extends Feature {
         ASPECT,
         TOME
     }
-
+@Override
     public boolean isEnabled() {
-        return SequoiaMod.CONFIG.guildRewardStorageFullAlertFeature.enabled();
+        return SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.enabled();
     }
 }
