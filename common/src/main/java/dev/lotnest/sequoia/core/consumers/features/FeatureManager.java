@@ -16,6 +16,7 @@ import dev.lotnest.sequoia.core.components.Manager;
 import dev.lotnest.sequoia.core.components.Managers;
 import dev.lotnest.sequoia.core.consumers.command.FeatureCommands;
 import dev.lotnest.sequoia.features.CommandsFeature;
+import dev.lotnest.sequoia.features.GuildRewardStorageTrackerFeature;
 import dev.lotnest.sequoia.features.OuterVoidTrackerFeature;
 import dev.lotnest.sequoia.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.features.SequoiaOSTFeature;
@@ -74,6 +75,7 @@ public final class FeatureManager extends Manager {
         registerFeature(new PartyRaidCompletionsDisplayFeature());
         registerFeature(new TerritoryFeature());
         registerFeature(new TerritoryMenuHotkeyFeature());
+        registerFeature(new GuildRewardStorageTrackerFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();
