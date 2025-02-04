@@ -40,9 +40,9 @@ public final class GuildMessageFilterPatterns {
         Pattern.compile("^(?<player>.+?) changed the style of (?<territory>.+?) to (?<style>.+?)$"),
         Pattern.compile("^(?<player>.+?) changed the global tax to (?<tax>.+?)%$"),
         Pattern.compile("^(?<player>.+?) changed the tax of (?<territory>.+?) to (?<tax>.+?)%$"),
-        Pattern.compile("^(?<territory>.+?) production has stabilised$"),
-        Pattern.compile("^(?<territory>.+?) is using more resources than it can store!$"),
-        Pattern.compile("^(?<territory>.+?) is producing more resources than it can store!$"),
+        Pattern.compile("^(Territory )?(?<territory>.+?) production has stabilised$"),
+        Pattern.compile("^(Territory )?(?<territory>.+?) is using more resources than it can store!$"),
+        Pattern.compile("^(Territory )?(?<territory>.+?) is producing more resources than it can store!$"),
         Pattern.compile("^(?<player>.+?) applied the loadout (?<loadout>.+?) on (?<territory>.+?)$"),
         Pattern.compile("^(?<player>.+?) updated Loadout (?<loadout>.+?)$"),
         Pattern.compile("^(?<player>.+?) deleted Loadout (?<loadout>.+?)$"),
@@ -51,7 +51,9 @@ public final class GuildMessageFilterPatterns {
                 "^(?<guild1>.+?) scheduled (?<resourceIcon>.+?) (?<amount>.+?) (?<resource>.+?) per hour to (?<guild2>.+?)$"),
         Pattern.compile("^(?<player>.+?) changed the global borders to (?<style>.+?)$"),
         Pattern.compile("^(?<player>.+?) changed the borders of (?<territory>.+?) to (?<style>.+?)$"),
-        Pattern.compile("^(?<player>.+?) sent (?<guild>.+?) a request to be allied$")
+        Pattern.compile("^(?<playerOrGuild>.+?) sent (?<guild>.+?) a request to be allied$"),
+        Pattern.compile("^(?<guild1>.+?) formed an alliance with (?<guild2>.+?)$"),
+        Pattern.compile("^(?<playerOrGuild>.+?) gifted (?<amount>.+?) (?<resource>.+?) to (?<guild>.+?)$")
     };
 
     public static final Pattern[] REWARD = {

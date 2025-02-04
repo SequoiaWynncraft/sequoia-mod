@@ -110,10 +110,6 @@ public class DiscordChatBridgeFeature extends Feature {
         }
     }
 
-    private static boolean containsUnicode(String message) {
-        return message.matches(".*[\\P{ASCII}].*");
-    }
-
     private static void createRealNameMap(Component message, Map<String, List<String>> nameMap) {
         if (!messageHasNickHoverDeep(message)) {
             return;
