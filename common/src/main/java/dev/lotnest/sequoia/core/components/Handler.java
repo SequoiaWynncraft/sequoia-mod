@@ -4,7 +4,7 @@
  */
 package dev.lotnest.sequoia.core.components;
 
-import dev.lotnest.sequoia.Handlers.GuildRaidHandler;
+import dev.lotnest.sequoia.handlers.GuildRaidHandler;
 
 /**
  * Handlers span the bridge between Minecraft and Wynncraft. They manage a certain

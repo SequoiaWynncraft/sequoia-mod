@@ -40,7 +40,7 @@ public class GuildRewardStorageTrackerFeature extends Feature {
     private static final Pattern GUILD_REWARDS_ITEM_NAME_PATTERN = Pattern.compile("§d§lGuild Rewards");
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onGuildRaidCompleteEvent(GuildRaidCompletedEvent event) {
+    public void onGuildRaidCompleted(GuildRaidCompletedEvent event) {
         if (!isEnabled()) {
             return;
         }

@@ -31,6 +31,7 @@ public class GuildRaidTrackerFeature extends Feature {
         if (!isEnabled()) {
             return;
         }
+
         sendGuildRaidCompletionReport(event.getGuildRaid());
     }
 
