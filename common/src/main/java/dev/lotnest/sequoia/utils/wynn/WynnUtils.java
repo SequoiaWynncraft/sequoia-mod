@@ -140,7 +140,7 @@ public final class WynnUtils {
         queryBuilder.onError(msg -> WynntilsMod.warn("Error querying Character Info: " + msg));
         queryBuilder.then(QueryStep.useItemInHotbar(InventoryUtils.COMPASS_SLOT_NUM)
                 .expectContainerTitle(ContainerModel.CHARACTER_INFO_NAME)
-                .processIncomingContainer(WynnUtils::parseCharacterContainer));
+                .processIncomingContainer(WynnUtils::parseCharacterContainerForGuildInfo));
 
         Models.Guild.addGuildContainerQuerySteps(queryBuilder);
 
@@ -149,7 +149,7 @@ public final class WynnUtils {
         return StringUtils.equals(Models.Guild.getGuildName(), "Sequoia");
     }
 
-    private static void parseCharacterContainer(ContainerContent container) {
+    public static void parseCharacterContainerForGuildInfo(ContainerContent container) {
         ItemStack guildInfoItem = container.items().get(GUILD_MENU_SLOT);
         Models.Guild.parseGuildInfoFromGuildMenu(guildInfoItem);
     }
