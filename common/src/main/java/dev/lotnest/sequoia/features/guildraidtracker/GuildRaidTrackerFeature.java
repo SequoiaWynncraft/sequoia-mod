@@ -5,11 +5,13 @@
 package dev.lotnest.sequoia.features.guildraidtracker;
 
 import com.google.common.collect.Maps;
+import com.wynntils.core.WynntilsMod;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
+import dev.lotnest.sequoia.core.events.GuildRaidCompletedEvent;
 import dev.lotnest.sequoia.core.websocket.WSMessage;
 import dev.lotnest.sequoia.core.websocket.messages.GuildRaidWSMessage;
 import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;
@@ -35,24 +37,6 @@ public class GuildRaidTrackerFeature extends Feature {
         if (event.getMessageType() != MessageType.FOREGROUND) {
             return;
         }
-
-        if (SequoiaMod.getWebSocketFeature() == null
-                || !SequoiaMod.getWebSocketFeature().isEnabled()) {
-            return;
-        }
-
-        if (SequoiaMod.getWebSocketFeature().isAuthenticating()) {
-            return;
-        }
-
-        if (!isEnabled()) {
-            return;
-        }
-
-        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
-            return;
-        }
-
         Component message = event.getStyledText().getComponent();
         String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
         Map<String, List<String>> nameMap = Maps.newHashMap();
@@ -62,6 +46,9 @@ public class GuildRaidTrackerFeature extends Feature {
             return;
         }
 
+        if (event.getStyledText() == null || event.getStyledText().isBlank()) {
+            return;
+        }
         createUsernameMap(message, nameMap);
 
         String player1 = extractUsername(guildRaidCompletionMatcher.group("player1"), nameMap);
@@ -79,20 +66,33 @@ public class GuildRaidTrackerFeature extends Feature {
 
         if (raidType == null) {
             SequoiaMod.error("Failed to parse RaidType: " + raidString);
-            McUtils.sendMessageToClient(
-                    Component.literal("Failed to report Guild Raid completion, unknown RaidType: " + raidString)
-                            .withStyle(ChatFormatting.RED));
+            McUtils.sendMessageToClient(Component.literal("Failed to parse GuildRaid, unknown RaidType: " + raidString)
+                    .withStyle(ChatFormatting.RED));
             return;
         }
-
-        sendGuildRaidCompletionReport(new GuildRaid(
+        GuildRaid guildRaid = new GuildRaid(
                 raidType,
                 List.of(player1, player2, player3, player4),
                 reporterID,
                 Long.parseLong(aspects),
                 Long.parseLong(emeralds),
                 LongUtils.convertToLong(xp),
-                StringUtils.isNotBlank(sr) ? Integer.parseInt(sr) : 0));
+                StringUtils.isNotBlank(sr) ? Integer.parseInt(sr) : 0);
+        WynntilsMod.postEvent(new GuildRaidCompletedEvent(guildRaid));
+
+        if (SequoiaMod.getWebSocketFeature() == null
+                || !SequoiaMod.getWebSocketFeature().isEnabled()) {
+            return;
+        }
+
+        if (SequoiaMod.getWebSocketFeature().isAuthenticating()) {
+            return;
+        }
+
+        if (!isEnabled()) {
+            return;
+        }
+        sendGuildRaidCompletionReport(guildRaid);
     }
 
     private static String extractUsername(String nickname, Map<String, List<String>> nameMap) {

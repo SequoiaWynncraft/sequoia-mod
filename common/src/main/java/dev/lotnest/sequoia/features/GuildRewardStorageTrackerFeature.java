@@ -8,7 +8,6 @@ import com.ibm.icu.impl.Pair;
 import com.wynntils.core.WynntilsMod;
 import com.wynntils.core.components.Models;
 import com.wynntils.core.text.StyledText;
-import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.handlers.container.scriptedquery.QueryBuilder;
 import com.wynntils.handlers.container.scriptedquery.QueryStep;
 import com.wynntils.handlers.container.scriptedquery.ScriptedContainerQuery;
@@ -19,7 +18,7 @@ import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.wynn.InventoryUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
-import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;
+import dev.lotnest.sequoia.core.events.GuildRaidCompletedEvent;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,31 +40,25 @@ public class GuildRewardStorageTrackerFeature extends Feature {
     private static final Pattern GUILD_REWARDS_ITEM_NAME_PATTERN = Pattern.compile("§d§lGuild Rewards");
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onGuildRaidCompleteEvent(ChatMessageReceivedEvent event) {
+    public void onGuildRaidCompleteEvent(GuildRaidCompletedEvent event) {
         if (!isEnabled()) {
             return;
         }
-        Component message = event.getStyledText().getComponent();
-        String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
-        Matcher guildRaidCompletionMatcher = GuildMessageFilterPatterns.RAID[0].matcher(unformattedMessage);
-        if (guildRaidCompletionMatcher.matches()) {
-            checkGuildRewards().thenAccept(rewardStorage -> {
-                Pair<Integer, Integer> emeralds = rewardStorage.getOrDefault(GuildRewardType.EMERALD, Pair.of(-1, -1));
-                Pair<Integer, Integer> aspects = rewardStorage.getOrDefault(GuildRewardType.ASPECT, Pair.of(-1, -1));
-                Pair<Integer, Integer> tomes = rewardStorage.getOrDefault(GuildRewardType.TOME, Pair.of(-1, -1));
-                if ((emeralds.first * 100 / emeralds.second)
-                        >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
-                    McUtils.sendMessageToClient(
-                            SequoiaMod.prefix(Component.translatable( "sequoia.feature.guildRewardStorageFullAlert.EmeraldStorageLow")));
-                if ((aspects.first * 100 / aspects.second)
-                        >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
-                    McUtils.sendMessageToClient(
-                            SequoiaMod.prefix(Component.translatable( "sequoia.feature.guildRewardStorageFullAlert.AspectStorageLow")));
-                if ((tomes.first * 100 / tomes.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
-                    McUtils.sendMessageToClient(
-                            SequoiaMod.prefix(Component.translatable( "sequoia.feature.guildRewardStorageFullAlert.TomeStorageLow")));
-            });
-        }
+
+        checkGuildRewards().thenAccept(rewardStorage -> {
+            Pair<Integer, Integer> emeralds = rewardStorage.getOrDefault(GuildRewardType.EMERALD, Pair.of(-1, -1));
+            Pair<Integer, Integer> aspects = rewardStorage.getOrDefault(GuildRewardType.ASPECT, Pair.of(-1, -1));
+            Pair<Integer, Integer> tomes = rewardStorage.getOrDefault(GuildRewardType.TOME, Pair.of(-1, -1));
+            if ((emeralds.first * 100 / emeralds.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
+                McUtils.sendMessageToClient(SequoiaMod.prefix(
+                        Component.translatable("sequoia.feature.guildRewardStorageFullAlert.EmeraldStorageLow")));
+            if ((aspects.first * 100 / aspects.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
+                McUtils.sendMessageToClient(SequoiaMod.prefix(
+                        Component.translatable("sequoia.feature.guildRewardStorageFullAlert.AspectStorageLow")));
+            if ((tomes.first * 100 / tomes.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
+                McUtils.sendMessageToClient(SequoiaMod.prefix(
+                        Component.translatable("sequoia.feature.guildRewardStorageFullAlert.TomeStorageLow")));
+        });
     }
 
     private CompletableFuture<Map<GuildRewardType, Pair<Integer, Integer>>> checkGuildRewards() {
@@ -142,7 +135,8 @@ public class GuildRewardStorageTrackerFeature extends Feature {
         ASPECT,
         TOME
     }
-@Override
+
+    @Override
     public boolean isEnabled() {
         return SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.enabled();
     }

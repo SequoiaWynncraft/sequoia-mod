@@ -74,8 +74,7 @@ public class ConfigModel {
 
     @Nest
     @Expanded
-    public GuildRewardStorageTrackerFeature guildRewardStorageTrackerFeature =
-            new GuildRewardStorageTrackerFeature();
+    public GuildRewardStorageTrackerFeature guildRewardStorageTrackerFeature = new GuildRewardStorageTrackerFeature();
 
     public static class MessageFilterFeature {
         public boolean enabled = false;
