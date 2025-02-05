@@ -74,7 +74,7 @@ loom {
         useLegacyMixinAp = false
     }
 
-    accessWidenerPath = file("src/main/resources/sequoia.accesswidener")
+    accessWidenerPath = file("src/main/resources/sequoia.accessWidener")
 
     mods {
         val main by creating { // To match the default mod generated for Forge

@@ -71,8 +71,8 @@ afterEvaluate {
 }
 
 loom {
-    if (project(":common").file("src/main/resources/sequoia.accesswidener").exists())
-        accessWidenerPath.set(project(":common").file("src/main/resources/sequoia.accesswidener"))
+    if (project(":common").file("src/main/resources/sequoia.accessWidener").exists())
+        accessWidenerPath.set(project(":common").file("src/main/resources/sequoia.accessWidener"))
 
     mixin {
         useLegacyMixinAp = false
