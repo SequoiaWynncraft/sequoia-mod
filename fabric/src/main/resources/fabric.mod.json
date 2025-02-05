@@ -6,11 +6,8 @@
     "OwORawr (Sequoia OST composer)"
   ],
   "depends": {
-    "fabric": ">=${fabric_version}",
-    "fabricloader": ">=${fabric_loader_version}",
-    "minecraft": "${minecraft_version}",
-    "owo-lib": ">=${owo_lib_version}",
-    "wynntils": ">=${wynntils_version}"
+    "fabricloader": ">=0.15.1",
+    "minecraft" : "1.21.4"
   },
   "description": "Guild mod for Sequoia [SEQ].",
   "entrypoints": {
@@ -19,12 +16,11 @@
     ]
   },
   "environment": "*",
-  "icon": "assets/sequoia/logo.png",
+  "icon": "assets/sequoia/sequoia-icon.png",
   "id": "${mod_id}",
   "license": "LGPL-3.0-only",
   "mixins": [
-    "sequoia.mixins.json",
-    "sequoia.mixins.fabric.json"
+    "sequoia.mixins.json"
   ],
   "name": "Sequoia",
   "schemaVersion": 1,
