@@ -3,7 +3,7 @@ import me.modmuss50.mpp.ReleaseType
 plugins {
     id("java")
     id("idea")
-    id("fabric-loom") version ("1.8.9")
+    id("fabric-loom") version ("1.9.2")
 }
 
 val MINECRAFT_VERSION: String by rootProject.extra

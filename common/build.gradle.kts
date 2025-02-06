@@ -1,10 +1,11 @@
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import java.io.File
-import java.net.URL
+import java.net.URI
 
 plugins {
     id("java")
     id("idea")
-    id("fabric-loom") version ("1.8.9")
+    id("fabric-loom") version "1.9.2"
 }
 
 repositories {
@@ -26,7 +27,7 @@ val WYNNTILS = {
     file.parentFile.mkdirs()
 
     if (!file.exists()) {
-        URL(url).openStream().use { downloadStream ->
+        URI.create(url).toURL().openStream().use { downloadStream ->
             file.outputStream().use { fileOut ->
                 downloadStream.copyTo(fileOut)
             }
@@ -68,17 +69,34 @@ dependencies {
     implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
 }
 
-loom {
+val usingHotswapAgent = project.hasProperty("sequoia.hotswap") &&
+        project.property("sequoia.hotswap") == "true"
+
+extensions.configure<LoomGradleExtensionAPI> {
     mixin {
         defaultRefmapName = "sequoia.refmap.json"
         useLegacyMixinAp = false
     }
 
-    accessWidenerPath = file("src/main/resources/sequoia.accessWidener")
+    accessWidenerPath.set(file("src/main/resources/sequoia.accessWidener"))
 
     mods {
-        val main by creating { // To match the default mod generated for Forge
+        val main by creating {
             sourceSet("main")
+        }
+    }
+
+    runs {
+        named("client") {
+            property("devauth.configDir", rootProject.file(".devauth").absolutePath)
+            if (project.hasProperty("sequoia.hotswap") &&
+                project.property("sequoia.hotswap") == "true") {
+                vmArgs("-XX:+AllowEnhancedClassRedefinition")
+                vmArgs("-XX:+ClassUnloading")
+                vmArgs("-XX:HotswapAgent=fatjar")
+            }
+            vmArgs("-ea")
+            client()
         }
     }
 }

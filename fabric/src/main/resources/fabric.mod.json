@@ -7,7 +7,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.15.1",
-    "minecraft" : "1.21.4"
+    "minecraft": "1.21.4"
   },
   "description": "Guild mod for Sequoia [SEQ].",
   "entrypoints": {

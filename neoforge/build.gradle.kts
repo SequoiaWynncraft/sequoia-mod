@@ -1,5 +1,5 @@
 import me.modmuss50.mpp.ReleaseType
-import java.net.URL
+import java.net.URI
 
 plugins {
     id("idea")
@@ -22,7 +22,7 @@ val WYNNTILS = {
     file.parentFile.mkdirs()
 
     if (!file.exists()) {
-        URL(url).openStream().use { downloadStream ->
+        URI.create(url).toURL().openStream().use { downloadStream ->
             file.outputStream().use { fileOut ->
                 downloadStream.copyTo(fileOut)
             }
