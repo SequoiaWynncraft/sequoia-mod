@@ -17,10 +17,5 @@ versionRange = "1.21.4"
 ordering = "NONE"
 side = "CLIENT"
 
-[[dependencies.sequoia]]
-modId = "forge"
-mandatory = true
-versionRange = "1.21.4"
-
 [[mixins]]
 config = "sequoia.mixins.json"

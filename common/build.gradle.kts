@@ -17,6 +17,7 @@ val MINECRAFT_VERSION: String by rootProject.extra
 val PARCHMENT_VERSION: String? by rootProject.extra
 val FABRIC_LOADER_VERSION: String by rootProject.extra
 val FABRIC_API_VERSION: String by rootProject.extra
+val NEOFORGE_EVENTBUS_VERSION: String by rootProject.extra
 
 val WYNNTILS_VERSION: String by rootProject.extra
 val WYNNTILS = {
@@ -63,10 +64,13 @@ dependencies {
         modCompileOnly(module)
     }
 
+    implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+
     modImplementation(WYNNTILS())
     modImplementation("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
     annotationProcessor("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
-    implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+
+    compileOnly("net.neoforged:bus:${NEOFORGE_EVENTBUS_VERSION}")
 }
 
 val usingHotswapAgent = project.hasProperty("sequoia.hotswap") &&

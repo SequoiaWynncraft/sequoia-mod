@@ -7,21 +7,23 @@ plugins {
     id("com.diffplug.spotless") version "6.25.0"
 }
 
-// Fabric: https://fabricmc.net/develop/
-// Neoforge: https://neoforged.net/
-val MINECRAFT_VERSION by extra { "1.21.4" } //MUST manually update fabric.mod.json and neoforge.mods.toml
-val NEOFORGE_VERSION by extra { "21.4.50-beta" }
-val FABRIC_LOADER_VERSION by extra { "0.16.9" }
-val FABRIC_API_VERSION by extra { "0.110.5+1.21.4" }
-val PARCHMENT_VERSION by extra { null }
-
 val MOD_ID by extra { "sequoia" }
 // https://semver.org/
 val MOD_VERSION by extra { "0.6.3" }
 
+// Fabric: https://fabricmc.net/develop/
+// Neoforge: https://neoforged.net/
+val MINECRAFT_VERSION by extra { "1.21.4" } // MUST manually update fabric.mod.json and neoforge.mods.toml
+val NEOFORGE_VERSION by extra { "21.4.51-beta" }
+val NEOFORGE_EVENTBUS_VERSION by extra { "8.0.2" }
+val FABRIC_LOADER_VERSION by extra { "0.16.10" }
+val FABRIC_API_VERSION by extra { "0.110.5+1.21.4" }
+val PARCHMENT_VERSION by extra { null }
+
 val WYNNTILS_VERSION by extra { "3.0.3" }
 val OWO_LIB_VERSION by extra { "0.12.20+1.21.4" }
 val WEBSOCKET_VERSION by extra { "1.5.7" }
+val DEV_AUTH_VERSION by extra { "1.2.1" }
 
 allprojects {
     apply(plugin = "java")

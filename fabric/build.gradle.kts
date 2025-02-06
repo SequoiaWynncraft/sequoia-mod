@@ -1,4 +1,5 @@
 import me.modmuss50.mpp.ReleaseType
+import java.net.URI
 
 plugins {
     id("java")
@@ -10,11 +11,40 @@ val MINECRAFT_VERSION: String by rootProject.extra
 val PARCHMENT_VERSION: String? by rootProject.extra
 val FABRIC_LOADER_VERSION: String by rootProject.extra
 val FABRIC_API_VERSION: String by rootProject.extra
+val NEOFORGE_EVENTBUS_VERSION: String by rootProject.extra
 
 val MOD_ID: String by rootProject.extra
 val MOD_VERSION: String by rootProject.extra
 
+val WYNNTILS_VERSION: String by rootProject.extra
+val WYNNTILS = {
+    val url =
+        "https://github.com/Wynntils/Wynntils/releases/download/v$WYNNTILS_VERSION/wynntils-$WYNNTILS_VERSION-fabric+MC-$MINECRAFT_VERSION.jar"
+    val file = File(projectDir, "libs/wynntils-$WYNNTILS_VERSION.jar")
+
+    file.parentFile.mkdirs()
+
+    if (!file.exists()) {
+        URI.create(url).toURL().openStream().use { downloadStream ->
+            file.outputStream().use { fileOut ->
+                downloadStream.copyTo(fileOut)
+            }
+        }
+
+        val modsFile = File(projectDir, "run/mods/wynntils.jar")
+        modsFile.parentFile.mkdirs()
+        file.inputStream().use { input ->
+            modsFile.outputStream().use { fileOut ->
+                input.copyTo(fileOut)
+            }
+        }
+    }
+
+    files(file.absolutePath)
+}
 val WEBSOCKET_VERSION: String by rootProject.extra
+val DEV_AUTH_VERSION: String by rootProject.extra
+val OWO_LIB_VERSION: String by rootProject.extra
 
 base {
     archivesName.set("sequoia-fabric")
@@ -53,6 +83,20 @@ dependencies {
     implementation(project.project(":common").sourceSets.getByName("main").output)
 
     include("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+    implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+
+    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${DEV_AUTH_VERSION}")
+
+    implementation("net.neoforged:bus:${NEOFORGE_EVENTBUS_VERSION}") {
+        exclude("org.ow2.asm")
+        exclude("org.apache.logging.log4j")
+        exclude("cpw.mods", "modlauncher")
+    }
+
+    implementation(WYNNTILS())
+
+    modImplementation("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
+    annotationProcessor("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
 }
 
 tasks.named("compileTestJava").configure {
@@ -66,7 +110,7 @@ tasks.named("test").configure {
 // https://fabricmc.net/wiki/tutorial:mixin_hotswaps
 afterEvaluate {
     loom.runs.configureEach {
-        vmArg("-javaagent:${ configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") } }")
+        vmArg("-javaagent:${configurations.compileClasspath.get().find { it.name.contains("sponge-mixin") }}")
     }
 }
 
@@ -132,7 +176,7 @@ publishMods {
 
 fun getReleaseType(): ReleaseType {
     return when (val releaseType = providers.environmentVariable("RELEASE_TYPE").orNull) {
-        "alpha"-> ReleaseType.ALPHA
+        "alpha" -> ReleaseType.ALPHA
         "beta" -> ReleaseType.BETA
         "stable" -> ReleaseType.STABLE
         else -> {

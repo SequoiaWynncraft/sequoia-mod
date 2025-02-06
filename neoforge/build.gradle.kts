@@ -2,9 +2,9 @@ import me.modmuss50.mpp.ReleaseType
 import java.net.URI
 
 plugins {
+    id("java")
     id("idea")
     id("net.neoforged.moddev") version "2.0.42-beta"
-    id("java-library")
 }
 
 val MINECRAFT_VERSION: String by rootProject.extra
@@ -39,6 +39,8 @@ val WYNNTILS = {
 
     files(file.absolutePath)
 }
+val DEV_AUTH_VERSION: String by rootProject.extra
+val WEBSOCKET_VERSION: String by rootProject.extra
 
 base {
     archivesName = "sequoia-neoforge"
@@ -48,7 +50,7 @@ repositories {
     maven("https://maven.pkg.github.com/ims212/Forge_Fabric_API") {
         credentials {
             username = "IMS212"
-            // Read only token
+            // Read-only token
             password = "ghp_" + "DEuGv0Z56vnSOYKLCXdsS9svK4nb9K39C1Hn"
         }
     }
@@ -95,6 +97,12 @@ neoForge {
     }
 
     runs {
+        configureEach {
+            dependencies {
+                runtimeOnly("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+            }
+        }
+
         create("client") {
             client()
         }
@@ -118,7 +126,11 @@ tasks.named("compileTestJava").configure {
 dependencies {
     compileOnly(project.project(":common").sourceSets.getByName("main").output)
 
+    implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+
     implementation(WYNNTILS())
+
+    runtimeOnly("me.djtheredstoner:DevAuth-neoforge:${DEV_AUTH_VERSION}")
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
