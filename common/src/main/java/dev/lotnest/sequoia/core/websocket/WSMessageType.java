@@ -15,7 +15,7 @@ public enum WSMessageType {
     G_IDENTIFY(6),
     G_GUILD_WAR_RESULTS(7),
     G_LOOT_POOL(8),
-    G_RESERVED_5(9),
+    G_AUTH(9),
     G_RESERVED_6(10),
     G_RESERVED_7(11),
     G_RESERVED_8(12),
@@ -39,7 +39,8 @@ public enum WSMessageType {
 
     D_CHANNEL_MESSAGE(29),
     D_GET_CONNECTED_CLIENT(30),
-    D_SERVER_RESTART(31);
+    D_SERVER_RESTART(31),
+    D_SERVER_MESSAGE(32);
 
     private final int value;
 

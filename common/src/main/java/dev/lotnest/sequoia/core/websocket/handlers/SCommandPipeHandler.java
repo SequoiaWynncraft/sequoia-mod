@@ -21,6 +21,10 @@ public class SCommandPipeHandler extends WSMessageHandler {
         if (StringUtils.equals("Invalid token", wsMessage.getData().getAsString())) {
             SequoiaMod.debug("Received invalid token response. Requesting a new token.");
             SequoiaMod.getWebSocketFeature().authenticate(true);
+        } else if (StringUtils.equals("Authenticated.", wsMessage.getData().getAsString())) {
+            SequoiaMod.debug("Authenticated with WebSocket server.");
+            SequoiaMod.getWebSocketFeature().setAuthenticating(false);
+            SequoiaMod.getWebSocketFeature().setAuthenticated(true);
         }
     }
 }

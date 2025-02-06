@@ -15,6 +15,7 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import com.wynntils.mc.event.CommandsAddedEvent;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.commands.AuthCommand;
 import dev.lotnest.sequoia.commands.ConfigCommand;
 import dev.lotnest.sequoia.commands.ConnectCommand;
 import dev.lotnest.sequoia.commands.DisconnectCommand;
@@ -193,6 +194,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new PlayerRankCommand());
         registerCommand(new SearchCommand());
         registerCommand(new TerritoryMenuCommand());
+        registerCommand(new AuthCommand());
 
         registerCommandWithCommandSet(new SequoiaCommand());
     }
