@@ -9,7 +9,7 @@ plugins {
 
 val MOD_ID by extra { "sequoia" }
 // https://semver.org/
-val MOD_VERSION by extra { "0.6.3" }
+val MOD_VERSION by extra { "0.6.4" }
 
 // Fabric: https://fabricmc.net/develop/
 // Neoforge: https://neoforged.net/
