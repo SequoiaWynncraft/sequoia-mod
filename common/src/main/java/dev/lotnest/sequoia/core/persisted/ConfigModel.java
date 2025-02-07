@@ -191,6 +191,7 @@ public class ConfigModel {
         public static class NOLRaidFeature {
             public boolean showLightOrbFormingTitle = true;
             public boolean showCrystallineDecaysSpawnedTitle = true;
+            public boolean autoSkipCutscene = true;
         }
 
         public static class TNARaidFeature {

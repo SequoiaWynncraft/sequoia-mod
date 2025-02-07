@@ -193,6 +193,7 @@
   "text.config.sequoia.option.playerIgnoreFeature.allowShoutsFromIgnoredPlayers": "Allow shouts from ignored players",
   "text.config.sequoia.option.playerIgnoreFeature.enabled": "Status",
   "text.config.sequoia.option.playerIgnoreFeature.ignoredPlayers": "Ignored players",
+  "text.config.sequoia.option.raidsFeature.NOLRaidFeature.autoSkipCutscene": "Automatically skip Nexus of Light cutscenes",
   "text.config.sequoia.option.raidsFeature.NOLRaidFeature.showCrystallineDecaysSpawnedTitle": "Show crystalline decays spawned title",
   "text.config.sequoia.option.raidsFeature.NOLRaidFeature.showCrystallineDecaysSpawnedTitle.tooltip": "Whenever crystalline decays are spawned, a title\nwill be shown in the middle of the screen.",
   "text.config.sequoia.option.raidsFeature.NOLRaidFeature.showLightOrbFormingTitle": "Show light orb forming title",
