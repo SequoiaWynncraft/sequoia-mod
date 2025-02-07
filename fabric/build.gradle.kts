@@ -30,14 +30,6 @@ val WYNNTILS = {
                 downloadStream.copyTo(fileOut)
             }
         }
-
-        val modsFile = File(projectDir, "run/mods/wynntils.jar")
-        modsFile.parentFile.mkdirs()
-        file.inputStream().use { input ->
-            modsFile.outputStream().use { fileOut ->
-                input.copyTo(fileOut)
-            }
-        }
     }
 
     files(file.absolutePath)
@@ -128,6 +120,7 @@ loom {
             configName = "Fabric Client"
             ideConfigGenerated(true)
             runDir("run")
+            vmArg("-Ddevauth.configDir=${rootProject.file(".devauth").absolutePath}")
         }
         create("fabricServer") {
             server()

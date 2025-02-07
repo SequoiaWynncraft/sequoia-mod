@@ -9,7 +9,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.command.Command;
-import dev.lotnest.sequoia.features.WebSocketFeature;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -27,15 +26,15 @@ public class ReconnectCommand extends Command {
     }
 
     private int reconnectToWebSocket(CommandContext<CommandSourceStack> context) {
-        if (!dev.lotnest.sequoia.core.components.Managers.Feature.getFeatureInstance(WebSocketFeature.class)
-                .isEnabled()) {
+        if (SequoiaMod.getWebSocketFeature() == null
+                || SequoiaMod.getWebSocketFeature().isEnabled()) {
             context.getSource()
                     .sendFailure(
                             SequoiaMod.prefix(Component.translatable("sequoia.feature.webSocket.featureDisabled")));
             return 1;
         }
 
-        if (!WynnUtils.isSequoiaGuildMember()) {
+        if (!WynnUtils.isSequoiaGuildMember().join()) {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.notASequoiaGuildMember")));
             return 1;

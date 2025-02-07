@@ -4,6 +4,10 @@
  */
 package dev.lotnest.sequoia.core.components;
 
+import dev.lotnest.sequoia.handlers.GuildRaidHandler;
+
 public final class Handlers {
+    public static final GuildRaidHandler GuildRaid = new GuildRaidHandler();
+
     private Handlers() {}
 }

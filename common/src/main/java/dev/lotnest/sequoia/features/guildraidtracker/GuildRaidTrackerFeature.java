@@ -19,24 +19,29 @@ import org.apache.commons.lang3.StringUtils;
 public class GuildRaidTrackerFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGuildRaidCompleted(GuildRaidCompletedEvent event) {
+        if (!isEnabled()) {
+            SequoiaMod.debug("Ignoring Guild Raid completion report as the feature is disabled.");
+            return;
+        }
+
         if (SequoiaMod.getWebSocketFeature() == null
                 || !SequoiaMod.getWebSocketFeature().isEnabled()) {
+            SequoiaMod.debug("Ignoring Guild Raid completion report as the WebSocket feature is disabled.");
             return;
         }
 
         if (!SequoiaMod.getWebSocketFeature().isAuthenticated()) {
-            return;
-        }
-
-        if (!isEnabled()) {
+            SequoiaMod.debug(
+                    "Ignoring Guild Raid completion report as the user is not authenticated with the WebSocket.");
             return;
         }
 
         sendGuildRaidCompletionReport(event.getGuildRaid());
     }
 
-    private static void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
+    private void sendGuildRaidCompletionReport(GuildRaid guildRaid) {
         if (guildRaid == null) {
+            SequoiaMod.debug("Ignoring Guild Raid completion report as the Guild Raid is null.");
             return;
         }
 

@@ -31,7 +31,6 @@ import dev.lotnest.sequoia.features.raids.PartyRaidCompletionsDisplayFeature;
 import dev.lotnest.sequoia.features.raids.RaidsFeature;
 import dev.lotnest.sequoia.features.raids.TNARaidFeature;
 import dev.lotnest.sequoia.features.territory.TerritoryFeature;
-import dev.lotnest.sequoia.features.territory.TerritoryMenuHotkeyFeature;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,8 +43,8 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public final class FeatureManager extends Manager {
-    private static final Map<Feature, FeatureState> FEATURES = Maps.newLinkedHashMap();
-    private static final Map<Class<? extends Feature>, Feature> FEATURE_INSTANCES = Maps.newLinkedHashMap();
+    private final Map<Feature, FeatureState> featureMap = Maps.newLinkedHashMap();
+    private final Map<Class<? extends Feature>, Feature> featureInstanceMap = Maps.newLinkedHashMap();
 
     private final FeatureCommands commands = new FeatureCommands();
 
@@ -74,7 +73,6 @@ public final class FeatureManager extends Manager {
         registerFeature(new TNARaidFeature());
         registerFeature(new PartyRaidCompletionsDisplayFeature());
         registerFeature(new TerritoryFeature());
-        registerFeature(new TerritoryMenuHotkeyFeature());
         registerFeature(new GuildRewardStorageTrackerFeature());
 
         synchronized (McUtils.options()) {
@@ -89,8 +87,8 @@ public final class FeatureManager extends Manager {
     private void registerFeature(Feature feature) {
         SequoiaMod.debug("Registering feature: " + feature.getClass().getSimpleName());
 
-        FEATURES.put(feature, FeatureState.DISABLED);
-        FEATURE_INSTANCES.put(feature.getClass(), feature);
+        featureMap.put(feature, FeatureState.DISABLED);
+        featureInstanceMap.put(feature.getClass(), feature);
 
         try {
             initializeFeature(feature);
@@ -116,7 +114,6 @@ public final class FeatureManager extends Manager {
         SequoiaMod.debug("Initializing feature: " + feature.getClass().getSimpleName());
 
         commands.discoverCommands(feature);
-        Managers.KeyBind.discoverKeyBinds(feature);
 
         assert !feature.getTranslatedName().startsWith("sequoia.feature.")
                 : "Fix i18n for " + feature.getTranslatedName();
@@ -128,11 +125,11 @@ public final class FeatureManager extends Manager {
     }
 
     public void enableFeature(Feature feature) {
-        if (!FEATURES.containsKey(feature)) {
+        if (!featureMap.containsKey(feature)) {
             throw new IllegalArgumentException("Tried to enable an unregistered feature: " + feature);
         }
 
-        FeatureState state = FEATURES.get(feature);
+        FeatureState state = featureMap.get(feature);
 
         if (state != FeatureState.DISABLED && state != FeatureState.CRASHED) {
             return;
@@ -140,54 +137,50 @@ public final class FeatureManager extends Manager {
 
         feature.onEnable();
 
-        FEATURES.put(feature, FeatureState.ENABLED);
+        featureMap.put(feature, FeatureState.ENABLED);
 
         WynntilsMod.registerEventListener(feature);
-
-        Managers.KeyBind.enableFeatureKeyBinds(feature);
 
         SequoiaMod.debug("Enabled feature: " + feature.getClass().getSimpleName());
     }
 
     public void disableFeature(Feature feature) {
-        if (!FEATURES.containsKey(feature)) {
+        if (!featureMap.containsKey(feature)) {
             throw new IllegalArgumentException("Tried to disable an unregistered feature: " + feature);
         }
 
-        FeatureState state = FEATURES.get(feature);
+        FeatureState state = featureMap.get(feature);
 
         if (state != FeatureState.ENABLED) return;
 
         feature.onDisable();
 
-        FEATURES.put(feature, FeatureState.DISABLED);
+        featureMap.put(feature, FeatureState.DISABLED);
 
         WynntilsMod.unregisterEventListener(feature);
-
-        Managers.KeyBind.disableFeatureKeyBinds(feature);
 
         SequoiaMod.debug("Disabled feature: " + feature.getClass().getSimpleName());
     }
 
     public void crashFeature(Feature feature) {
-        if (!FEATURES.containsKey(feature)) {
+        if (!featureMap.containsKey(feature)) {
             throw new IllegalArgumentException("Tried to crash an unregistered feature: " + feature);
         }
 
         disableFeature(feature);
 
-        FEATURES.put(feature, FeatureState.CRASHED);
+        featureMap.put(feature, FeatureState.CRASHED);
 
         SequoiaMod.debug("Crashed feature: " + feature.getClass().getSimpleName());
     }
 
     private FeatureState getFeatureState(Feature feature) {
-        if (!FEATURES.containsKey(feature)) {
+        if (!featureMap.containsKey(feature)) {
             throw new IllegalArgumentException(
                     "Feature " + feature + " is not registered, but was was queried for its state");
         }
 
-        return FEATURES.get(feature);
+        return featureMap.get(feature);
     }
 
     public boolean isEnabled(Feature feature) {
@@ -195,12 +188,12 @@ public final class FeatureManager extends Manager {
     }
 
     public List<Feature> getFeatures() {
-        return FEATURES.keySet().stream().toList();
+        return featureMap.keySet().stream().toList();
     }
 
     @SuppressWarnings("unchecked")
     public <T extends Feature> T getFeatureInstance(Class<T> featureClass) {
-        return (T) FEATURE_INSTANCES.get(featureClass);
+        return (T) featureInstanceMap.get(featureClass);
     }
 
     public Optional<Feature> getFeatureFromString(String featureName) {
@@ -249,7 +242,7 @@ public final class FeatureManager extends Manager {
         Managers.CrashReport.registerCrashContext("Loaded Features", () -> {
             StringBuilder result = new StringBuilder();
 
-            for (Feature feature : FEATURES.keySet()) {
+            for (Feature feature : featureMap.keySet()) {
                 if (feature.isEnabled()) {
                     result.append("\n\t\t").append(feature.getTranslatedName());
                 }

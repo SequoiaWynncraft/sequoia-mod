@@ -33,14 +33,6 @@ val WYNNTILS = {
                 downloadStream.copyTo(fileOut)
             }
         }
-
-        val modsFile = File(projectDir, "run/mods/wynntils.jar")
-        modsFile.parentFile.mkdirs()
-        file.inputStream().use { input ->
-            modsFile.outputStream().use { fileOut ->
-                input.copyTo(fileOut)
-            }
-        }
     }
 
     files(file.absolutePath)
@@ -94,7 +86,8 @@ extensions.configure<LoomGradleExtensionAPI> {
         named("client") {
             property("devauth.configDir", rootProject.file(".devauth").absolutePath)
             if (project.hasProperty("sequoia.hotswap") &&
-                project.property("sequoia.hotswap") == "true") {
+                project.property("sequoia.hotswap") == "true"
+            ) {
                 vmArgs("-XX:+AllowEnhancedClassRedefinition")
                 vmArgs("-XX:+ClassUnloading")
                 vmArgs("-XX:HotswapAgent=fatjar")

@@ -10,6 +10,7 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Handler;
 import dev.lotnest.sequoia.core.events.GuildRaidCompletedEvent;
 import dev.lotnest.sequoia.features.guildraidtracker.GuildRaid;
 import dev.lotnest.sequoia.features.guildraidtracker.RaidType;
@@ -30,12 +31,13 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 
-public class GuildRaidHandler {
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+public class GuildRaidHandler extends Handler {
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onGuildRaidCompletion(ChatMessageReceivedEvent event) {
         if (event.getMessageType() != MessageType.FOREGROUND) {
             return;
         }
+
         Component message = event.getStyledText().getComponent();
         String unformattedMessage = WynnUtils.getUnformattedString(message.getString());
         Map<String, List<String>> nameMap = Maps.newHashMap();
@@ -45,9 +47,12 @@ public class GuildRaidHandler {
             return;
         }
 
+        SequoiaMod.debug("Parsing GuildRaid: " + message.getString());
+
         if (event.getStyledText() == null || event.getStyledText().isBlank()) {
             return;
         }
+
         createUsernameMap(message, nameMap);
 
         String player1 = extractUsername(guildRaidCompletionMatcher.group("player1"), nameMap);
@@ -69,6 +74,7 @@ public class GuildRaidHandler {
                     .withStyle(ChatFormatting.RED));
             return;
         }
+
         GuildRaid guildRaid = new GuildRaid(
                 raidType,
                 List.of(player1, player2, player3, player4),
@@ -78,6 +84,7 @@ public class GuildRaidHandler {
                 LongUtils.convertToLong(xp),
                 StringUtils.isNotBlank(sr) ? Integer.parseInt(sr) : 0);
 
+        SequoiaMod.debug("Completed parsing GuildRaid: " + guildRaid);
         WynntilsMod.postEvent(new GuildRaidCompletedEvent(guildRaid));
     }
 

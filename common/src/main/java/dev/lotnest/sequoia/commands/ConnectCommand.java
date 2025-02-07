@@ -35,7 +35,7 @@ public class ConnectCommand extends Command {
             return 1;
         }
 
-        if (!WynnUtils.isSequoiaGuildMember()) {
+        if (!WynnUtils.isSequoiaGuildMember().join()) {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.notASequoiaGuildMember")));
             return 1;

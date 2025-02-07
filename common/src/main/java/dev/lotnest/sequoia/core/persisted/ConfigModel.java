@@ -208,6 +208,5 @@ public class ConfigModel {
     public static class TerritoryFeature {
         public boolean enabled = true;
         public boolean showCapturedTerritoryInfo = true;
-        public boolean territoryMenuHotkey = true;
     }
 }

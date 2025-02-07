@@ -96,8 +96,8 @@ public final class SequoiaMod {
             addCrashCallbacks();
 
             initFeatures();
-        } catch (Throwable throwable) {
-            LOGGER.error("Failed to initialize Sequoia components", throwable);
+        } catch (Exception exception) {
+            LOGGER.error("Failed to initialize Sequoia components", exception);
         }
     }
 

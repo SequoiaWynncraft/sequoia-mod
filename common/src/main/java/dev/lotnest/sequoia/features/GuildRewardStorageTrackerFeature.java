@@ -45,52 +45,54 @@ public class GuildRewardStorageTrackerFeature extends Feature {
             return;
         }
 
-        checkGuildRewards().thenAccept(rewardStorage -> {
+        checkGuildRewards().thenAcceptAsync(rewardStorage -> {
             Pair<Integer, Integer> emeralds = rewardStorage.getOrDefault(GuildRewardType.EMERALD, Pair.of(-1, -1));
             Pair<Integer, Integer> aspects = rewardStorage.getOrDefault(GuildRewardType.ASPECT, Pair.of(-1, -1));
             Pair<Integer, Integer> tomes = rewardStorage.getOrDefault(GuildRewardType.TOME, Pair.of(-1, -1));
             if ((emeralds.first * 100 / emeralds.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
                 McUtils.sendMessageToClient(SequoiaMod.prefix(
-                        Component.translatable("sequoia.feature.guildRewardStorageFullAlert.EmeraldStorageLow")));
+                        Component.translatable("sequoia.feature.guildRewardStorageTrackerFeature.emeraldStorageLow")));
             if ((aspects.first * 100 / aspects.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
                 McUtils.sendMessageToClient(SequoiaMod.prefix(
-                        Component.translatable("sequoia.feature.guildRewardStorageFullAlert.AspectStorageLow")));
+                        Component.translatable("sequoia.feature.guildRewardStorageTrackerFeature.aspectStorageLow")));
             if ((tomes.first * 100 / tomes.second) >= SequoiaMod.CONFIG.guildRewardStorageTrackerFeature.value())
                 McUtils.sendMessageToClient(SequoiaMod.prefix(
-                        Component.translatable("sequoia.feature.guildRewardStorageFullAlert.TomeStorageLow")));
+                        Component.translatable("sequoia.feature.guildRewardStorageTrackerFeature.tomeStorageLow")));
         });
     }
 
     private CompletableFuture<Map<GuildRewardType, Pair<Integer, Integer>>> checkGuildRewards() {
-        CompletableFuture<Map<GuildRewardType, Pair<Integer, Integer>>> future = new CompletableFuture<>();
+        CompletableFuture<Map<GuildRewardType, Pair<Integer, Integer>>> result = new CompletableFuture<>();
 
-        QueryBuilder queryBuilder = ScriptedContainerQuery.builder("Guild Reward Query");
-        queryBuilder.onError(message -> {
-            WynntilsMod.warn("Error querying guild rewards: " + message);
-            future.completeExceptionally(new RuntimeException("Error querying guild rewards: " + message));
+        CompletableFuture.runAsync(() -> {
+            QueryBuilder queryBuilder = ScriptedContainerQuery.builder("Guild Reward Query");
+
+            queryBuilder.onError(message -> {
+                WynntilsMod.warn("Error querying guild rewards: " + message);
+                result.completeExceptionally(new RuntimeException("Error querying guild rewards: " + message));
+            });
+
+            SequoiaMod.debug("Setting up checkGuildRewards query steps");
+            queryBuilder
+                    .then(QueryStep.useItemInHotbar(InventoryUtils.COMPASS_SLOT_NUM)
+                            .expectContainerTitle(ContainerModel.CHARACTER_INFO_NAME)
+                            .processIncomingContainer(WynnUtils::parseCharacterContainerForGuildInfo))
+                    .conditionalThen(
+                            content -> StringUtils.isNotBlank(Models.Guild.getGuildName()),
+                            QueryStep.clickOnSlot(26).expectContainerTitle("[a-zA-Z\\s]+: Manage"))
+                    .then(QueryStep.clickOnSlot(0).expectContainerTitle("[a-zA-Z\\s]+: Members"))
+                    .then(QueryStep.clickOnSlot(2)
+                            .expectContainerTitle("[a-zA-Z\\s]+: Members")
+                            .processIncomingContainer(content -> {
+                                Map<GuildRewardType, Pair<Integer, Integer>> rewardStorage = getRewardsValue(content);
+                                result.complete(rewardStorage);
+                            }));
+
+            queryBuilder.build().executeQuery();
+            SequoiaMod.debug("checkGuildRewards query setup complete");
         });
 
-        SequoiaMod.debug("Setting up query steps");
-        queryBuilder
-                .then(QueryStep.useItemInHotbar(InventoryUtils.COMPASS_SLOT_NUM)
-                        .expectContainerTitle(ContainerModel.CHARACTER_INFO_NAME)
-                        .processIncomingContainer(WynnUtils::parseCharacterContainerForGuildInfo))
-                .conditionalThen(
-                        content -> StringUtils.isNotBlank(Models.Guild.getGuildName()),
-                        QueryStep.clickOnSlot(26).expectContainerTitle("[a-zA-Z\\s]+: Manage"))
-                .then(QueryStep.clickOnSlot(0).expectContainerTitle("[a-zA-Z\\s]+: Members"))
-                .then(QueryStep.clickOnSlot(2)
-                        .expectContainerTitle("[a-zA-Z\\s]+: Members")
-                        .processIncomingContainer(content -> {
-                            Map<GuildRewardType, Pair<Integer, Integer>> rewardStorage = getRewardsValue(content);
-                            future.complete(rewardStorage);
-                        }));
-
-        queryBuilder.build().executeQuery();
-
-        SequoiaMod.debug("Query setup complete");
-
-        return future;
+        return result;
     }
 
     private Map<GuildRewardType, Pair<Integer, Integer>> getRewardsValue(ContainerContent content) {

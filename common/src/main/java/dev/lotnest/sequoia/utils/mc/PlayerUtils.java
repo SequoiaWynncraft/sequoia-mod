@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import com.wynntils.utils.mc.McUtils;
 import java.util.Collections;
 import java.util.List;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
@@ -90,5 +91,9 @@ public final class PlayerUtils {
 
     public static boolean isSelf(Player player) {
         return McUtils.player() == player;
+    }
+
+    public static void swapOffhand() {
+        KeyMapping.click(Minecraft.getInstance().options.keySwapOffhand.key);
     }
 }

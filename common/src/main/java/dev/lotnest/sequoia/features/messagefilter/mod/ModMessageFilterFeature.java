@@ -50,9 +50,6 @@ public class ModMessageFilterFeature extends Feature {
             return;
         }
 
-        SequoiaMod.debug(
-                "[ModMessageFilterFeature] Checking " + event.getStyledText().toString());
-
         for (Map.Entry<Pattern, String> patternEntry : PATTERN_ACTIONS.entrySet()) {
             Pattern pattern = patternEntry.getKey();
             String category = patternEntry.getValue();

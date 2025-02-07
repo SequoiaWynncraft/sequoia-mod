@@ -17,7 +17,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
 public class AuthCommand extends Command {
-    private static final Pattern CODE_PATTERN = Pattern.compile("[a-zA-Z0-9]{8}");
+    private static final Pattern CODE_PATTERN = Pattern.compile("[a-z0-9]{32}");
 
     private boolean sentGAuthWSMessage = false;
 
@@ -70,7 +70,7 @@ public class AuthCommand extends Command {
                             () -> SequoiaMod.prefix(Component.translatable("sequoia.command.auth.authenticating")),
                             false);
 
-            Managers.TickScheduler.scheduleLater(() -> sentGAuthWSMessage = false, 20 * 60);
+            Managers.TickScheduler.scheduleLater(() -> sentGAuthWSMessage = false, 20 * 10);
         } else {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.auth.invalidCode")));

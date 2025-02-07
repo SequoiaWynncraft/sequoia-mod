@@ -4,11 +4,9 @@
     "ClientLevelMixin",
     "CrashReportMixin",
     "ItemEntityRendererMixin",
-    "KeyMappingMixin",
     "ResourceLoadStateTrackerMixin",
     "ScreenMixin",
-    "TitleScreenMixin",
-    "accessors.OptionsAccessor"
+    "TitleScreenMixin"
   ],
   "compatibilityLevel": "JAVA_17",
   "injectors": {

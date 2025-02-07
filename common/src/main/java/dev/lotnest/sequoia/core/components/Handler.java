@@ -4,8 +4,6 @@
  */
 package dev.lotnest.sequoia.core.components;
 
-import dev.lotnest.sequoia.handlers.GuildRaidHandler;
-
 /**
  * Handlers span the bridge between Minecraft and Wynncraft. They manage a certain
  * aspect of Minecraft functionality, and with some Wynncraft knowledge, they distribute
@@ -15,8 +13,6 @@ import dev.lotnest.sequoia.handlers.GuildRaidHandler;
  * Handlers are created as singletons in the {@link Handlers} holding class.
  */
 public abstract class Handler extends CoreComponent {
-    public static final GuildRaidHandler GuildRaid = new GuildRaidHandler();
-
     protected Handler() {}
 
     @Override
