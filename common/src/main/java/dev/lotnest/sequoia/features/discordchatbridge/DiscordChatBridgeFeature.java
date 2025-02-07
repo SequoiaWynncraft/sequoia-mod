@@ -59,7 +59,7 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        if (SequoiaMod.getWebSocketFeature().isAuthenticating()) {
+        if (!SequoiaMod.getWebSocketFeature().isAuthenticated()) {
             return;
         }
 
@@ -108,10 +108,6 @@ public class DiscordChatBridgeFeature extends Feature {
             SequoiaMod.error("Failed to send guild chat message to Discord", exception);
             return;
         }
-    }
-
-    private static boolean containsUnicode(String message) {
-        return message.matches(".*[\\P{ASCII}].*");
     }
 
     private static void createRealNameMap(Component message, Map<String, List<String>> nameMap) {

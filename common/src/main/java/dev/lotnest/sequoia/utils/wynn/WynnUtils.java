@@ -19,12 +19,15 @@ import com.wynntils.models.containers.ContainerModel;
 import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.render.buffered.CustomRenderType;
 import com.wynntils.utils.wynn.InventoryUtils;
+import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.mc.MinecraftUtils;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
@@ -135,21 +138,30 @@ public final class WynnUtils {
         return WORLD_NAME_TABLIST_ENTRY.matcher(input).matches();
     }
 
-    public static boolean isSequoiaGuildMember() {
-        QueryBuilder queryBuilder = ScriptedContainerQuery.builder("Character Info Query");
-        queryBuilder.onError(msg -> WynntilsMod.warn("Error querying Character Info: " + msg));
-        queryBuilder.then(QueryStep.useItemInHotbar(InventoryUtils.COMPASS_SLOT_NUM)
-                .expectContainerTitle(ContainerModel.CHARACTER_INFO_NAME)
-                .processIncomingContainer(WynnUtils::parseCharacterContainer));
+    public static CompletableFuture<Boolean> isSequoiaGuildMember() {
+        return Services.Player.getPlayer(McUtils.playerName()).thenApplyAsync(playerResponse -> {
+            if (playerResponse == null) {
+                SequoiaMod.debug("playerResponse is null, querying Character Info for guild info");
 
-        Models.Guild.addGuildContainerQuerySteps(queryBuilder);
+                QueryBuilder queryBuilder = ScriptedContainerQuery.builder("Character Info Query");
+                queryBuilder.onError(msg -> WynntilsMod.warn("Error querying Character Info: " + msg));
+                queryBuilder.then(QueryStep.useItemInHotbar(InventoryUtils.COMPASS_SLOT_NUM)
+                        .expectContainerTitle(ContainerModel.CHARACTER_INFO_NAME)
+                        .processIncomingContainer(WynnUtils::parseCharacterContainerForGuildInfo));
 
-        queryBuilder.build().executeQuery();
+                Models.Guild.addGuildContainerQuerySteps(queryBuilder);
 
-        return StringUtils.equals(Models.Guild.getGuildName(), "Sequoia");
+                queryBuilder.build().executeQuery();
+                return StringUtils.equals(Models.Guild.getGuildName(), "Sequoia");
+            }
+
+            SequoiaMod.debug(playerResponse.getUsername() + "'s guild: "
+                    + playerResponse.getGuild().getName());
+            return StringUtils.equals(playerResponse.getGuild().getName(), "Sequoia");
+        });
     }
 
-    private static void parseCharacterContainer(ContainerContent container) {
+    public static void parseCharacterContainerForGuildInfo(ContainerContent container) {
         ItemStack guildInfoItem = container.items().get(GUILD_MENU_SLOT);
         Models.Guild.parseGuildInfoFromGuildMenu(guildInfoItem);
     }

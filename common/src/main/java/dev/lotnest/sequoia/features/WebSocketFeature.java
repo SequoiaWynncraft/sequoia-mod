@@ -6,6 +6,7 @@ package dev.lotnest.sequoia.features;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.wynntils.core.components.Models;
@@ -126,6 +127,7 @@ public class WebSocketFeature extends Feature {
 
                 SequoiaMod.error("Error occurred in WebSocket connection", e);
                 setAuthenticating(false);
+                setAuthenticated(false);
                 if (StringUtils.equals(e.getMessage(), "java.net.ConnectException: Connection refused: connect")) {
                     client.close();
                 }
@@ -163,9 +165,12 @@ public class WebSocketFeature extends Feature {
 
             JsonObject jsonObject = JsonParser.parseString(json).getAsJsonObject();
             if (jsonObject.has("data")) {
-                JsonObject data = jsonObject.getAsJsonObject("data");
-                if (data.has("access_token")) {
-                    data.addProperty("access_token", "REDACTED");
+                JsonElement dataElement = jsonObject.get("data");
+                if (dataElement.isJsonObject()) {
+                    JsonObject data = dataElement.getAsJsonObject();
+                    if (data.has("access_token")) {
+                        data.addProperty("access_token", "REDACTED");
+                    }
                 }
             }
 
@@ -192,27 +197,35 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
-        if (!WynnUtils.isSequoiaGuildMember()) {
-            return;
-        }
+        WynnUtils.isSequoiaGuildMember().whenComplete((isSequoiaGuildMember, throwable) -> {
+            if (throwable != null) {
+                SequoiaMod.error("Failed to check if player is a Sequoia guild member", throwable);
+                return;
+            }
 
-        if (isAuthenticating()) {
-            SequoiaMod.debug("Already authenticating with WebSocket server.");
-            return;
-        }
+            if (!isSequoiaGuildMember) {
+                return;
+            }
 
-        setAuthenticating(true);
-        SequoiaMod.debug("Authenticating with WebSocket server.");
+            if (isAuthenticating()) {
+                SequoiaMod.debug("Already authenticating with WebSocket server.");
+                return;
+            }
 
-        if (receivedInvalidTokenResult) {
-            AccessTokenManager.invalidateAccessToken();
-        }
+            setAuthenticating(true);
+            setAuthenticated(false);
+            SequoiaMod.debug("Authenticating with WebSocket server.");
 
-        GIdentifyWSMessage gIdentifyWSMessage = new GIdentifyWSMessage(new GIdentifyWSMessage.Data(
-                AccessTokenManager.retrieveAccessToken(),
-                McUtils.player().getStringUUID(),
-                SequoiaMod.getVersionInt()));
-        sendAsJson(gIdentifyWSMessage);
+            if (receivedInvalidTokenResult) {
+                AccessTokenManager.invalidateAccessToken();
+            }
+
+            GIdentifyWSMessage gIdentifyWSMessage = new GIdentifyWSMessage(new GIdentifyWSMessage.Data(
+                    AccessTokenManager.retrieveAccessToken(),
+                    McUtils.player().getStringUUID(),
+                    SequoiaMod.getVersionInt()));
+            sendAsJson(gIdentifyWSMessage);
+        });
     }
 
     public boolean isAuthenticating() {
@@ -272,7 +285,9 @@ public class WebSocketFeature extends Feature {
         if (client.isOpen()) {
             client.close();
         }
+
         setAuthenticating(false);
+        setAuthenticated(false);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -281,23 +296,30 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
-        if (!WynnUtils.isSequoiaGuildMember()) {
-            return;
-        }
+        WynnUtils.isSequoiaGuildMember().whenComplete((isSequoiaGuildMember, throwable) -> {
+            if (throwable != null) {
+                SequoiaMod.error("Failed to check if player is a Sequoia guild member", throwable);
+                return;
+            }
 
-        WebSocketFeature webSocketFeature = SequoiaMod.getWebSocketFeature();
-        if (webSocketFeature == null || !webSocketFeature.isEnabled()) {
-            return;
-        }
+            if (!isSequoiaGuildMember) {
+                return;
+            }
 
-        AccessTokenManagerUpfixer.fixLegacyFilesIfNeeded();
+            WebSocketFeature webSocketFeature = SequoiaMod.getWebSocketFeature();
+            if (webSocketFeature == null || !webSocketFeature.isEnabled()) {
+                return;
+            }
 
-        try {
-            webSocketFeature.initClient();
-            webSocketFeature.connectIfNeeded();
-        } catch (RuntimeException exception) {
-            SequoiaMod.error("Failed to connect to WebSocket server: " + exception.getMessage());
-        }
+            AccessTokenManagerUpfixer.fixLegacyFilesIfNeeded();
+
+            try {
+                webSocketFeature.initClient();
+                webSocketFeature.connectIfNeeded();
+            } catch (RuntimeException exception) {
+                SequoiaMod.error("Failed to connect to WebSocket server: " + exception.getMessage());
+            }
+        });
     }
 
     @Override

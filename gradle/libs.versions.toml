@@ -1,0 +1,94 @@
+[metadata]
+format = { version = "1.1" }
+
+[versions]
+adventure = "4.18.0"
+adventurePlatform = "4.3.4"
+ansi = "1.1.1"
+autoService = "1.1.1"
+checkstyle = "10.21.1"
+examination = "1.3.0"
+fabricApi = "0.112.0+1.21.4"
+fabricLoader = "0.16.10"
+indra = "3.1.3"
+junit = "5.11.4"
+minecraft = "1.21.4"
+parchment = "1.21.4:2024.12.22"
+vineflower = "1.10.1"
+spotless = "6.25.0"
+neoforge = "21.4.47-beta"
+neoform = "1.21.4-20241203.161809"
+
+[libraries]
+adventure-api = { module = "net.kyori:adventure-api", version.ref = "adventure" }
+adventure-key = { module = "net.kyori:adventure-key", version.ref = "adventure" }
+adventure-platform-api = { module = "net.kyori:adventure-platform-api", version.ref = "adventurePlatform" }
+adventure-textLoggerSlf4j = { module = "net.kyori:adventure-text-logger-slf4j", version.ref = "adventure" }
+adventure-textMinimessage = { module = "net.kyori:adventure-text-minimessage", version.ref = "adventure" }
+adventure-textSerializerPlain = { module = "net.kyori:adventure-text-serializer-plain", version.ref = "adventure" }
+adventure-textSerializerGson = { module = "net.kyori:adventure-text-serializer-gson", version.ref = "adventure" }
+adventure-textSerializerJson = { module = "net.kyori:adventure-text-serializer-json", version.ref = "adventure" }
+adventure-textSerializerAnsi = { module = "net.kyori:adventure-text-serializer-ansi", version.ref = "adventure" }
+
+ansi = { module = "net.kyori:ansi", version.ref = "ansi" }
+examination-api = { module = "net.kyori:examination-api", version.ref = "examination" }
+examination-string = { module = "net.kyori:examination-string", version.ref = "examination" }
+jetbrainsAnnotations = "org.jetbrains:annotations:26.0.1"
+option = { module = "net.kyori:option", version = "1.0.0" }
+
+# mod-shared
+mixin = "net.fabricmc:sponge-mixin:0.15.3+mixin.0.8.7"
+mixinExtras = "io.github.llamalad7:mixinextras-common:0.4.1"
+# For Renovate, do not use directly
+zNeoform = { module = "net.neoforged:neoform", version.ref = "neoform" }
+
+# fabric
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader"}
+fabric-loader-junit = { module = "net.fabricmc:fabric-loader-junit", version.ref = "fabricLoader"}
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
+fabric-api-bom = { module = "net.fabricmc.fabric-api:fabric-api-bom", version.ref = "fabricApi" }
+fabric-api-base = { module = "net.fabricmc.fabric-api:fabric-api-base" }
+fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-api-v1" }
+fabric-api-command = { module = "net.fabricmc.fabric-api:fabric-command-api-v2" }
+fabric-api-lifecycle = { module = "net.fabricmc.fabric-api:fabric-lifecycle-events-v1" }
+fabric-permissionsApi = { module = "me.lucko:fabric-permissions-api", version = "0.3.3" }
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+
+# neoforge
+# For Renovate, do not use directly
+zNeoforge = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
+
+# build
+autoService = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
+autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
+contractValidator = "ca.stellardrift:contract-validator:1.0.1"
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params" }
+stylecheck = "ca.stellardrift:stylecheck:0.2.1"
+vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
+build-indra = { module = "net.kyori:indra-common", version.ref = "indra" }
+build-indra-crossdoc = { module = "net.kyori:indra-crossdoc", version.ref = "indra" }
+build-indra-spotless = { module = "net.kyori:indra-licenser-spotless", version.ref = "indra" }
+build-configurate-transformations = { module = "ca.stellardrift:gradle-plugin-configurate", version = "6.1.0" }
+build-idea-ext = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version = "1.1.9" }
+
+# For Renovate, do not use directly
+zCheckstyle = { module = "com.puppycrawl.tools:checkstyle", version.ref = "checkstyle" }
+
+[plugins]
+configurateTransformations = { id = "ca.stellardrift.configurate-transformations" }
+eclipseApt = "com.diffplug.eclipse.apt:4.2.0"
+loom = "fabric-loom:1.9.2"
+# ModDevGradle settings plugin is putting another version on the classpath, so we can't specify a version :(
+ideaExt = { id = "org.jetbrains.gradle.plugin.idea-ext" }
+indra = { id = "net.kyori.indra" }
+indra-licenseHeader = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
+indra-checkstyle = { id = "net.kyori.indra.checkstyle" }
+indra-publishing = { id = "net.kyori.indra.publishing" }
+indra-crossdoc = { id = "net.kyori.indra.crossdoc" }
+indra-sonatype = { id = "net.kyori.indra.publishing.sonatype", version.ref = "indra" }
+nexusPublish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

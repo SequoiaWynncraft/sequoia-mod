@@ -72,6 +72,10 @@ public class ConfigModel {
     @Expanded
     public TerritoryFeature territoryFeature = new TerritoryFeature();
 
+    @Nest
+    @Expanded
+    public GuildRewardStorageTrackerFeature guildRewardStorageTrackerFeature = new GuildRewardStorageTrackerFeature();
+
     public static class MessageFilterFeature {
         public boolean enabled = false;
         public MessageFilterDecisionType eventMessagesFilterDecisionType = MessageFilterDecisionType.KEEP;
@@ -131,6 +135,13 @@ public class ConfigModel {
         public boolean sendDiscordMessagesToInGameChat = true;
     }
 
+    public static class GuildRewardStorageTrackerFeature {
+        public boolean enabled = true;
+
+        @RangeConstraint(min = 1, max = 100)
+        public int value = 90;
+    }
+
     public static class OuterVoidTrackerFeature {
         public boolean enabled = true;
         public boolean playSoundEffect = true;
@@ -180,6 +191,7 @@ public class ConfigModel {
         public static class NOLRaidFeature {
             public boolean showLightOrbFormingTitle = true;
             public boolean showCrystallineDecaysSpawnedTitle = true;
+            public boolean autoSkipCutscene = true;
         }
 
         public static class TNARaidFeature {
@@ -196,6 +208,5 @@ public class ConfigModel {
     public static class TerritoryFeature {
         public boolean enabled = true;
         public boolean showCapturedTerritoryInfo = true;
-        public boolean territoryMenuHotkey = true;
     }
 }
