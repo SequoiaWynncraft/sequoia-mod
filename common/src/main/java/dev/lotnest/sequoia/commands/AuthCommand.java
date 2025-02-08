@@ -11,6 +11,7 @@ import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.command.Command;
 import dev.lotnest.sequoia.core.websocket.messages.GAuthWSMessage;
+import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.regex.Pattern;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -41,6 +42,13 @@ public class AuthCommand extends Command {
                 context.getSource()
                         .sendFailure(
                                 SequoiaMod.prefix(Component.translatable("sequoia.feature.webSocket.featureDisabled")));
+                return 1;
+            }
+
+            if (Boolean.FALSE.equals(WynnUtils.isSequoiaGuildMember().join())) {
+                context.getSource()
+                        .sendFailure(
+                                SequoiaMod.prefix(Component.translatable("sequoia.command.notASequoiaGuildMember")));
                 return 1;
             }
 
