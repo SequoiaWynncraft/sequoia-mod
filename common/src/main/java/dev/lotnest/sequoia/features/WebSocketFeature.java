@@ -78,6 +78,7 @@ public class WebSocketFeature extends Feature {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 if (!isEnabled()) {
+                    close();
                     return;
                 }
 
@@ -88,6 +89,7 @@ public class WebSocketFeature extends Feature {
             @Override
             public void onMessage(String s) {
                 if (!isEnabled()) {
+                    close();
                     return;
                 }
 
@@ -111,10 +113,6 @@ public class WebSocketFeature extends Feature {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                if (!isEnabled()) {
-                    return;
-                }
-
                 SequoiaMod.debug("WebSocket connection closed. Code: " + i
                         + (StringUtils.isNotBlank(s) ? ", Reason: " + s : ""));
                 closeIfNeeded();
@@ -124,6 +122,7 @@ public class WebSocketFeature extends Feature {
             @Override
             public void onError(Exception e) {
                 if (!isEnabled()) {
+                    close();
                     return;
                 }
 
