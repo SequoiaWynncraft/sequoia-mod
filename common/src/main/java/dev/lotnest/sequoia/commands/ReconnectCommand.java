@@ -27,14 +27,14 @@ public class ReconnectCommand extends Command {
 
     private int reconnectToWebSocket(CommandContext<CommandSourceStack> context) {
         if (SequoiaMod.getWebSocketFeature() == null
-                || SequoiaMod.getWebSocketFeature().isEnabled()) {
+                || !SequoiaMod.getWebSocketFeature().isEnabled()) {
             context.getSource()
                     .sendFailure(
                             SequoiaMod.prefix(Component.translatable("sequoia.feature.webSocket.featureDisabled")));
             return 1;
         }
 
-        if (!WynnUtils.isSequoiaGuildMember().join()) {
+        if (Boolean.FALSE.equals(WynnUtils.isSequoiaGuildMember().join())) {
             context.getSource()
                     .sendFailure(SequoiaMod.prefix(Component.translatable("sequoia.command.notASequoiaGuildMember")));
             return 1;

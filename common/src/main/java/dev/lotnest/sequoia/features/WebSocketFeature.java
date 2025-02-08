@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.wynntils.core.components.Managers;
 import com.wynntils.core.components.Models;
 import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
@@ -21,7 +22,6 @@ import dev.lotnest.sequoia.core.websocket.WSMessage;
 import dev.lotnest.sequoia.core.websocket.WSMessageType;
 import dev.lotnest.sequoia.core.websocket.handlers.SChannelMessageHandler;
 import dev.lotnest.sequoia.core.websocket.handlers.SCommandPipeHandler;
-import dev.lotnest.sequoia.core.websocket.handlers.SIC3DataHandler;
 import dev.lotnest.sequoia.core.websocket.handlers.SMessageHandler;
 import dev.lotnest.sequoia.core.websocket.handlers.SSessionResultHandler;
 import dev.lotnest.sequoia.core.websocket.messages.session.GIdentifyWSMessage;
@@ -78,6 +78,7 @@ public class WebSocketFeature extends Feature {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 if (!isEnabled()) {
+                    close();
                     return;
                 }
 
@@ -88,6 +89,7 @@ public class WebSocketFeature extends Feature {
             @Override
             public void onMessage(String s) {
                 if (!isEnabled()) {
+                    close();
                     return;
                 }
 
@@ -102,8 +104,7 @@ public class WebSocketFeature extends Feature {
                         case S_SESSION_RESULT -> new SSessionResultHandler(s).handle();
                         case S_MESSAGE -> new SMessageHandler(s).handle();
                         case S_COMMAND_PIPE -> new SCommandPipeHandler(s).handle();
-                        case S_IC3_DATA -> new SIC3DataHandler(s).handle();
-                        default -> SequoiaMod.debug("Unhandled WebSocket message type: " + wsMessageType);
+                        default -> SequoiaMod.warn("Unhandled WebSocket message type: " + wsMessageType);
                     }
                 } catch (Exception exception) {
                     SequoiaMod.error("Failed to parse WebSocket message: " + s, exception);
@@ -112,18 +113,16 @@ public class WebSocketFeature extends Feature {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                if (!isEnabled()) {
-                    return;
-                }
-
                 SequoiaMod.debug("WebSocket connection closed. Code: " + i
                         + (StringUtils.isNotBlank(s) ? ", Reason: " + s : ""));
                 closeIfNeeded();
+                tryReconnect();
             }
 
             @Override
             public void onError(Exception e) {
                 if (!isEnabled()) {
+                    close();
                     return;
                 }
 
@@ -290,6 +289,24 @@ public class WebSocketFeature extends Feature {
 
         setAuthenticating(false);
         setAuthenticated(false);
+    }
+
+    public void tryReconnect() {
+        Managers.TickScheduler.scheduleLater(
+                () -> {
+                    if (!isEnabled()) {
+                        return;
+                    }
+
+                    if (client == null) {
+                        initClient();
+                    }
+
+                    if (!client.isOpen()) {
+                        client.reconnect();
+                    }
+                },
+                20 * 10);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
