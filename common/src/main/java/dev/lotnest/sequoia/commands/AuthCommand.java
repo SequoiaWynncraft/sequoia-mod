@@ -17,7 +17,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
 public class AuthCommand extends Command {
-    private static final Pattern CODE_PATTERN = Pattern.compile("[a-z0-9]{32}");
+    private static final Pattern CODE_PATTERN = Pattern.compile("[a-z0-9]{64}");
 
     private boolean sentGAuthWSMessage = false;
 
