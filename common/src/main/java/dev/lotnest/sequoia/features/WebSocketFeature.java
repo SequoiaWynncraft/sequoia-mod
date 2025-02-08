@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.wynntils.core.components.Managers;
 import com.wynntils.core.components.Models;
 import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.utils.mc.McUtils;
@@ -101,7 +102,7 @@ public class WebSocketFeature extends Feature {
                         case S_SESSION_RESULT -> new SSessionResultHandler(s).handle();
                         case S_MESSAGE -> new SMessageHandler(s).handle();
                         case S_COMMAND_PIPE -> new SCommandPipeHandler(s).handle();
-                        default -> SequoiaMod.debug("Unhandled WebSocket message type: " + wsMessageType);
+                        default -> SequoiaMod.warn("Unhandled WebSocket message type: " + wsMessageType);
                     }
                 } catch (Exception exception) {
                     SequoiaMod.error("Failed to parse WebSocket message: " + s, exception);
@@ -117,6 +118,7 @@ public class WebSocketFeature extends Feature {
                 SequoiaMod.debug("WebSocket connection closed. Code: " + i
                         + (StringUtils.isNotBlank(s) ? ", Reason: " + s : ""));
                 closeIfNeeded();
+                tryReconnect();
             }
 
             @Override
@@ -288,6 +290,24 @@ public class WebSocketFeature extends Feature {
 
         setAuthenticating(false);
         setAuthenticated(false);
+    }
+
+    public void tryReconnect() {
+        Managers.TickScheduler.scheduleLater(
+                () -> {
+                    if (!isEnabled()) {
+                        return;
+                    }
+
+                    if (client == null) {
+                        initClient();
+                    }
+
+                    if (!client.isOpen()) {
+                        client.reconnect();
+                    }
+                },
+                20 * 10);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
