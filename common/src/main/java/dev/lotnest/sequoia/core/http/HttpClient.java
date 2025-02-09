@@ -12,7 +12,6 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.TimeUnit;
 
 public class HttpClient {
     private static final int[] OK_STATUS_CODES = {200, 201, 202, 203, 204, 205, 206, 207, 208, 226};
@@ -21,19 +20,11 @@ public class HttpClient {
     private static final ConcurrentMap<java.net.http.HttpClient, Boolean> httpClientPool = Maps.newConcurrentMap();
 
     private HttpClient() {
-        this(1, TimeUnit.MINUTES);
-    }
-
-    private HttpClient(long cacheDuration, TimeUnit cacheDurationUnit) {
         createClientPool();
     }
 
     public static HttpClient newHttpClient() {
         return new HttpClient();
-    }
-
-    public static HttpClient newHttpClient(long cacheDuration, TimeUnit cacheDurationUnit) {
-        return new HttpClient(cacheDuration, cacheDurationUnit);
     }
 
     private void createClientPool() {

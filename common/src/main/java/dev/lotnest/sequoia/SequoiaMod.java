@@ -107,7 +107,7 @@ public final class SequoiaMod {
         isDevelopmentBuild = modVersion.contains("SNAPSHOT");
         SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
-        versionInt = Integer.parseInt(modVersion.replaceAll("[^0-9]", ""));
+        versionInt = Integer.parseInt(modVersion.replaceAll("\\D", ""));
         httpClient = HttpClient.newHttpClient();
 
         LOGGER.info(
@@ -129,7 +129,6 @@ public final class SequoiaMod {
                         components.add(component);
                     } catch (IllegalAccessException exception) {
                         error("Internal error in " + registryClass.getSimpleName(), exception);
-                        throw new RuntimeException(exception);
                     }
                 });
     }
@@ -173,6 +172,10 @@ public final class SequoiaMod {
 
     public static MutableComponent prefix(Component component) {
         return PREFIX.copy().append(component);
+    }
+
+    public static ModLoader getModLoader() {
+        return modLoader;
     }
 
     public static String getVersion() {
