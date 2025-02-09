@@ -67,16 +67,19 @@ public class HttpClient {
     }
 
     public HttpResponse<String> get(String url) {
+        java.net.http.HttpClient client = getAvailableClient();
         try {
-            java.net.http.HttpClient client = getAvailableClient();
             java.net.http.HttpRequest request = HttpUtils.newGetRequest(url);
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            httpClientPool.put(client, false);
-            return response;
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            SequoiaMod.error("Thread interrupted while fetching response", e);
+            return null;
         } catch (Exception exception) {
             SequoiaMod.error("Failed to fetch response", exception);
             return null;
+        } finally {
+            httpClientPool.put(client, false);
         }
     }
 
@@ -97,17 +100,19 @@ public class HttpClient {
     }
 
     public HttpResponse<String> post(String url, String body) {
+        java.net.http.HttpClient client = getAvailableClient();
         try {
-            java.net.http.HttpClient client = getAvailableClient();
             java.net.http.HttpRequest request = HttpUtils.newPostRequest(url, body);
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-            httpClientPool.put(client, false);
-
-            return response;
+            return client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            SequoiaMod.error("Thread interrupted while posting response", e);
+            return null;
         } catch (Exception exception) {
             SequoiaMod.error("Failed to post response", exception);
             return null;
+        } finally {
+            httpClientPool.put(client, false);
         }
     }
 
@@ -136,7 +141,7 @@ public class HttpClient {
 
         SequoiaMod.debug(response.statusCode() + " " + url + " " + response.body());
 
-        if (response != null && response.body() != null && isOkStatusCode(response.statusCode())) {
+        if (response.body() != null && isOkStatusCode(response.statusCode())) {
             return gson.fromJson(response.body(), responseType);
         }
         return null;
@@ -150,7 +155,7 @@ public class HttpClient {
         return getAsync(url).thenApply(response -> {
             SequoiaMod.debug("ASYNC " + response.statusCode() + " " + url + " " + response.body());
 
-            if (response != null && response.body() != null && isOkStatusCode(response.statusCode())) {
+            if (response.body() != null && isOkStatusCode(response.statusCode())) {
                 return gson.fromJson(response.body(), responseType);
             }
 
