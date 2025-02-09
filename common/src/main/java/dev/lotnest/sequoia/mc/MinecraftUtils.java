@@ -7,10 +7,9 @@ package dev.lotnest.sequoia.mc;
 import java.util.regex.Pattern;
 
 public final class MinecraftUtils {
-    private static final Pattern MINECRAFT_NAME_PATTERN = Pattern.compile("[a-zA-Z0-9_]{3,16}");
-    private static final Pattern MINECRAFT_NAME_PATTERN_WITH_COLOR =
-            Pattern.compile("§[a-fA-F0-9 ]+[a-zA-Z0-9_]{3,16}");
-    private static final Pattern NON_MINECRAFT_NAME_PATTERN = Pattern.compile("[^a-zA-Z0-9_]");
+    private static final Pattern MINECRAFT_NAME_PATTERN = Pattern.compile("\\w{3,16}");
+    private static final Pattern MINECRAFT_NAME_PATTERN_WITH_COLOR = Pattern.compile("§[a-fA-F0-9 ]+\\w{3,16}");
+    private static final Pattern NON_MINECRAFT_NAME_PATTERN = Pattern.compile("\\W");
 
     private MinecraftUtils() {}
 

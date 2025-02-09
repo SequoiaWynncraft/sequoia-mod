@@ -48,7 +48,7 @@ public class DiscordChatBridgeFeature extends Feature {
                 .replaceAll("\\s{2,}", " ");
         MutableComponent messageComponent = messageTextWithoutNewLines.getComponent();
 
-        if (messageTextWithoutNewLines == null || messageTextWithoutNewLines.isBlank()) {
+        if (messageTextWithoutNewLines.isBlank()) {
             return;
         }
 
