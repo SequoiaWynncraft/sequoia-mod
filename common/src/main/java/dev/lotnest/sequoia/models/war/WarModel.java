@@ -5,12 +5,11 @@
 package dev.lotnest.sequoia.models.war;
 
 import com.google.common.collect.Sets;
-import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
-import com.wynntils.utils.mc.StyledTextUtils;
 import dev.lotnest.sequoia.core.components.Model;
 import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;
 import dev.lotnest.sequoia.features.war.GuildWar;
+import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -28,16 +27,17 @@ public class WarModel extends Model {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void handleChatMessage(ChatMessageReceivedEvent event) {
-        StyledText messageText = StyledTextUtils.unwrap(event.getOriginalStyledText());
-        Matcher takenControlOfTerritoryMatcher = messageText.getMatcher(GuildMessageFilterPatterns.WAR[3]);
+        String unformattedMessage =
+                WynnUtils.getUnformattedString(event.getStyledText().getStringWithoutFormatting());
 
+        Matcher takenControlOfTerritoryMatcher = GuildMessageFilterPatterns.WAR[3].matcher(unformattedMessage);
         if (takenControlOfTerritoryMatcher.matches()) {
             String territoryName = takenControlOfTerritoryMatcher.group("territory");
             activeWars.removeIf(war -> war.hash() == territoryName.hashCode());
             return;
         }
 
-        Matcher territoryDefenseMatcher = messageText.getMatcher(GuildMessageFilterPatterns.WAR[0]);
+        Matcher territoryDefenseMatcher = GuildMessageFilterPatterns.WAR[0].matcher(unformattedMessage);
         if (territoryDefenseMatcher.matches()) {
             String territoryName = territoryDefenseMatcher.group(1);
             Difficulty defenseDifficulty = Difficulty.fromString(territoryDefenseMatcher.group(2));
