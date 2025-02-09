@@ -48,7 +48,7 @@ public class DiscordChatBridgeFeature extends Feature {
                 .replaceAll("\\s{2,}", " ");
         MutableComponent messageComponent = messageTextWithoutNewLines.getComponent();
 
-        if (messageTextWithoutNewLines == null || messageTextWithoutNewLines.isBlank()) {
+        if (messageTextWithoutNewLines.isBlank()) {
             return;
         }
 
@@ -106,7 +106,6 @@ public class DiscordChatBridgeFeature extends Feature {
             }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to send guild chat message to Discord", exception);
-            return;
         }
     }
 
