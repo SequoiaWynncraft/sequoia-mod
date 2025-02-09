@@ -7,6 +7,7 @@ package dev.lotnest.sequoia.core.persisted;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.features.messagefilter.MessageFilterDecisionType;
 import dev.lotnest.sequoia.features.raids.RaidsFeature;
+import dev.lotnest.sequoia.features.war.WarPartyFeature;
 import io.wispforest.owo.config.annotation.Config;
 import io.wispforest.owo.config.annotation.Expanded;
 import io.wispforest.owo.config.annotation.Modmenu;
@@ -71,6 +72,10 @@ public class ConfigModel {
     @Nest
     @Expanded
     public TerritoryFeature territoryFeature = new TerritoryFeature();
+
+    @Nest
+    @Expanded
+    public WarPartyFeature warPartyFeature = new WarPartyFeature();
 
     @Nest
     @Expanded
@@ -208,5 +213,9 @@ public class ConfigModel {
     public static class TerritoryFeature {
         public boolean enabled = true;
         public boolean showCapturedTerritoryInfo = true;
+    }
+
+    public static class WarPartyFeature {
+        public boolean enabled = true;
     }
 }
