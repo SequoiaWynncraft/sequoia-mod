@@ -15,7 +15,7 @@ import dev.lotnest.sequoia.core.events.WarPartyUpdateEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateRequestEvent;
 import dev.lotnest.sequoia.core.websocket.WSMessageHandler;
 import dev.lotnest.sequoia.core.websocket.messages.ic3.SIC3DataWSMessage;
-import dev.lotnest.sequoia.models.War.WarPartyModel;
+import dev.lotnest.sequoia.models.war.WarPartyModel;
 import java.nio.charset.StandardCharsets;
 import net.minecraft.network.chat.Component;
 

@@ -11,11 +11,9 @@ import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.command.Command;
 import dev.lotnest.sequoia.core.websocket.messages.ic3.GIC3HWSMessage;
-
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-
 
 public class MessageCommand extends Command {
     private boolean sentGAuthWSMessage = false;
@@ -47,5 +45,4 @@ public class MessageCommand extends Command {
         Managers.TickScheduler.scheduleLater(() -> sentGAuthWSMessage = false, 20 * 10);
         return 1;
     }
-
 }

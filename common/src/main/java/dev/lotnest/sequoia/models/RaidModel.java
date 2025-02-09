@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.models.raid;
+package dev.lotnest.sequoia.models;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;

@@ -4,6 +4,6 @@
  */
 package dev.lotnest.sequoia.features.war;
 
-import dev.lotnest.sequoia.models.War.WarModel;
+import dev.lotnest.sequoia.models.war.WarModel;
 
 public record GuildWar(int hash, String territory, WarModel.Difficulty difficulty) {}

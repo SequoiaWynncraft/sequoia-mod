@@ -4,7 +4,7 @@
  */
 package dev.lotnest.sequoia.features.war;
 
-import dev.lotnest.sequoia.models.War.WarPartyModel;
+import dev.lotnest.sequoia.models.war.WarPartyModel;
 import java.util.Map;
 
 public record GuildWarParty(int hash, String partyLeader, String territory, Map<String, WarPartyModel.Role> members) {}

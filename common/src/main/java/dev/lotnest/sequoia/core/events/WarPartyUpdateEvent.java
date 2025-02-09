@@ -4,7 +4,7 @@
  */
 package dev.lotnest.sequoia.core.events;
 
-import dev.lotnest.sequoia.models.War.WarPartyModel;
+import dev.lotnest.sequoia.models.war.WarPartyModel;
 import net.neoforged.bus.api.Event;
 
 public class WarPartyUpdateEvent extends Event {

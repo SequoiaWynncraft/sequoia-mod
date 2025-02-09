@@ -5,6 +5,7 @@ plugins {
     id("fabric-loom") version "1.9.2" apply false
     id("me.modmuss50.mod-publish-plugin") version "0.8.1" apply false
     id("com.diffplug.spotless") version "6.25.0"
+    id("org.sonarqube") version "6.0.1.5171"
 }
 
 val MOD_ID by extra { "sequoia" }
