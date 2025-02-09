@@ -9,21 +9,17 @@ import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.utils.mc.StyledTextUtils;
 import dev.lotnest.sequoia.core.components.Model;
+import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;
 import dev.lotnest.sequoia.features.war.GuildWar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import net.minecraft.ChatFormatting;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class WarModel extends Model {
-    private static final Pattern TERRITORY_CAPTURED_PATTERN = Pattern.compile(
-            "§c(?:\uE006\uE002|\uE001) \\[(?<guild>.+)] (?:has )?captured the territory (?<territory>.+)\\.");
-    private static final Pattern TERRITORY_DEFENSE_PATTERN = Pattern.compile("§b.+§b (.+) defense is (.+)");
-
     private final Set<GuildWar> activeWars = Sets.newHashSet();
 
     public WarModel() {
@@ -33,15 +29,15 @@ public class WarModel extends Model {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void handleChatMessage(ChatMessageReceivedEvent event) {
         StyledText messageText = StyledTextUtils.unwrap(event.getOriginalStyledText());
-        Matcher territoryCapturedMatcher = messageText.getMatcher(TERRITORY_CAPTURED_PATTERN);
+        Matcher takenControlOfTerritoryMatcher = messageText.getMatcher(GuildMessageFilterPatterns.WAR[3]);
 
-        if (territoryCapturedMatcher.matches()) {
-            String territoryName = territoryCapturedMatcher.group("territory");
+        if (takenControlOfTerritoryMatcher.matches()) {
+            String territoryName = takenControlOfTerritoryMatcher.group("territory");
             activeWars.removeIf(war -> war.hash() == territoryName.hashCode());
             return;
         }
 
-        Matcher territoryDefenseMatcher = messageText.getMatcher(TERRITORY_DEFENSE_PATTERN);
+        Matcher territoryDefenseMatcher = messageText.getMatcher(GuildMessageFilterPatterns.WAR[0]);
         if (territoryDefenseMatcher.matches()) {
             String territoryName = territoryDefenseMatcher.group(1);
             Difficulty defenseDifficulty = Difficulty.fromString(territoryDefenseMatcher.group(2));
