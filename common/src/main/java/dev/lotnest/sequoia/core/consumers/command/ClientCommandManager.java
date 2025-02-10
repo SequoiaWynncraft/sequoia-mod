@@ -22,9 +22,9 @@ import dev.lotnest.sequoia.commands.DisconnectCommand;
 import dev.lotnest.sequoia.commands.DiscordCommand;
 import dev.lotnest.sequoia.commands.LastSeenCommand;
 import dev.lotnest.sequoia.commands.MeowCommand;
-import dev.lotnest.sequoia.commands.MessageCommand;
 import dev.lotnest.sequoia.commands.OnlineMembersCommand;
 import dev.lotnest.sequoia.commands.OuterVoidCommand;
+import dev.lotnest.sequoia.commands.PartyCommand;
 import dev.lotnest.sequoia.commands.PlayerDungeonsCommand;
 import dev.lotnest.sequoia.commands.PlayerGuildCommand;
 import dev.lotnest.sequoia.commands.PlayerRaidsCommand;
@@ -196,7 +196,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new SearchCommand());
         registerCommand(new TerritoryMenuCommand());
         registerCommand(new AuthCommand());
-        registerCommand(new MessageCommand());
+        registerCommand(new PartyCommand());
 
         registerCommandWithCommandSet(new SequoiaCommand());
     }
