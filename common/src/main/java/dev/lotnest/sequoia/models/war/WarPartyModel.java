@@ -10,6 +10,7 @@ import dev.lotnest.sequoia.core.events.WarPartyCreatedEvent;
 import dev.lotnest.sequoia.core.events.WarPartyDisbandEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateRequestEvent;
+import dev.lotnest.sequoia.core.events.WarPartyUpdateRoleEvent;
 import dev.lotnest.sequoia.features.war.GuildWarParty;
 import java.util.Collections;
 import java.util.List;
@@ -31,10 +32,11 @@ public class WarPartyModel extends Model {
         Map<String, Role> members = Maps.newHashMap();
         String territory = event.getTerritory();
         Role leaderRole = event.getRole();
+        WarModel.Difficulty difficulty = event.getDifficulty();
 
         members.put(leader, leaderRole);
 
-        GuildWarParty guildWarParty = new GuildWarParty(partyId, leader, territory, members);
+        GuildWarParty guildWarParty = new GuildWarParty(partyId, leader, territory, difficulty, members);
         activeWarParties.putIfAbsent(partyId, guildWarParty);
     }
 
@@ -50,11 +52,23 @@ public class WarPartyModel extends Model {
         int partyId = event.getHash();
 
         activeWarParties.computeIfPresent(partyId, (id, party) -> {
-            if (event.getOperation() > 1) {
+            if (event.getOperation() > 0) {
                 party.members().put(userName, role);
             } else {
                 party.members().remove(userName);
             }
+            return party;
+        });
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void handleRoleChange(WarPartyUpdateRoleEvent event) {
+        String userName = event.getUserName();
+        Role role = event.getRole();
+        int partyId = event.getHash();
+
+        activeWarParties.computeIfPresent(partyId, (id, party) -> {
+            party.members().computeIfPresent(userName, (s, role1) -> role);
             return party;
         });
     }
@@ -69,6 +83,7 @@ public class WarPartyModel extends Model {
     }
 
     public enum Role {
+        NONE("None"),
         SOLO("Solo"),
         DPS("DPS"),
         TANK("Tank"),

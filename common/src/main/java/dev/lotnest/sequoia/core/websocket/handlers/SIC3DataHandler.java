@@ -13,8 +13,10 @@ import dev.lotnest.sequoia.core.events.WarPartyCreatedEvent;
 import dev.lotnest.sequoia.core.events.WarPartyDisbandEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateRequestEvent;
+import dev.lotnest.sequoia.core.events.WarPartyUpdateRoleEvent;
 import dev.lotnest.sequoia.core.websocket.WSMessageHandler;
 import dev.lotnest.sequoia.core.websocket.messages.ic3.SIC3DataWSMessage;
+import dev.lotnest.sequoia.models.war.WarModel;
 import dev.lotnest.sequoia.models.war.WarPartyModel;
 import java.nio.charset.StandardCharsets;
 import net.minecraft.network.chat.Component;
@@ -44,7 +46,8 @@ public class SIC3DataHandler extends WSMessageHandler {
                                 Integer.parseInt(messages[0]),
                                 messages[1],
                                 messages[2],
-                                WarPartyModel.Role.fromString(messages[3])));
+                                WarPartyModel.Role.fromString(messages[3]),
+                                WarModel.Difficulty.fromString(messages[4])));
                     }
                     case "partyDisbanded" -> WynntilsMod.postEvent(new WarPartyDisbandEvent(Integer.parseInt(payload)));
                     case "partyUpdate" -> {
@@ -56,6 +59,13 @@ public class SIC3DataHandler extends WSMessageHandler {
                                 WarPartyModel.Role.fromString(messages[3])));
                     }
                     case "updateRequest" -> WynntilsMod.postEvent(new WarPartyUpdateRequestEvent(payload));
+                    case "partyRoleUpdate" -> {
+                        String[] messages = payload.split(";");
+                        WynntilsMod.postEvent(new WarPartyUpdateRoleEvent(
+                                Integer.parseInt(messages[0]),
+                                messages[1],
+                                WarPartyModel.Role.fromString(messages[2])));
+                    }
                 }
             }
         }

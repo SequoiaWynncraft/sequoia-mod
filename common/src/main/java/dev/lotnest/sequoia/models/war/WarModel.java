@@ -6,6 +6,7 @@ package dev.lotnest.sequoia.models.war;
 
 import com.google.common.collect.Sets;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Model;
 import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;
 import dev.lotnest.sequoia.features.war.GuildWar;
@@ -39,11 +40,26 @@ public class WarModel extends Model {
 
         Matcher territoryDefenseMatcher = GuildMessageFilterPatterns.WAR[0].matcher(unformattedMessage);
         if (territoryDefenseMatcher.matches()) {
-            String territoryName = territoryDefenseMatcher.group(1);
-            Difficulty defenseDifficulty = Difficulty.fromString(territoryDefenseMatcher.group(2));
+            String territoryName = territoryDefenseMatcher.group("territory");
+            Difficulty defenseDifficulty = Difficulty.fromString(territoryDefenseMatcher.group("defense"));
             GuildWar guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty);
             activeWars.add(guildWar);
+            SequoiaMod.debug("Message: " + unformattedMessage);
+            SequoiaMod.debug("Group 0: " + " " + territoryDefenseMatcher.group(0));
+            SequoiaMod.debug("Group 1: " + " " + territoryName);
+            SequoiaMod.debug("Group 2: " + " " + defenseDifficulty.displayName);
         }
+    }
+
+    public void mockWars() {
+        String territoryName = "Terr1";
+        Difficulty defenseDifficulty = Difficulty.fromString("Very High");
+        GuildWar guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty);
+        activeWars.add(guildWar);
+        territoryName = "Terr2";
+        defenseDifficulty = Difficulty.fromString("Medium");
+        guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty);
+        activeWars.add(guildWar);
     }
 
     public Set<GuildWar> getActiveWars() {
