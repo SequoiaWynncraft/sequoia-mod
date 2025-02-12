@@ -107,7 +107,7 @@ public final class SequoiaMod {
         isDevelopmentBuild = modVersion.contains("SNAPSHOT");
         SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
-        versionInt = Integer.parseInt(modVersion.replaceAll("[^0-9]", ""));
+        versionInt = Integer.parseInt(modVersion.replaceAll("\\D", ""));
         httpClient = HttpClient.newHttpClient();
 
         LOGGER.info(
