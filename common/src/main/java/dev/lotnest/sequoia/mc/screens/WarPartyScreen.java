@@ -80,24 +80,25 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
         rightPartyInfo = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(30));
         rightPartyInfo.alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
 
-        rightPartyHolder = Containers.horizontalFlow(Sizing.fill(100), Sizing.fill(40));
-        rightPartyHolder.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+        rightPartyHolder = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(40));
+        rightPartyHolder
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 
         rightPartyJoin = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(30));
         rightPartyJoin
                 .alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM)
                 .allowOverflow(true);
 
-        rightPartyDescription = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
-        rightPartyDescription
-                .alignment(HorizontalAlignment.LEFT, VerticalAlignment.CENTER)
-                .padding(Insets.of(5));
-
-        rightPartyActions = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
-        rightPartyActions.alignment(HorizontalAlignment.RIGHT, VerticalAlignment.CENTER);
-
-        rightPartyHolder.child(rightPartyDescription);
-        rightPartyHolder.child(rightPartyActions);
+        //        rightPartyDescription = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
+        //        rightPartyDescription
+        //                .alignment(HorizontalAlignment.LEFT, VerticalAlignment.CENTER)
+        //                .padding(Insets.of(5));
+        //
+        //        rightPartyActions = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
+        //        rightPartyActions.alignment(HorizontalAlignment.RIGHT, VerticalAlignment.CENTER);
+        //
+        //        //        rightPartyHolder.child(rightPartyDescription);
+        //        //        rightPartyHolder.child(rightPartyActions);
 
         partyEntries = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
         partyEntries.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
@@ -203,7 +204,7 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
                 .child(Components.label(
                                 Component.literal("Party Info").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD))
                         .margins(Insets.bottom(10)))
-                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
 
         addRightPartyInfoChild(
                 selectedParty.territory(),
@@ -225,7 +226,7 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
                     .append(Component.literal(role.getDisplayName()).withStyle(ChatFormatting.LIGHT_PURPLE))));
         }
         rightPartyHolder.child(
-                membersList.margins(Insets.bottom(10)).alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER));
+                membersList.margins(Insets.bottom(10)).alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP));
 
         if (selectedParty.members().containsKey(McUtils.playerName())) {
             DropdownComponent roleDropdown = Components.dropdown(Sizing.content())
