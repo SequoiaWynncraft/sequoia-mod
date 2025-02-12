@@ -38,11 +38,11 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        if (!RecipientType.GUILD.matchPattern(event.getStyledText(), MessageType.FOREGROUND)) {
+        if (!RecipientType.GUILD.matchPattern(event.getOriginalStyledText(), MessageType.FOREGROUND)) {
             return;
         }
 
-        StyledText messageTextWithoutNewLines = event.getStyledText()
+        StyledText messageTextWithoutNewLines = event.getOriginalStyledText()
                 .replaceAll("\n", "")
                 .replaceAll("\uDAFF\uDFFC\uE001\uDB00\uDC06\\s+", "")
                 .replaceAll("\\s{2,}", " ");
