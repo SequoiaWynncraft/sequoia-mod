@@ -6,10 +6,13 @@ package dev.lotnest.sequoia.mc.screens;
 
 import com.wynntils.core.WynntilsMod;
 import com.wynntils.utils.mc.McUtils;
+import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.components.Models;
 import dev.lotnest.sequoia.core.events.WarPartyCreatedEvent;
 import dev.lotnest.sequoia.core.events.WarPartyDisbandEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateRoleEvent;
+import dev.lotnest.sequoia.core.websocket.messages.ic3.GIC3HWSMessage;
 import dev.lotnest.sequoia.features.war.GuildWar;
 import dev.lotnest.sequoia.features.war.GuildWarParty;
 import dev.lotnest.sequoia.models.war.WarPartyModel;
@@ -27,21 +30,20 @@ import io.wispforest.owo.ui.core.Sizing;
 import io.wispforest.owo.ui.core.Surface;
 import io.wispforest.owo.ui.core.VerticalAlignment;
 import java.util.Map;
-import java.util.Set;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 
 public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
-    private final Map<Integer, GuildWarParty> warParties;
+    private Map<Integer, GuildWarParty> warParties;
 
-    private final Set<GuildWar> activeWars;
+    private Map<Integer, GuildWar> activeWars;
     private GuildWarParty selectedParty;
     private GuildWar selectedWar;
     private WarPartyModel.Role selectedRole;
 
-    public WarPartyScreen(Map<Integer, GuildWarParty> warParties, Set<GuildWar> activeWars) {
-        this.warParties = warParties;
-        this.activeWars = activeWars;
+    public WarPartyScreen() {
+        this.warParties = Models.WarParty.getActiveWarParties();
+        this.activeWars = Models.War.getActiveWars();
         this.selectedRole = WarPartyModel.Role.NONE;
     }
 
@@ -88,30 +90,7 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
         FlowLayout partyEntries = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
         partyEntries.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 
-        for (GuildWarParty party : warParties.values()) {
-            ButtonComponent button =
-                    Components.button(Component.literal(party.territory()).withStyle(ChatFormatting.GREEN), b -> {
-                        this.selectedParty = party;
-                        this.selectedWar = null;
-                        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin);
-                    });
-            button.sizing(Sizing.fixed(140), Sizing.fixed(30));
-            button.margins(Insets.of(3));
-            button.tooltip(Component.literal("Click for party info!"));
-            partyEntries.child(button);
-        }
-        for (GuildWar war : activeWars) {
-            ButtonComponent button =
-                    Components.button(Component.literal(war.territory()).withStyle(ChatFormatting.RED), b -> {
-                        this.selectedWar = war;
-                        this.selectedParty = null;
-                        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin);
-                    });
-            button.sizing(Sizing.fixed(140), Sizing.fixed(30));
-            button.margins(Insets.of(3));
-            button.tooltip(Component.literal("Click for war info!"));
-            partyEntries.child(button);
-        }
+        updateLeftSide(partyEntries, RightPartyInfo, RightPartyDescription, RightPartyJoin);
 
         ScrollContainer<FlowLayout> parties =
                 Containers.verticalScroll(Sizing.fill(100), Sizing.fill(80), partyEntries);
@@ -125,7 +104,7 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
         Left.child(parties);
 
         // **Right Panel: Initially Empty**
-        updateRightPanel(RightPartyInfo, RightPartyHolder, RightPartyJoin);
+        updateRightPanel(RightPartyInfo, RightPartyHolder, RightPartyJoin, partyEntries, RightPartyDescription);
 
         RightPartyHolder.child(RightPartyDescription);
         RightPartyHolder.child(RightPartyActions);
@@ -137,10 +116,60 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
         rootComponent.child(Box);
     }
 
+    private void updateLeftSide(
+            FlowLayout partyEntries,
+            FlowLayout RightPartyInfo,
+            FlowLayout RightPartyDescription,
+            FlowLayout RightPartyJoin) {
+        partyEntries.clearChildren();
+        this.warParties = Models.WarParty.getActiveWarParties();
+        this.activeWars = Models.War.getActiveWars();
+        for (GuildWarParty party : warParties.values()) {
+            ButtonComponent button =
+                    Components.button(Component.literal(party.territory()).withStyle(ChatFormatting.GREEN), b -> {
+                        this.selectedParty = party;
+                        this.selectedWar = null;
+                        updateRightPanel(
+                                RightPartyInfo,
+                                RightPartyDescription,
+                                RightPartyJoin,
+                                partyEntries,
+                                RightPartyDescription);
+                    });
+            button.sizing(Sizing.fixed(140), Sizing.fixed(30));
+            button.margins(Insets.of(3));
+            button.tooltip(Component.literal("Click for party info!"));
+            partyEntries.child(button);
+        }
+        for (GuildWar war : activeWars.values()) {
+            if (!war.hasParty()) {
+                ButtonComponent button =
+                        Components.button(Component.literal(war.territory()).withStyle(ChatFormatting.RED), b -> {
+                            this.selectedWar = war;
+                            this.selectedParty = null;
+                            updateRightPanel(
+                                    RightPartyInfo,
+                                    RightPartyDescription,
+                                    RightPartyJoin,
+                                    partyEntries,
+                                    RightPartyDescription);
+                        });
+                button.sizing(Sizing.fixed(140), Sizing.fixed(30));
+                button.margins(Insets.of(3));
+                button.tooltip(Component.literal("Click for war info!"));
+                partyEntries.child(button);
+            }
+        }
+    }
     /**
      * Updates the right panel with the selected party's info.
      */
-    private void updateRightPanel(FlowLayout RightPartyInfo, FlowLayout RightPartyHolder, FlowLayout RightPartyJoin) {
+    private void updateRightPanel(
+            FlowLayout RightPartyInfo,
+            FlowLayout RightPartyHolder,
+            FlowLayout RightPartyJoin,
+            FlowLayout partyEntries,
+            FlowLayout RightPartyDescription) {
         RightPartyInfo.clearChildren();
         RightPartyHolder.clearChildren();
         RightPartyJoin.clearChildren();
@@ -170,7 +199,12 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
 
             ButtonComponent createButton = Components.button(
                     Component.literal("Create Party"),
-                    b -> createParty(RightPartyInfo, RightPartyHolder, RightPartyJoin));
+                    b -> createParty(
+                            RightPartyInfo,
+                            RightPartyDescription,
+                            RightPartyJoin,
+                            partyEntries,
+                            RightPartyDescription));
             createButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
             RightPartyJoin.child(createButton.margins(Insets.top(10)))
                     .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
@@ -195,16 +229,16 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
                                     .withStyle(selectedParty.difficulty().getColor()))))
                     .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 
-            // **Leader Info**
-            RightPartyHolder.child(Components.label(Component.literal("Leader: " + selectedParty.partyLeader())
-                                    .withStyle(ChatFormatting.YELLOW))
-                            .margins(Insets.bottom(5)))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
+//            // **Leader Info**
+//            RightPartyHolder.child(Components.label(Component.literal("Leader: " + selectedParty.partyLeader())
+//                                    .withStyle(ChatFormatting.YELLOW))
+//                            .margins(Insets.bottom(5)))
+//                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
 
             // **Party Members**
             RightPartyHolder.child(
                     Components.label(Component.literal("Members:").withStyle(ChatFormatting.BOLD))
-                            .margins(Insets.bottom(2)));
+                            .margins(Insets.bottom(2))).alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
 
             FlowLayout membersList = Containers.verticalFlow(Sizing.content(), Sizing.content());
             for (Map.Entry<String, WarPartyModel.Role> entry :
@@ -233,28 +267,36 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
                                                     WarPartyModel.Role.DPS,
                                                     RightPartyInfo,
                                                     RightPartyHolder,
-                                                    RightPartyJoin));
+                                                    RightPartyJoin,
+                                                    partyEntries,
+                                                    RightPartyDescription));
                                     dropdownComponent.button(
                                             Component.literal("Healer"),
                                             d -> updateRole(
                                                     WarPartyModel.Role.HEALER,
                                                     RightPartyInfo,
                                                     RightPartyHolder,
-                                                    RightPartyJoin));
+                                                    RightPartyJoin,
+                                                    partyEntries,
+                                                    RightPartyDescription));
                                     dropdownComponent.button(
                                             Component.literal("Tank"),
                                             d -> updateRole(
                                                     WarPartyModel.Role.TANK,
                                                     RightPartyInfo,
                                                     RightPartyHolder,
-                                                    RightPartyJoin));
+                                                    RightPartyJoin,
+                                                    partyEntries,
+                                                    RightPartyDescription));
                                     dropdownComponent.button(
                                             Component.literal("Solo"),
                                             d -> updateRole(
                                                     WarPartyModel.Role.SOLO,
                                                     RightPartyInfo,
                                                     RightPartyHolder,
-                                                    RightPartyJoin));
+                                                    RightPartyJoin,
+                                                    partyEntries,
+                                                    RightPartyDescription));
                                 });
 
                 roleDropdown.surface(Surface.DARK_PANEL).horizontalAlignment(HorizontalAlignment.CENTER);
@@ -268,14 +310,21 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
                             selectedParty.members().containsKey(McUtils.playerName()),
                             RightPartyInfo,
                             RightPartyHolder,
-                            RightPartyJoin));
+                            RightPartyJoin,
+                            partyEntries,
+                            RightPartyDescription));
             joinButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
             RightPartyJoin.child(joinButton.margins(Insets.top(10)))
                     .alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
-            if (this.selectedParty.partyLeader() == McUtils.playerName()) {
+            if (this.selectedParty.partyLeader().matches(McUtils.playerName())) {
                 ButtonComponent disbandButton = Components.button(
                         Component.literal("Disband"),
-                        b -> disbandParty(RightPartyInfo, RightPartyHolder, RightPartyJoin));
+                        b -> disbandParty(
+                                RightPartyInfo,
+                                RightPartyDescription,
+                                RightPartyJoin,
+                                partyEntries,
+                                RightPartyDescription));
                 disbandButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
                 RightPartyHolder.child(disbandButton.margins(Insets.top(10)))
                         .alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
@@ -287,21 +336,38 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
             WarPartyModel.Role role,
             FlowLayout RightPartyInfo,
             FlowLayout RightPartyHolder,
-            FlowLayout RightPartyJoin) {
+            FlowLayout RightPartyJoin,
+            FlowLayout partyEntries,
+            FlowLayout RightPartyDescription) {
         WynntilsMod.postEvent(new WarPartyUpdateRoleEvent(selectedParty.hash(), McUtils.playerName(), role));
+        this.selectedRole = role;
+
+        sendMessageToServer(false, "roleUpdate");
         // TODO send message to IC3
 
-        updateRightPanel(RightPartyInfo, RightPartyHolder, RightPartyJoin);
+        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
     }
 
-    private void disbandParty(FlowLayout RightPartyInfo, FlowLayout RightPartyHolder, FlowLayout RightPartyJoin) {
+    private void disbandParty(
+            FlowLayout RightPartyInfo,
+            FlowLayout RightPartyHolder,
+            FlowLayout RightPartyJoin,
+            FlowLayout partyEntries,
+            FlowLayout RightPartyDescription) {
         WynntilsMod.postEvent(new WarPartyDisbandEvent(selectedParty.hash()));
         // TODO send message to IC3
+        sendMessageToServer(false, "partyDisband");
         this.selectedParty = null;
-        updateRightPanel(RightPartyInfo, RightPartyHolder, RightPartyJoin);
+        updateLeftSide(partyEntries, RightPartyInfo, RightPartyDescription, RightPartyJoin);
+        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
     }
 
-    private void createParty(FlowLayout RightPartyInfo, FlowLayout RightPartyHolder, FlowLayout RightPartyJoin) {
+    private void createParty(
+            FlowLayout RightPartyInfo,
+            FlowLayout RightPartyHolder,
+            FlowLayout RightPartyJoin,
+            FlowLayout partyEntries,
+            FlowLayout RightPartyDescription) {
         WynntilsMod.postEvent(new WarPartyCreatedEvent(
                 selectedWar.hash(),
                 McUtils.playerName(),
@@ -309,16 +375,50 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
                 WarPartyModel.Role.NONE,
                 selectedWar.difficulty()));
         // TODO send message to IC3
+        sendMessageToServer(false, "partyCreate");
         this.selectedParty = warParties.get(selectedWar.hash());
         this.selectedWar = null;
-        updateRightPanel(RightPartyInfo, RightPartyHolder, RightPartyJoin);
+        updateLeftSide(partyEntries, RightPartyInfo, RightPartyDescription, RightPartyJoin);
+        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
     }
 
     private void toggleJoinLeave(
-            boolean join, FlowLayout RightPartyInfo, FlowLayout RightPartyHolder, FlowLayout RightPartyJoin) {
+            boolean join,
+            FlowLayout RightPartyInfo,
+            FlowLayout RightPartyHolder,
+            FlowLayout RightPartyJoin,
+            FlowLayout partyEntries,
+            FlowLayout RightPartyDescription) {
         // TODO send message to IC3
+        sendMessageToServer(join, "partyUpdate");
         WynntilsMod.postEvent(
                 new WarPartyUpdateEvent(selectedParty.hash(), McUtils.playerName(), join ? 1 : -1, selectedRole));
-        updateRightPanel(RightPartyInfo, RightPartyHolder, RightPartyJoin);
+        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
+    }
+
+    private void sendMessageToServer(boolean payload, String method) {
+        String message = null;
+        switch (method) {
+            case "roleUpdate" -> message =
+                    String.format("%d;%s;%s", selectedParty.hash(), McUtils.playerName(), this.selectedRole);
+            case "partyCreate" -> message = String.format(
+                    "%d;%s;%s;%s;%s",
+                    selectedWar.hash(),
+                    McUtils.playerName(),
+                    selectedWar.territory(),
+                    WarPartyModel.Role.NONE,
+                    selectedWar.difficulty().getDisplayName());
+            case "partyDisband" -> message = String.valueOf(selectedParty.hash());
+            case "partyUpdate" -> message =
+                    String.format("%d;%d;%s", selectedParty.hash(), payload ? 1 : -1, selectedRole);
+        }
+
+        if (!SequoiaMod.getWebSocketFeature().getClient().isOpen()) {
+            SequoiaMod.getWebSocketFeature().connectIfNeeded();
+        }
+        String[] target = new String[] {"*"};
+        GIC3HWSMessage.Data data = new GIC3HWSMessage.Data(1, 0, method, message.getBytes(), target);
+        GIC3HWSMessage gic3HWSMessage = new GIC3HWSMessage(data);
+        SequoiaMod.getWebSocketFeature().sendAsJson(gic3HWSMessage);
     }
 }

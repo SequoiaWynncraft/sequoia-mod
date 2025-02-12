@@ -6,7 +6,6 @@ package dev.lotnest.sequoia.commands;
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import dev.lotnest.sequoia.core.components.Models;
 import dev.lotnest.sequoia.core.consumers.command.Command;
 import dev.lotnest.sequoia.mc.screens.WarPartyScreen;
 import java.util.List;
@@ -40,10 +39,8 @@ public class PartyCommand extends Command {
             Executors.newSingleThreadScheduledExecutor()
                     .schedule(
                             () -> Minecraft.getInstance().execute(() -> {
-                                Models.War.mockWars();
-                                Minecraft.getInstance()
-                                        .setScreen(new WarPartyScreen(
-                                                Models.WarParty.getActiveWarParties(), Models.War.getActiveWars()));
+                                // Models.War.mockWars();
+                                Minecraft.getInstance().setScreen(new WarPartyScreen());
                             }),
                             1,
                             TimeUnit.MILLISECONDS);

@@ -6,6 +6,7 @@ package dev.lotnest.sequoia.models.war;
 
 import com.google.common.collect.Maps;
 import dev.lotnest.sequoia.core.components.Model;
+import dev.lotnest.sequoia.core.components.Models;
 import dev.lotnest.sequoia.core.events.WarPartyCreatedEvent;
 import dev.lotnest.sequoia.core.events.WarPartyDisbandEvent;
 import dev.lotnest.sequoia.core.events.WarPartyUpdateEvent;
@@ -38,11 +39,13 @@ public class WarPartyModel extends Model {
 
         GuildWarParty guildWarParty = new GuildWarParty(partyId, leader, territory, difficulty, members);
         activeWarParties.putIfAbsent(partyId, guildWarParty);
+        Models.War.updateParty(event.getHash(), true);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void handlePartyDisband(WarPartyDisbandEvent event) {
         activeWarParties.remove(event.getHash());
+        Models.War.updateParty(event.getHash(), false);
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)

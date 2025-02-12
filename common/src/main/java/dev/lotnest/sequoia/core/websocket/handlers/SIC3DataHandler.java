@@ -40,7 +40,7 @@ public class SIC3DataHandler extends WSMessageHandler {
             case 1 -> {
                 String payload = new String(sic3DataWSMessageData.payload(), StandardCharsets.UTF_8);
                 switch (sic3DataWSMessageData.method()) {
-                    case "partyCreated" -> {
+                    case "partyCreate" -> {
                         String[] messages = payload.split(";");
                         WynntilsMod.postEvent(new WarPartyCreatedEvent(
                                 Integer.parseInt(messages[0]),
@@ -49,7 +49,7 @@ public class SIC3DataHandler extends WSMessageHandler {
                                 WarPartyModel.Role.fromString(messages[3]),
                                 WarModel.Difficulty.fromString(messages[4])));
                     }
-                    case "partyDisbanded" -> WynntilsMod.postEvent(new WarPartyDisbandEvent(Integer.parseInt(payload)));
+                    case "partyDisband" -> WynntilsMod.postEvent(new WarPartyDisbandEvent(Integer.parseInt(payload)));
                     case "partyUpdate" -> {
                         String[] messages = payload.split(";");
                         WynntilsMod.postEvent(new WarPartyUpdateEvent(
@@ -59,7 +59,7 @@ public class SIC3DataHandler extends WSMessageHandler {
                                 WarPartyModel.Role.fromString(messages[3])));
                     }
                     case "updateRequest" -> WynntilsMod.postEvent(new WarPartyUpdateRequestEvent(payload));
-                    case "partyRoleUpdate" -> {
+                    case "roleUpdate" -> {
                         String[] messages = payload.split(";");
                         WynntilsMod.postEvent(new WarPartyUpdateRoleEvent(
                                 Integer.parseInt(messages[0]),

@@ -4,23 +4,22 @@
  */
 package dev.lotnest.sequoia.models.war;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Maps;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Model;
 import dev.lotnest.sequoia.features.messagefilter.guild.GuildMessageFilterPatterns;
 import dev.lotnest.sequoia.features.war.GuildWar;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.regex.Matcher;
 import net.minecraft.ChatFormatting;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
 public class WarModel extends Model {
-    private final Set<GuildWar> activeWars = Sets.newHashSet();
+    private final Map<Integer, GuildWar> activeWars = Maps.newHashMap();
 
     public WarModel() {
         super(List.of());
@@ -34,7 +33,7 @@ public class WarModel extends Model {
         Matcher takenControlOfTerritoryMatcher = GuildMessageFilterPatterns.WAR[3].matcher(unformattedMessage);
         if (takenControlOfTerritoryMatcher.matches()) {
             String territoryName = takenControlOfTerritoryMatcher.group("territory");
-            activeWars.removeIf(war -> war.hash() == territoryName.hashCode());
+            activeWars.remove(territoryName.hashCode());
             return;
         }
 
@@ -42,28 +41,31 @@ public class WarModel extends Model {
         if (territoryDefenseMatcher.matches()) {
             String territoryName = territoryDefenseMatcher.group("territory");
             Difficulty defenseDifficulty = Difficulty.fromString(territoryDefenseMatcher.group("defense"));
-            GuildWar guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty);
-            activeWars.add(guildWar);
-            SequoiaMod.debug("Message: " + unformattedMessage);
-            SequoiaMod.debug("Group 0: " + " " + territoryDefenseMatcher.group(0));
-            SequoiaMod.debug("Group 1: " + " " + territoryName);
-            SequoiaMod.debug("Group 2: " + " " + defenseDifficulty.displayName);
+            GuildWar guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty, false);
+            activeWars.put(territoryName.hashCode(), guildWar);
         }
     }
 
     public void mockWars() {
         String territoryName = "Terr1";
         Difficulty defenseDifficulty = Difficulty.fromString("Very High");
-        GuildWar guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty);
-        activeWars.add(guildWar);
+        GuildWar guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty, false);
+        activeWars.put(territoryName.hashCode(), guildWar);
         territoryName = "Terr2";
         defenseDifficulty = Difficulty.fromString("Medium");
-        guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty);
-        activeWars.add(guildWar);
+        guildWar = new GuildWar(territoryName.hashCode(), territoryName, defenseDifficulty, false);
+        activeWars.put(territoryName.hashCode(), guildWar);
     }
 
-    public Set<GuildWar> getActiveWars() {
-        return Collections.unmodifiableSet(activeWars);
+    public Map<Integer, GuildWar> getActiveWars() {
+        SequoiaMod.debug(activeWars.toString());
+        return activeWars;
+    }
+
+    public void updateParty(int hash, boolean value) {
+        GuildWar old = activeWars.get(hash);
+        activeWars.remove(hash);
+        activeWars.put(old.hash(), new GuildWar(old.hash(), old.territory(), old.difficulty(), value));
     }
 
     public enum Difficulty {
