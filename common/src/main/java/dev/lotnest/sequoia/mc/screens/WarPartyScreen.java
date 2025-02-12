@@ -35,16 +35,20 @@ import net.minecraft.network.chat.Component;
 
 public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
     private Map<Integer, GuildWarParty> warParties;
-
     private Map<Integer, GuildWar> activeWars;
     private GuildWarParty selectedParty;
     private GuildWar selectedWar;
     private WarPartyModel.Role selectedRole;
 
+    private FlowLayout partyEntries;
+    private FlowLayout rightPartyInfo;
+    private FlowLayout rightPartyHolder;
+    private FlowLayout rightPartyJoin;
+
     public WarPartyScreen() {
-        this.warParties = Models.WarParty.getActiveWarParties();
-        this.activeWars = Models.War.getActiveWars();
-        this.selectedRole = WarPartyModel.Role.NONE;
+        warParties = Models.WarParty.getActiveWarParties();
+        activeWars = Models.War.getActiveWars();
+        selectedRole = WarPartyModel.Role.NONE;
     }
 
     @Override
@@ -54,353 +58,274 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
 
     @Override
     protected void build(FlowLayout rootComponent) {
+        FlowLayout rightPartyDescription;
+        FlowLayout rightPartyActions;
         rootComponent
                 .surface(Surface.VANILLA_TRANSLUCENT)
                 .horizontalAlignment(HorizontalAlignment.CENTER)
                 .verticalAlignment(VerticalAlignment.CENTER);
 
-        FlowLayout Box = Containers.horizontalFlow(Sizing.fill(50), Sizing.fill(60));
-        FlowLayout Left = Containers.verticalFlow(Sizing.fill(50), Sizing.fill(100));
-        FlowLayout Right = Containers.verticalFlow(Sizing.fill(50), Sizing.fill(100));
+        FlowLayout box = Containers.horizontalFlow(Sizing.fill(50), Sizing.fill(60));
+        FlowLayout leftPanel = Containers.verticalFlow(Sizing.fill(50), Sizing.fill(100));
+        FlowLayout rightPanel = Containers.verticalFlow(Sizing.fill(50), Sizing.fill(100));
 
-        Box.surface(Surface.OPTIONS_BACKGROUND);
+        box.surface(Surface.OPTIONS_BACKGROUND);
+        leftPanel
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
+                .padding(Insets.of(5));
+        rightPanel
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER)
+                .padding(Insets.of(15));
 
-        Left.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER).padding(Insets.of(5));
+        rightPartyInfo = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(30));
+        rightPartyInfo.alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
 
-        Right.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER).padding(Insets.of(15));
+        rightPartyHolder = Containers.horizontalFlow(Sizing.fill(100), Sizing.fill(40));
+        rightPartyHolder.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 
-        FlowLayout RightPartyInfo = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(30));
-        RightPartyInfo.alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
-
-        FlowLayout RightPartyHolder = Containers.horizontalFlow(Sizing.fill(100), Sizing.fill(40));
-        RightPartyHolder.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-
-        FlowLayout RightPartyJoin = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(30));
-        RightPartyJoin.alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM)
+        rightPartyJoin = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(30));
+        rightPartyJoin
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM)
                 .allowOverflow(true);
 
-        FlowLayout RightPartyDescription = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
-        FlowLayout RightPartyActions = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
-
-        RightPartyDescription.alignment(HorizontalAlignment.LEFT, VerticalAlignment.CENTER)
+        rightPartyDescription = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
+        rightPartyDescription
+                .alignment(HorizontalAlignment.LEFT, VerticalAlignment.CENTER)
                 .padding(Insets.of(5));
-        RightPartyActions.alignment(HorizontalAlignment.RIGHT, VerticalAlignment.CENTER);
 
-        // **Scrollable Party List**
-        FlowLayout partyEntries = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
+        rightPartyActions = Containers.verticalFlow(Sizing.content(), Sizing.fill(100));
+        rightPartyActions.alignment(HorizontalAlignment.RIGHT, VerticalAlignment.CENTER);
+
+        rightPartyHolder.child(rightPartyDescription);
+        rightPartyHolder.child(rightPartyActions);
+
+        partyEntries = Containers.verticalFlow(Sizing.fill(100), Sizing.content());
         partyEntries.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+        updateLeftPanel();
 
-        updateLeftSide(partyEntries, RightPartyInfo, RightPartyDescription, RightPartyJoin);
-
-        ScrollContainer<FlowLayout> parties =
+        ScrollContainer<FlowLayout> scrollableParties =
                 Containers.verticalScroll(Sizing.fill(100), Sizing.fill(80), partyEntries);
-
-        parties.scrollbar(ScrollContainer.Scrollbar.vanilla())
+        scrollableParties
+                .scrollbar(ScrollContainer.Scrollbar.vanilla())
                 .scrollbarThiccness(8)
                 .scrollStep(10)
                 .allowOverflow(false)
                 .alignment(HorizontalAlignment.RIGHT, VerticalAlignment.CENTER);
 
-        Left.child(parties);
+        leftPanel.child(scrollableParties);
 
-        // **Right Panel: Initially Empty**
-        updateRightPanel(RightPartyInfo, RightPartyHolder, RightPartyJoin, partyEntries, RightPartyDescription);
+        updateRightPanel();
 
-        RightPartyHolder.child(RightPartyDescription);
-        RightPartyHolder.child(RightPartyActions);
-        Right.child(RightPartyInfo);
-        Right.child(RightPartyHolder);
-        Right.child(RightPartyJoin);
-        Box.child(Left);
-        Box.child(Right);
-        rootComponent.child(Box);
+        rightPanel.child(rightPartyInfo);
+        rightPanel.child(rightPartyHolder);
+        rightPanel.child(rightPartyJoin);
+        box.child(leftPanel);
+        box.child(rightPanel);
+        rootComponent.child(box);
     }
 
-    private void updateLeftSide(
-            FlowLayout partyEntries,
-            FlowLayout RightPartyInfo,
-            FlowLayout RightPartyDescription,
-            FlowLayout RightPartyJoin) {
+    private void updateLeftPanel() {
         partyEntries.clearChildren();
-        this.warParties = Models.WarParty.getActiveWarParties();
-        this.activeWars = Models.War.getActiveWars();
+        warParties = Models.WarParty.getActiveWarParties();
+        activeWars = Models.War.getActiveWars();
+
         for (GuildWarParty party : warParties.values()) {
-            ButtonComponent button =
-                    Components.button(Component.literal(party.territory()).withStyle(ChatFormatting.GREEN), b -> {
-                        this.selectedParty = party;
-                        this.selectedWar = null;
-                        updateRightPanel(
-                                RightPartyInfo,
-                                RightPartyDescription,
-                                RightPartyJoin,
-                                partyEntries,
-                                RightPartyDescription);
+            ButtonComponent partyButton = Components.button(
+                    Component.literal(party.territory()).withStyle(ChatFormatting.GREEN), buttonComponent -> {
+                        selectedParty = party;
+                        selectedWar = null;
+                        updateRightPanel();
                     });
-            button.sizing(Sizing.fixed(140), Sizing.fixed(30));
-            button.margins(Insets.of(3));
-            button.tooltip(Component.literal("Click for party info!"));
-            partyEntries.child(button);
+            partyButton.sizing(Sizing.fixed(140), Sizing.fixed(30));
+            partyButton.margins(Insets.of(3));
+            partyButton.tooltip(Component.literal("Click for party info!"));
+            partyEntries.child(partyButton);
         }
+
         for (GuildWar war : activeWars.values()) {
             if (!war.hasParty()) {
-                ButtonComponent button =
-                        Components.button(Component.literal(war.territory()).withStyle(ChatFormatting.RED), b -> {
-                            this.selectedWar = war;
-                            this.selectedParty = null;
-                            updateRightPanel(
-                                    RightPartyInfo,
-                                    RightPartyDescription,
-                                    RightPartyJoin,
-                                    partyEntries,
-                                    RightPartyDescription);
+                ButtonComponent warButton = Components.button(
+                        Component.literal(war.territory()).withStyle(ChatFormatting.RED), buttonComponent -> {
+                            selectedWar = war;
+                            selectedParty = null;
+                            updateRightPanel();
                         });
-                button.sizing(Sizing.fixed(140), Sizing.fixed(30));
-                button.margins(Insets.of(3));
-                button.tooltip(Component.literal("Click for war info!"));
-                partyEntries.child(button);
+                warButton.sizing(Sizing.fixed(140), Sizing.fixed(30));
+                warButton.margins(Insets.of(3));
+                warButton.tooltip(Component.literal("Click for war info!"));
+                partyEntries.child(warButton);
             }
         }
     }
-    /**
-     * Updates the right panel with the selected party's info.
-     */
-    private void updateRightPanel(
-            FlowLayout RightPartyInfo,
-            FlowLayout RightPartyHolder,
-            FlowLayout RightPartyJoin,
-            FlowLayout partyEntries,
-            FlowLayout RightPartyDescription) {
-        RightPartyInfo.clearChildren();
-        RightPartyHolder.clearChildren();
-        RightPartyJoin.clearChildren();
+
+    private void updateRightPanel() {
+        rightPartyInfo.clearChildren();
+        rightPartyHolder.clearChildren();
+        rightPartyJoin.clearChildren();
 
         if (selectedParty == null && selectedWar == null) {
-            RightPartyInfo.child(Components.label(
+            rightPartyInfo.child(Components.label(
                     Component.literal("Select something to display!").withStyle(ChatFormatting.GRAY)));
             return;
         }
 
         if (selectedParty == null) {
-            RightPartyInfo.child(Components.label(Component.literal("This war has no party yet!")
-                                    .withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD))
-                            .margins(Insets.bottom(10)))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-            RightPartyInfo.child(Components.label(Component.literal("Territory: ")
-                                    .withStyle(ChatFormatting.GRAY)
-                                    .append(Component.literal(selectedWar.territory())
-                                            .withStyle(ChatFormatting.BOLD, ChatFormatting.GRAY)))
-                            .margins(Insets.bottom(5)))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-            RightPartyInfo.child(Components.label(Component.literal("Difficulty: ")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(Component.literal(selectedWar.difficulty().getDisplayName())
-                                    .withStyle(selectedWar.difficulty().getColor()))))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+            updateRightPanelForWar();
+        } else {
+            updateRightPanelForParty();
+        }
+    }
 
-            ButtonComponent createButton = Components.button(
-                    Component.literal("Create Party"),
-                    b -> createParty(
-                            RightPartyInfo,
-                            RightPartyDescription,
-                            RightPartyJoin,
-                            partyEntries,
-                            RightPartyDescription));
-            createButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
-            RightPartyJoin.child(createButton.margins(Insets.top(10)))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+    private void updateRightPanelForWar() {
+        rightPartyInfo
+                .child(Components.label(Component.literal("This war has no party yet!")
+                                .withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD))
+                        .margins(Insets.bottom(10)))
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+
+        addRightPartyInfoChild(
+                selectedWar.territory(),
+                selectedWar.difficulty().getDisplayName(),
+                selectedWar.difficulty().getColor());
+
+        ButtonComponent createButton =
+                Components.button(Component.literal("Create Party"), buttonComponent -> createParty());
+        createButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
+        rightPartyJoin
+                .child(createButton.margins(Insets.top(10)))
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+    }
+
+    private void updateRightPanelForParty() {
+        selectedRole = selectedParty.members().getOrDefault(McUtils.playerName(), WarPartyModel.Role.NONE);
+
+        rightPartyInfo
+                .child(Components.label(
+                                Component.literal("Party Info").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD))
+                        .margins(Insets.bottom(10)))
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+
+        addRightPartyInfoChild(
+                selectedParty.territory(),
+                selectedParty.difficulty().getDisplayName(),
+                selectedParty.difficulty().getColor());
+
+        rightPartyHolder
+                .child(Components.label(Component.literal("Members:").withStyle(ChatFormatting.BOLD))
+                        .margins(Insets.bottom(2)))
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
+
+        FlowLayout membersList = Containers.verticalFlow(Sizing.content(), Sizing.content());
+        for (Map.Entry<String, WarPartyModel.Role> entry :
+                selectedParty.members().entrySet()) {
+            String member = entry.getKey();
+            WarPartyModel.Role role = entry.getValue();
+            membersList.child(Components.label(Component.literal("  " + member + " ")
+                    .withStyle(ChatFormatting.AQUA)
+                    .append(Component.literal(role.getDisplayName()).withStyle(ChatFormatting.LIGHT_PURPLE))));
+        }
+        rightPartyHolder.child(
+                membersList.margins(Insets.bottom(10)).alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER));
+
+        if (selectedParty.members().containsKey(McUtils.playerName())) {
+            DropdownComponent roleDropdown = Components.dropdown(Sizing.content())
+                    .nested(
+                            Component.literal(
+                                    selectedRole == WarPartyModel.Role.NONE
+                                            ? " Please select a role."
+                                            : " Selected role: " + selectedRole),
+                            Sizing.content(),
+                            dropdown -> {
+                                dropdown.button(Component.literal("DPS"), d -> updateRole(WarPartyModel.Role.DPS));
+                                dropdown.button(
+                                        Component.literal("Healer"), d -> updateRole(WarPartyModel.Role.HEALER));
+                                dropdown.button(Component.literal("Tank"), d -> updateRole(WarPartyModel.Role.TANK));
+                                dropdown.button(Component.literal("Solo"), d -> updateRole(WarPartyModel.Role.SOLO));
+                            });
+            roleDropdown.surface(Surface.DARK_PANEL).horizontalAlignment(HorizontalAlignment.CENTER);
+            rightPartyJoin.child(roleDropdown);
         }
 
-        if (selectedWar == null) {
-            selectedRole = this.selectedParty.members().getOrDefault(McUtils.playerName(), WarPartyModel.Role.NONE);
-            // **Title**
-            RightPartyInfo.child(Components.label(
-                                    Component.literal("Party Info").withStyle(ChatFormatting.BOLD, ChatFormatting.GOLD))
-                            .margins(Insets.bottom(10)))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-            RightPartyInfo.child(Components.label(Component.literal("Territory: ")
-                                    .withStyle(ChatFormatting.GRAY)
-                                    .append(Component.literal(selectedParty.territory())
-                                            .withStyle(ChatFormatting.BOLD, ChatFormatting.GRAY)))
-                            .margins(Insets.bottom(5)))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
-            RightPartyInfo.child(Components.label(Component.literal("Difficulty: ")
-                            .withStyle(ChatFormatting.GRAY)
-                            .append(Component.literal(selectedParty.difficulty().getDisplayName())
-                                    .withStyle(selectedParty.difficulty().getColor()))))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+        boolean isMember = selectedParty.members().containsKey(McUtils.playerName());
+        ButtonComponent joinButton = Components.button(
+                Component.literal(isMember ? "Leave" : "Join"), buttonComponent -> toggleJoinLeave(isMember));
+        joinButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
+        rightPartyJoin
+                .child(joinButton.margins(Insets.top(10)))
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
 
-//            // **Leader Info**
-//            RightPartyHolder.child(Components.label(Component.literal("Leader: " + selectedParty.partyLeader())
-//                                    .withStyle(ChatFormatting.YELLOW))
-//                            .margins(Insets.bottom(5)))
-//                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
-
-            // **Party Members**
-            RightPartyHolder.child(
-                    Components.label(Component.literal("Members:").withStyle(ChatFormatting.BOLD))
-                            .margins(Insets.bottom(2))).alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
-
-            FlowLayout membersList = Containers.verticalFlow(Sizing.content(), Sizing.content());
-            for (Map.Entry<String, WarPartyModel.Role> entry :
-                    selectedParty.members().entrySet()) {
-                String member = entry.getKey();
-                WarPartyModel.Role role = entry.getValue();
-                membersList.child(Components.label(Component.literal("  " + member + " ")
-                        .withStyle(ChatFormatting.AQUA)
-                        .append(Component.literal(role.getDisplayName()).withStyle(ChatFormatting.LIGHT_PURPLE))));
-            }
-            RightPartyHolder.child(membersList
-                    .margins(Insets.bottom(10))
-                    .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER));
-            if (selectedParty.members().containsKey(McUtils.playerName())) {
-                DropdownComponent roleDropdown = Components.dropdown(Sizing.content())
-                        .nested(
-                                Component.literal(
-                                        this.selectedRole == WarPartyModel.Role.NONE
-                                                ? " Please select a role."
-                                                : " Selected role: " + selectedRole),
-                                Sizing.content(),
-                                dropdownComponent -> {
-                                    dropdownComponent.button(
-                                            Component.literal("DPS"),
-                                            d -> updateRole(
-                                                    WarPartyModel.Role.DPS,
-                                                    RightPartyInfo,
-                                                    RightPartyHolder,
-                                                    RightPartyJoin,
-                                                    partyEntries,
-                                                    RightPartyDescription));
-                                    dropdownComponent.button(
-                                            Component.literal("Healer"),
-                                            d -> updateRole(
-                                                    WarPartyModel.Role.HEALER,
-                                                    RightPartyInfo,
-                                                    RightPartyHolder,
-                                                    RightPartyJoin,
-                                                    partyEntries,
-                                                    RightPartyDescription));
-                                    dropdownComponent.button(
-                                            Component.literal("Tank"),
-                                            d -> updateRole(
-                                                    WarPartyModel.Role.TANK,
-                                                    RightPartyInfo,
-                                                    RightPartyHolder,
-                                                    RightPartyJoin,
-                                                    partyEntries,
-                                                    RightPartyDescription));
-                                    dropdownComponent.button(
-                                            Component.literal("Solo"),
-                                            d -> updateRole(
-                                                    WarPartyModel.Role.SOLO,
-                                                    RightPartyInfo,
-                                                    RightPartyHolder,
-                                                    RightPartyJoin,
-                                                    partyEntries,
-                                                    RightPartyDescription));
-                                });
-
-                roleDropdown.surface(Surface.DARK_PANEL).horizontalAlignment(HorizontalAlignment.CENTER);
-                RightPartyJoin.child(roleDropdown);
-            }
-
-            // **Join Button**
-            ButtonComponent joinButton = Components.button(
-                    Component.literal(selectedParty.members().containsKey(McUtils.playerName()) ? "Leave" : "Join"),
-                    b -> toggleJoinLeave(
-                            selectedParty.members().containsKey(McUtils.playerName()),
-                            RightPartyInfo,
-                            RightPartyHolder,
-                            RightPartyJoin,
-                            partyEntries,
-                            RightPartyDescription));
-            joinButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
-            RightPartyJoin.child(joinButton.margins(Insets.top(10)))
+        if (selectedParty.partyLeader().equals(McUtils.playerName())) {
+            ButtonComponent disbandButton =
+                    Components.button(Component.literal("Disband"), buttonComponent -> disbandParty());
+            disbandButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
+            rightPartyHolder
+                    .child(disbandButton.margins(Insets.top(10)))
                     .alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
-            if (this.selectedParty.partyLeader().matches(McUtils.playerName())) {
-                ButtonComponent disbandButton = Components.button(
-                        Component.literal("Disband"),
-                        b -> disbandParty(
-                                RightPartyInfo,
-                                RightPartyDescription,
-                                RightPartyJoin,
-                                partyEntries,
-                                RightPartyDescription));
-                disbandButton.sizing(Sizing.fixed(80), Sizing.fixed(20));
-                RightPartyHolder.child(disbandButton.margins(Insets.top(10)))
-                        .alignment(HorizontalAlignment.CENTER, VerticalAlignment.BOTTOM);
-            }
         }
     }
 
-    public void updateRole(
-            WarPartyModel.Role role,
-            FlowLayout RightPartyInfo,
-            FlowLayout RightPartyHolder,
-            FlowLayout RightPartyJoin,
-            FlowLayout partyEntries,
-            FlowLayout RightPartyDescription) {
+    private void addRightPartyInfoChild(String territory, String difficultyDisplay, ChatFormatting difficultyColor) {
+        rightPartyInfo
+                .child(Components.label(Component.literal("Territory: ")
+                                .withStyle(ChatFormatting.GRAY)
+                                .append(Component.literal(territory)
+                                        .withStyle(ChatFormatting.BOLD, ChatFormatting.GRAY)))
+                        .margins(Insets.bottom(5)))
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+
+        rightPartyInfo
+                .child(Components.label(Component.literal("Difficulty: ")
+                        .withStyle(ChatFormatting.GRAY)
+                        .append(Component.literal(difficultyDisplay).withStyle(difficultyColor))))
+                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+    }
+
+    public void updateRole(WarPartyModel.Role role) {
         WynntilsMod.postEvent(new WarPartyUpdateRoleEvent(selectedParty.hash(), McUtils.playerName(), role));
-        this.selectedRole = role;
 
-        sendMessageToServer(false, "roleUpdate");
-        // TODO send message to IC3
+        selectedRole = role;
+        sendIC3Message(false, "roleUpdate");
 
-        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
+        updateRightPanel();
     }
 
-    private void disbandParty(
-            FlowLayout RightPartyInfo,
-            FlowLayout RightPartyHolder,
-            FlowLayout RightPartyJoin,
-            FlowLayout partyEntries,
-            FlowLayout RightPartyDescription) {
+    private void disbandParty() {
         WynntilsMod.postEvent(new WarPartyDisbandEvent(selectedParty.hash()));
-        // TODO send message to IC3
-        sendMessageToServer(false, "partyDisband");
-        this.selectedParty = null;
-        updateLeftSide(partyEntries, RightPartyInfo, RightPartyDescription, RightPartyJoin);
-        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
+        sendIC3Message(false, "partyDisband");
+        selectedParty = null;
+
+        updateLeftPanel();
+        updateRightPanel();
     }
 
-    private void createParty(
-            FlowLayout RightPartyInfo,
-            FlowLayout RightPartyHolder,
-            FlowLayout RightPartyJoin,
-            FlowLayout partyEntries,
-            FlowLayout RightPartyDescription) {
+    private void createParty() {
         WynntilsMod.postEvent(new WarPartyCreatedEvent(
                 selectedWar.hash(),
                 McUtils.playerName(),
                 selectedWar.territory(),
                 WarPartyModel.Role.NONE,
                 selectedWar.difficulty()));
-        // TODO send message to IC3
-        sendMessageToServer(false, "partyCreate");
-        this.selectedParty = warParties.get(selectedWar.hash());
-        this.selectedWar = null;
-        updateLeftSide(partyEntries, RightPartyInfo, RightPartyDescription, RightPartyJoin);
-        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
+        sendIC3Message(false, "partyCreate");
+        selectedParty = warParties.get(selectedWar.hash());
+        selectedWar = null;
+
+        updateLeftPanel();
+        updateRightPanel();
     }
 
-    private void toggleJoinLeave(
-            boolean join,
-            FlowLayout RightPartyInfo,
-            FlowLayout RightPartyHolder,
-            FlowLayout RightPartyJoin,
-            FlowLayout partyEntries,
-            FlowLayout RightPartyDescription) {
-        // TODO send message to IC3
-        sendMessageToServer(join, "partyUpdate");
+    private void toggleJoinLeave(boolean isJoining) {
+        sendIC3Message(isJoining, "partyUpdate");
         WynntilsMod.postEvent(
-                new WarPartyUpdateEvent(selectedParty.hash(), McUtils.playerName(), join ? 1 : -1, selectedRole));
-        updateRightPanel(RightPartyInfo, RightPartyDescription, RightPartyJoin, partyEntries, RightPartyDescription);
+                new WarPartyUpdateEvent(selectedParty.hash(), McUtils.playerName(), isJoining ? 1 : -1, selectedRole));
+
+        updateRightPanel();
     }
 
-    private void sendMessageToServer(boolean payload, String method) {
+    private void sendIC3Message(boolean payload, String method) {
         String message = null;
         switch (method) {
             case "roleUpdate" -> message =
-                    String.format("%d;%s;%s", selectedParty.hash(), McUtils.playerName(), this.selectedRole);
+                    String.format("%d;%s;%s", selectedParty.hash(), McUtils.playerName(), selectedRole);
             case "partyCreate" -> message = String.format(
                     "%d;%s;%s;%s;%s",
                     selectedWar.hash(),
@@ -411,11 +336,17 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
             case "partyDisband" -> message = String.valueOf(selectedParty.hash());
             case "partyUpdate" -> message =
                     String.format("%d;%d;%s", selectedParty.hash(), payload ? 1 : -1, selectedRole);
+            default -> SequoiaMod.error("Unknown method: " + method);
+        }
+
+        if (message == null) {
+            return;
         }
 
         if (!SequoiaMod.getWebSocketFeature().getClient().isOpen()) {
             SequoiaMod.getWebSocketFeature().connectIfNeeded();
         }
+
         String[] target = new String[] {"*"};
         GIC3HWSMessage.Data data = new GIC3HWSMessage.Data(1, 0, method, message.getBytes(), target);
         GIC3HWSMessage gic3HWSMessage = new GIC3HWSMessage(data);

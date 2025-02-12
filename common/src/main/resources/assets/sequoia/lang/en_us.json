@@ -87,6 +87,7 @@
   "sequoia.command.territoryMenu.description": "Opens the territory menu.",
   "sequoia.command.test.description": "Tests various components of the mod, not very useful for regular users.",
   "sequoia.command.version.description": "Shows the version of Sequoia currently installed.",
+  "sequoia.command.warParty.failedToOpenScreen": "&cAn error occurred while opening the WarPartyScreen, check the logs for more information.",
   "sequoia.feature.commands.description": "Provides commands for managing the mod",
   "sequoia.feature.commands.name": "Commands",
   "sequoia.feature.discordChatBridge.description": "Bridges the in-game chat with the Discord server",

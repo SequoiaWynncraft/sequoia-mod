@@ -24,7 +24,6 @@ import dev.lotnest.sequoia.commands.LastSeenCommand;
 import dev.lotnest.sequoia.commands.MeowCommand;
 import dev.lotnest.sequoia.commands.OnlineMembersCommand;
 import dev.lotnest.sequoia.commands.OuterVoidCommand;
-import dev.lotnest.sequoia.commands.PartyCommand;
 import dev.lotnest.sequoia.commands.PlayerDungeonsCommand;
 import dev.lotnest.sequoia.commands.PlayerGuildCommand;
 import dev.lotnest.sequoia.commands.PlayerRaidsCommand;
@@ -36,6 +35,7 @@ import dev.lotnest.sequoia.commands.SequoiaCommand;
 import dev.lotnest.sequoia.commands.TerritoryMenuCommand;
 import dev.lotnest.sequoia.commands.TestCommand;
 import dev.lotnest.sequoia.commands.VersionCommand;
+import dev.lotnest.sequoia.commands.WarPartyCommand;
 import dev.lotnest.sequoia.core.components.Manager;
 import java.util.List;
 import net.minecraft.ChatFormatting;
@@ -196,7 +196,7 @@ public final class ClientCommandManager extends Manager {
         registerCommand(new SearchCommand());
         registerCommand(new TerritoryMenuCommand());
         registerCommand(new AuthCommand());
-        registerCommand(new PartyCommand());
+        registerCommand(new WarPartyCommand());
 
         registerCommandWithCommandSet(new SequoiaCommand());
     }
