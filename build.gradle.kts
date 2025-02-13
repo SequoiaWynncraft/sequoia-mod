@@ -21,7 +21,7 @@ val FABRIC_LOADER_VERSION by extra { "0.16.10" }
 val FABRIC_API_VERSION by extra { "0.110.5+1.21.4" }
 val PARCHMENT_VERSION by extra { null }
 
-val WYNNTILS_VERSION by extra { "3.0.4" }
+val WYNNTILS_VERSION by extra { "3.0.5" }
 val OWO_LIB_VERSION by extra { "0.12.20+1.21.4" }
 val WEBSOCKET_VERSION by extra { "1.5.7" }
 val DEV_AUTH_VERSION by extra { "1.2.1" }
