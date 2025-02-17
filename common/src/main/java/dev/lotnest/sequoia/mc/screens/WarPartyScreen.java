@@ -81,8 +81,7 @@ public class WarPartyScreen extends BaseOwoScreen<FlowLayout> {
         rightPartyInfo.alignment(HorizontalAlignment.CENTER, VerticalAlignment.TOP);
 
         rightPartyHolder = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(40));
-        rightPartyHolder
-                .alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
+        rightPartyHolder.alignment(HorizontalAlignment.CENTER, VerticalAlignment.CENTER);
 
         rightPartyJoin = Containers.verticalFlow(Sizing.fill(100), Sizing.fill(30));
         rightPartyJoin
