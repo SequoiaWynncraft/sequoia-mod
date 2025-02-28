@@ -2,28 +2,17 @@ import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import java.io.File
 import java.net.URI
 
-plugins {
-    id("java")
-    id("idea")
-    id("fabric-loom") version "1.9.2"
-}
+val minecraftVersion: String by rootProject.extra
+val parchmentVersion: String? by rootProject.extra
+val fabricLoaderVersion: String by rootProject.extra
+val fabricApiVersion: String by rootProject.extra
+val neoForgeEventBusVersion: String by rootProject.extra
 
-repositories {
-    maven("https://maven.parchmentmc.org/")
-    maven("https://maven.wispforest.io")
-}
-
-val MINECRAFT_VERSION: String by rootProject.extra
-val PARCHMENT_VERSION: String? by rootProject.extra
-val FABRIC_LOADER_VERSION: String by rootProject.extra
-val FABRIC_API_VERSION: String by rootProject.extra
-val NEOFORGE_EVENTBUS_VERSION: String by rootProject.extra
-
-val WYNNTILS_VERSION: String by rootProject.extra
-val WYNNTILS = {
+val wynntilsVersion: String by rootProject.extra
+val wynntils = {
     val url =
-        "https://github.com/Wynntils/Wynntils/releases/download/v$WYNNTILS_VERSION/wynntils-$WYNNTILS_VERSION-fabric+MC-$MINECRAFT_VERSION.jar"
-    val file = File(projectDir, "libs/wynntils-$WYNNTILS_VERSION.jar")
+        "https://github.com/Wynntils/Wynntils/releases/download/v$wynntilsVersion/wynntils-$wynntilsVersion-fabric+MC-$minecraftVersion.jar"
+    val file = File(projectDir, "libs/wynntils-$wynntilsVersion.jar")
 
     file.parentFile.mkdirs()
 
@@ -37,32 +26,43 @@ val WYNNTILS = {
 
     files(file.absolutePath)
 }
-val OWO_LIB_VERSION: String by rootProject.extra
-val WEBSOCKET_VERSION: String by rootProject.extra
+val owoLibVersion: String by rootProject.extra
+val webSocketVersion: String by rootProject.extra
+
+plugins {
+    id("java")
+    id("idea")
+    id("fabric-loom") version "1.9.2"
+}
+
+repositories {
+    maven("https://maven.parchmentmc.org/")
+    maven("https://maven.wispforest.io")
+}
 
 dependencies {
-    minecraft(group = "com.mojang", name = "minecraft", version = MINECRAFT_VERSION)
+    minecraft(group = "com.mojang", name = "minecraft", version = minecraftVersion)
     mappings(loom.layered() {
         officialMojangMappings()
-        if (PARCHMENT_VERSION != null) {
-            parchment("org.parchmentmc.data:parchment-${MINECRAFT_VERSION}:${PARCHMENT_VERSION}@zip")
+        if (parchmentVersion != null) {
+            parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentVersion}@zip")
         }
     })
 
-    modCompileOnly("net.fabricmc:fabric-loader:$FABRIC_LOADER_VERSION")
+    modCompileOnly("net.fabricmc:fabric-loader:$fabricLoaderVersion")
 
     fun addDependentFabricModule(name: String) {
-        val module = fabricApi.module(name, FABRIC_API_VERSION)
+        val module = fabricApi.module(name, fabricApiVersion)
         modCompileOnly(module)
     }
 
-    implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+    implementation("org.java-websocket:Java-WebSocket:$webSocketVersion")
 
-    modImplementation(WYNNTILS())
-    modImplementation("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
-    annotationProcessor("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
+    modImplementation(wynntils())
+    modImplementation("io.wispforest:owo-lib:${owoLibVersion}")
+    annotationProcessor("io.wispforest:owo-lib:${owoLibVersion}")
 
-    compileOnly("net.neoforged:bus:${NEOFORGE_EVENTBUS_VERSION}")
+    compileOnly("net.neoforged:bus:${neoForgeEventBusVersion}")
 }
 
 val usingHotswapAgent = project.hasProperty("sequoia.hotswap") &&

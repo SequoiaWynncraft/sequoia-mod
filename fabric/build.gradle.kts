@@ -1,26 +1,20 @@
 import me.modmuss50.mpp.ReleaseType
 import java.net.URI
 
-plugins {
-    id("java")
-    id("idea")
-    id("fabric-loom") version ("1.9.2")
-}
+val modId: String by rootProject.extra
+val modVersion: String by rootProject.extra
 
-val MINECRAFT_VERSION: String by rootProject.extra
-val PARCHMENT_VERSION: String? by rootProject.extra
-val FABRIC_LOADER_VERSION: String by rootProject.extra
-val FABRIC_API_VERSION: String by rootProject.extra
-val NEOFORGE_EVENTBUS_VERSION: String by rootProject.extra
+val minecraftVersion: String by rootProject.extra
+val parchmentVersion: String? by rootProject.extra
+val fabricLoaderVersion: String by rootProject.extra
+val fabricApiVersion: String by rootProject.extra
+val neoForgeEventBusVersion: String by rootProject.extra
 
-val MOD_ID: String by rootProject.extra
-val MOD_VERSION: String by rootProject.extra
-
-val WYNNTILS_VERSION: String by rootProject.extra
-val WYNNTILS = {
+val wynntilsVersion: String by rootProject.extra
+val wynntils = {
     val url =
-        "https://github.com/Wynntils/Wynntils/releases/download/v$WYNNTILS_VERSION/wynntils-$WYNNTILS_VERSION-fabric+MC-$MINECRAFT_VERSION.jar"
-    val file = File(projectDir, "libs/wynntils-$WYNNTILS_VERSION.jar")
+        "https://github.com/Wynntils/Wynntils/releases/download/v$wynntilsVersion/wynntils-$wynntilsVersion-fabric+MC-$minecraftVersion.jar"
+    val file = File(projectDir, "libs/wynntils-$wynntilsVersion.jar")
 
     file.parentFile.mkdirs()
 
@@ -34,37 +28,43 @@ val WYNNTILS = {
 
     files(file.absolutePath)
 }
-val WEBSOCKET_VERSION: String by rootProject.extra
-val DEV_AUTH_VERSION: String by rootProject.extra
-val OWO_LIB_VERSION: String by rootProject.extra
+val webSocketVersion: String by rootProject.extra
+val devAuthVersion: String by rootProject.extra
+val owoLibVersion: String by rootProject.extra
+
+plugins {
+    id("java")
+    id("idea")
+    id("fabric-loom") version ("1.9.2")
+}
 
 base {
     archivesName.set("sequoia-fabric")
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${MINECRAFT_VERSION}")
+    minecraft("com.mojang:minecraft:${minecraftVersion}")
     mappings(loom.layered {
         officialMojangMappings()
-        if (PARCHMENT_VERSION != null) {
-            parchment("org.parchmentmc.data:parchment-${MINECRAFT_VERSION}:${PARCHMENT_VERSION}@zip")
+        if (parchmentVersion != null) {
+            parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentVersion}@zip")
         }
     })
-    modImplementation("net.fabricmc:fabric-loader:$FABRIC_LOADER_VERSION")
+    modImplementation("net.fabricmc:fabric-loader:$fabricLoaderVersion")
 
     fun addEmbeddedFabricModule(name: String) {
-        val module = fabricApi.module(name, FABRIC_API_VERSION)
+        val module = fabricApi.module(name, fabricApiVersion)
         modImplementation(module)
         include(module)
     }
 
     fun addCompileOnlyFabricModule(name: String) {
-        val module = fabricApi.module(name, FABRIC_API_VERSION)
+        val module = fabricApi.module(name, fabricApiVersion)
         modCompileOnly(module)
     }
 
     fun addFabricModule(name: String) {
-        val module = fabricApi.module(name, FABRIC_API_VERSION)
+        val module = fabricApi.module(name, fabricApiVersion)
         modImplementation(module)
     }
 
@@ -74,21 +74,21 @@ dependencies {
 
     implementation(project.project(":common").sourceSets.getByName("main").output)
 
-    include("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
-    implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+    include("org.java-websocket:Java-WebSocket:$webSocketVersion")
+    implementation("org.java-websocket:Java-WebSocket:$webSocketVersion")
 
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${DEV_AUTH_VERSION}")
+    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:${devAuthVersion}")
 
-    implementation("net.neoforged:bus:${NEOFORGE_EVENTBUS_VERSION}") {
+    implementation("net.neoforged:bus:${neoForgeEventBusVersion}") {
         exclude("org.ow2.asm")
         exclude("org.apache.logging.log4j")
         exclude("cpw.mods", "modlauncher")
     }
 
-    implementation(WYNNTILS())
+    implementation(wynntils())
 
-    modImplementation("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
-    annotationProcessor("io.wispforest:owo-lib:${OWO_LIB_VERSION}")
+    modImplementation("io.wispforest:owo-lib:${owoLibVersion}")
+    annotationProcessor("io.wispforest:owo-lib:${owoLibVersion}")
 }
 
 tasks.named("compileTestJava").configure {
@@ -137,7 +137,7 @@ tasks {
         inputs.property("version", project.version)
 
         filesMatching("fabric.mod.json") {
-            expand(mapOf("mod_id" to MOD_ID, "mod_version" to MOD_VERSION))
+            expand(mapOf("mod_id" to modId, "mod_version" to modVersion))
         }
     }
 
@@ -151,7 +151,7 @@ tasks {
 }
 
 publishMods {
-    val mcVersionSequoiaVersion = "mc$MINECRAFT_VERSION-$MOD_VERSION"
+    val mcVersionSequoiaVersion = "mc$minecraftVersion-$modVersion"
     version = "$mcVersionSequoiaVersion-fabric"
     file = tasks.remapJar.get().archiveFile
     changelog = rootProject.file("CHANGELOG.md").readText().trim()
@@ -162,8 +162,8 @@ publishMods {
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_API_KEY")
         projectId = "fn9R8LGk"
-        minecraftVersions.add(MINECRAFT_VERSION)
-        displayName = "Sequoia $MOD_VERSION for Fabric"
+        minecraftVersions.add(minecraftVersion)
+        displayName = "Sequoia $modVersion for Fabric"
     }
 }
 

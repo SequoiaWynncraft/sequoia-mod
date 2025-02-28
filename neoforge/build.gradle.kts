@@ -1,23 +1,17 @@
 import me.modmuss50.mpp.ReleaseType
 import java.net.URI
 
-plugins {
-    id("java")
-    id("idea")
-    id("net.neoforged.moddev") version "2.0.42-beta"
-}
+val modVersion: String by rootProject.extra
 
-val MINECRAFT_VERSION: String by rootProject.extra
-val PARCHMENT_VERSION: String? by rootProject.extra
-val NEOFORGE_VERSION: String by rootProject.extra
+val minecraftVersion: String by rootProject.extra
+val parchmentVersion: String? by rootProject.extra
+val neoForgeVersion: String by rootProject.extra
 
-val MOD_VERSION: String by rootProject.extra
-
-val WYNNTILS_VERSION: String by rootProject.extra
-val WYNNTILS = {
+val wynntilsVersion: String by rootProject.extra
+val wynntils = {
     val url =
-        "https://github.com/Wynntils/Wynntils/releases/download/v$WYNNTILS_VERSION/wynntils-$WYNNTILS_VERSION-neoforge+MC-$MINECRAFT_VERSION.jar"
-    val file = File(projectDir, "libs/wynntils-$WYNNTILS_VERSION.jar")
+        "https://github.com/Wynntils/Wynntils/releases/download/v$wynntilsVersion/wynntils-$wynntilsVersion-neoforge+MC-$minecraftVersion.jar"
+    val file = File(projectDir, "libs/wynntils-$wynntilsVersion.jar")
 
     file.parentFile.mkdirs()
 
@@ -31,8 +25,14 @@ val WYNNTILS = {
 
     files(file.absolutePath)
 }
-val DEV_AUTH_VERSION: String by rootProject.extra
-val WEBSOCKET_VERSION: String by rootProject.extra
+val devAuthVersion: String by rootProject.extra
+val webSocketVersion: String by rootProject.extra
+
+plugins {
+    id("java")
+    id("idea")
+    id("net.neoforged.moddev") version "2.0.42-beta"
+}
 
 base {
     archivesName = "sequoia-neoforge"
@@ -72,26 +72,26 @@ tasks.jar {
     from(rootDir.resolve("LICENSE.md"))
 
     filesMatching("neoforge.mods.toml") {
-        expand(mapOf("version" to MOD_VERSION))
+        expand(mapOf("version" to modVersion))
     }
 }
 
 tasks.jar.get().destinationDirectory = rootDir.resolve("build").resolve("libs")
 
 neoForge {
-    version = NEOFORGE_VERSION
+    version = neoForgeVersion
 
-    if (PARCHMENT_VERSION != null) {
+    if (parchmentVersion != null) {
         parchment {
-            minecraftVersion = MINECRAFT_VERSION
-            mappingsVersion = PARCHMENT_VERSION
+            minecraftVersion = minecraftVersion
+            mappingsVersion = parchmentVersion
         }
     }
 
     runs {
         configureEach {
             dependencies {
-                runtimeOnly("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+                runtimeOnly("org.java-websocket:Java-WebSocket:$webSocketVersion")
             }
         }
 
@@ -119,17 +119,17 @@ tasks.named("compileTestJava").configure {
 dependencies {
     compileOnly(project.project(":common").sourceSets.getByName("main").output)
 
-    implementation("org.java-websocket:Java-WebSocket:$WEBSOCKET_VERSION")
+    implementation("org.java-websocket:Java-WebSocket:$webSocketVersion")
 
-    implementation(WYNNTILS())
+    implementation(wynntils())
 
-    runtimeOnly("me.djtheredstoner:DevAuth-neoforge:${DEV_AUTH_VERSION}")
+    runtimeOnly("me.djtheredstoner:DevAuth-neoforge:${devAuthVersion}")
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 publishMods {
-    val mcVersionSequoiaVersion = "mc$MINECRAFT_VERSION-$MOD_VERSION"
+    val mcVersionSequoiaVersion = "mc$minecraftVersion-$modVersion"
     version = "$mcVersionSequoiaVersion-neoforge"
     file = tasks.jar.get().archiveFile
     changelog = rootProject.file("CHANGELOG.md").readText().trim()
@@ -139,8 +139,8 @@ publishMods {
     modrinth {
         accessToken = providers.environmentVariable("MODRINTH_API_KEY")
         projectId = "fn9R8LGk"
-        minecraftVersions.add(MINECRAFT_VERSION)
-        displayName = "Sequoia $MOD_VERSION for Neoforge"
+        minecraftVersions.add(minecraftVersion)
+        displayName = "Sequoia $modVersion for Neoforge"
     }
 }
 
