@@ -8,7 +8,7 @@ import static dev.lotnest.sequoia.features.WebSocketFeature.GSON;
 
 import com.google.gson.annotations.SerializedName;
 import dev.lotnest.sequoia.core.websocket.WSMessage;
-import dev.lotnest.sequoia.core.websocket.WSMessageType;
+import dev.lotnest.sequoia.core.websocket.type.WSMessageType;
 import java.time.OffsetDateTime;
 
 public class SSessionResultWSMessage extends WSMessage {

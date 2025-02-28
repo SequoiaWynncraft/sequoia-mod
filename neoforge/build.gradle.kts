@@ -42,8 +42,7 @@ repositories {
     maven("https://maven.pkg.github.com/ims212/Forge_Fabric_API") {
         credentials {
             username = "IMS212"
-            // Read-only token
-            password = "ghp_" + "DEuGv0Z56vnSOYKLCXdsS9svK4nb9K39C1Hn"
+            password = "ghp_" + "DEuGv0Z56vnSOYKLCXdsS9svK4nb9K39C1Hn" // Read-only token
         }
     }
     maven("https://maven.su5ed.dev/releases")
@@ -140,7 +139,7 @@ publishMods {
         accessToken = providers.environmentVariable("MODRINTH_API_KEY")
         projectId = "fn9R8LGk"
         minecraftVersions.add(minecraftVersion)
-        displayName = "Sequoia $modVersion for Neoforge"
+        displayName = "Sequoia $modVersion for NeoForge"
     }
 }
 

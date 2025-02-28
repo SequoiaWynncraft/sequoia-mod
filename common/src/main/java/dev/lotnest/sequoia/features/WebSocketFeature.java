@@ -19,12 +19,13 @@ import dev.lotnest.sequoia.core.http.HttpUtils;
 import dev.lotnest.sequoia.core.json.OffsetDateTimeAdapter;
 import dev.lotnest.sequoia.core.upfixers.AccessTokenManagerUpfixer;
 import dev.lotnest.sequoia.core.websocket.WSMessage;
-import dev.lotnest.sequoia.core.websocket.WSMessageType;
+import dev.lotnest.sequoia.core.websocket.handlers.SBinaryDataHandler;
 import dev.lotnest.sequoia.core.websocket.handlers.SChannelMessageHandler;
 import dev.lotnest.sequoia.core.websocket.handlers.SCommandPipeHandler;
 import dev.lotnest.sequoia.core.websocket.handlers.SMessageHandler;
 import dev.lotnest.sequoia.core.websocket.handlers.SSessionResultHandler;
 import dev.lotnest.sequoia.core.websocket.messages.session.GIdentifyWSMessage;
+import dev.lotnest.sequoia.core.websocket.type.WSMessageType;
 import dev.lotnest.sequoia.managers.AccessTokenManager;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.net.URI;
@@ -104,6 +105,7 @@ public class WebSocketFeature extends Feature {
                         case S_SESSION_RESULT -> new SSessionResultHandler(s).handle();
                         case S_MESSAGE -> new SMessageHandler(s).handle();
                         case S_COMMAND_PIPE -> new SCommandPipeHandler(s).handle();
+                        case S_BINARY_DATA -> new SBinaryDataHandler(s).handle();
                         default -> SequoiaMod.warn("Unhandled WebSocket message type: " + wsMessageType);
                     }
                 } catch (Exception exception) {

@@ -2,7 +2,7 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.core.websocket;
+package dev.lotnest.sequoia.core.websocket.type;
 
 public enum WSMessageType {
     INVALID,
@@ -17,7 +17,7 @@ public enum WSMessageType {
     NOT_IMPLEMENTED_3,
     G_AUTH,
     G_IC3H,
-    G_RESERVED_7,
+    G_RESOURCE_REQUEST,
     G_RESERVED_8,
     G_RESERVED_9,
     G_RESERVED_10,
@@ -31,7 +31,7 @@ public enum WSMessageType {
     S_MESSAGE,
     S_SESSION_RESULT,
     S_IC3_DATA,
-    S_RESERVED_6,
+    S_BINARY_DATA,
     S_RESERVED_7,
     S_RESERVED_8,
     S_RESERVED_9,

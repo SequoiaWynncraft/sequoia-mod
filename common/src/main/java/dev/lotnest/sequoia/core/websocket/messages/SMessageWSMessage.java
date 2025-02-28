@@ -6,7 +6,7 @@ package dev.lotnest.sequoia.core.websocket.messages;
 
 import com.google.gson.JsonElement;
 import dev.lotnest.sequoia.core.websocket.WSMessage;
-import dev.lotnest.sequoia.core.websocket.WSMessageType;
+import dev.lotnest.sequoia.core.websocket.type.WSMessageType;
 
 public class SMessageWSMessage extends WSMessage {
     public SMessageWSMessage(JsonElement data) {

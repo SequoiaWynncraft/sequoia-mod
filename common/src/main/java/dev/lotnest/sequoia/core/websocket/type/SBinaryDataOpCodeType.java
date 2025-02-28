@@ -2,16 +2,19 @@
  * Copyright © sequoia-mod 2025.
  * This file is released under LGPLv3. See LICENSE for full license details.
  */
-package dev.lotnest.sequoia.core.websocket;
+package dev.lotnest.sequoia.core.websocket.type;
 
-public enum WSStateOpCodeType {
+public enum SBinaryDataOpCodeType {
+    // Server to client
     INVALID,
-    LOCATION_SERVICE,
-    LOOT_POOL,
-    GUILD_MAP,
-    GUILD_WAR_RESULTS;
+    FILE_TRANSFER_START,
+    FILE_TRANSFER_DATA,
+    FILE_TRANSFER_END,
+    // Client to server
+    FILE_TRANSFER_READY,
+    FILE_TRANSFER_ACK;
 
-    public static WSStateOpCodeType fromValue(int value) {
+    public static SBinaryDataOpCodeType fromValue(int value) {
         if (value < 0 || value >= values().length) {
             return INVALID;
         }

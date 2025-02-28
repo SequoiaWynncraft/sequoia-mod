@@ -7,7 +7,7 @@ package dev.lotnest.sequoia.core.websocket.messages;
 import static dev.lotnest.sequoia.features.WebSocketFeature.GSON;
 
 import dev.lotnest.sequoia.core.websocket.WSMessage;
-import dev.lotnest.sequoia.core.websocket.WSMessageType;
+import dev.lotnest.sequoia.core.websocket.type.WSMessageType;
 
 public class SCommandPipeWSMessage extends WSMessage {
     public SCommandPipeWSMessage(String data) {
