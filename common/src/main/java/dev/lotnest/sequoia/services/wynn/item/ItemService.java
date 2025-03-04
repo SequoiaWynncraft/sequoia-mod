@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Service;
+import dev.lotnest.sequoia.core.http.HttpClients;
 import dev.lotnest.sequoia.core.json.ItemResponseIconAdapter;
 import dev.lotnest.sequoia.core.json.ItemResponseIdentificationAdapter;
 import dev.lotnest.sequoia.core.json.ItemsResponseAdapter;
@@ -30,7 +31,7 @@ public final class ItemService extends Service {
 
     public CompletableFuture<ItemsResponse> searchItem(String itemName) {
         String url = String.format(SEARCH_URL, URLUtils.sanitize(itemName));
-        return SequoiaMod.getHttpClient()
+        return HttpClients.WYNNCRAFT_API
                 .getJsonAsync(url, ItemsResponse.class, GSON)
                 .thenApply(result -> {
                     if (result != null) {

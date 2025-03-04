@@ -123,6 +123,11 @@ public class ConfigModel {
 
     public static class WebSocketFeature {
         public boolean enabled = true;
+        public boolean autoReconnect = true;
+        public boolean relayGuildMapData = true;
+        public boolean relayGuildWarResultsData = true;
+        public boolean relayLocationServiceData = true;
+        public boolean relayLootPoolData = true;
     }
 
     public static class GuildRaidTrackerFeature {

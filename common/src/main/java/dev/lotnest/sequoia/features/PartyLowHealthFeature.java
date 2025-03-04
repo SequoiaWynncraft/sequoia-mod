@@ -46,7 +46,7 @@ public class PartyLowHealthFeature extends Feature {
             return;
         }
 
-        if (!Models.WorldState.onWorld() && !Models.WorldState.onHousing()) {
+        if (!Models.Character.hasCharacter()) {
             return;
         }
 

@@ -18,9 +18,8 @@ import dev.lotnest.sequoia.core.components.Models;
 import dev.lotnest.sequoia.core.components.Service;
 import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.events.SequoiaCrashEvent;
-import dev.lotnest.sequoia.core.http.HttpClient;
 import dev.lotnest.sequoia.core.persisted.SequoiaConfig;
-import dev.lotnest.sequoia.features.WebSocketFeature;
+import dev.lotnest.sequoia.features.ws.WebSocketFeature;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -52,7 +51,6 @@ public final class SequoiaMod {
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-    private static HttpClient httpClient = null;
 
     public static void error(String message) {
         LOGGER.error(message);
@@ -108,7 +106,6 @@ public final class SequoiaMod {
         SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
         versionInt = Integer.parseInt(modVersion.replaceAll("\\D", ""));
-        httpClient = HttpClient.newHttpClient();
 
         LOGGER.info(
                 "Sequoia: Starting version {} (using {} on Minecraft {})",
@@ -197,10 +194,6 @@ public final class SequoiaMod {
 
     public static WebSocketFeature getWebSocketFeature() {
         return Managers.Feature.getFeatureInstance(WebSocketFeature.class);
-    }
-
-    public static HttpClient getHttpClient() {
-        return httpClient;
     }
 
     public enum ModLoader {

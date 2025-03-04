@@ -8,8 +8,8 @@ import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.core.events.GuildRaidCompletedEvent;
-import dev.lotnest.sequoia.core.websocket.WSMessage;
-import dev.lotnest.sequoia.core.websocket.messages.GuildRaidWSMessage;
+import dev.lotnest.sequoia.core.ws.message.WSMessage;
+import dev.lotnest.sequoia.core.ws.message.ws.GuildRaidWSMessage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.EventPriority;
@@ -47,7 +47,7 @@ public class GuildRaidTrackerFeature extends Feature {
 
         try {
             WSMessage guildRaidWSMessage = new GuildRaidWSMessage(guildRaid);
-            String payload = SequoiaMod.getWebSocketFeature().sendAsJson(guildRaidWSMessage);
+            String payload = SequoiaMod.getWebSocketFeature().sendMessage(guildRaidWSMessage);
             if (StringUtils.isNotBlank(payload)) {
                 SequoiaMod.debug("Sending Guild Raid completion: " + payload);
             }

@@ -28,7 +28,7 @@ public class TerritoryModel extends Model {
     private static final Pattern GUILD_MANAGE_TITLE_PATTERN = Pattern.compile(".+: Manage");
     private static final int GUILD_TERRITORY_MENU_ITEM_SLOT = 14;
 
-    private boolean isTerritoryMenuOpened = false;
+    private boolean isTerritoryMenuOpening = false;
 
     public TerritoryModel() {
         super(List.of());
@@ -36,11 +36,11 @@ public class TerritoryModel extends Model {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onMenuOpenedPre(MenuEvent.MenuOpenedEvent.Pre event) {
-        if (!isTerritoryMenuOpened) {
+        if (!isTerritoryMenuOpening) {
             return;
         }
 
-        isTerritoryMenuOpened = false;
+        isTerritoryMenuOpening = false;
 
         StyledText title = StyledText.fromComponent(event.getTitle());
         if (title.matches(GUILD_MANAGE_TITLE_PATTERN)) {
@@ -68,7 +68,7 @@ public class TerritoryModel extends Model {
     }
 
     public void openTerritoryMenu() {
-        isTerritoryMenuOpened = true;
+        isTerritoryMenuOpening = true;
         Handlers.Command.sendCommandImmediately("guild manage");
     }
 }

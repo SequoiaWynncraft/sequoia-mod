@@ -12,7 +12,7 @@ import com.wynntils.handlers.chat.type.RecipientType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
-import dev.lotnest.sequoia.core.websocket.messages.discordchatbridge.GChatMessageWSMessage;
+import dev.lotnest.sequoia.core.ws.message.ws.discordchatbridge.GChatMessageWSMessage;
 import dev.lotnest.sequoia.utils.TimeUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,7 +101,7 @@ public class DiscordChatBridgeFeature extends Feature {
 
                 GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
                         username, nickname, message, TimeUtils.wsTimestamp(), McUtils.playerName()));
-                SequoiaMod.getWebSocketFeature().sendAsJson(gChatMessageWSMessage);
+                SequoiaMod.getWebSocketFeature().sendMessage(gChatMessageWSMessage);
                 SequoiaMod.debug("Sending guild chat message to Discord: " + gChatMessageWSMessage);
             }
         } catch (Exception exception) {

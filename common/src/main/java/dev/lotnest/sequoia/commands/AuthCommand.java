@@ -10,7 +10,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.command.Command;
-import dev.lotnest.sequoia.core.websocket.messages.session.GAuthWSMessage;
+import dev.lotnest.sequoia.core.ws.message.ws.session.GAuthWSMessage;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.regex.Pattern;
 import net.minecraft.commands.CommandSourceStack;
@@ -71,7 +71,7 @@ public class AuthCommand extends Command {
             }
 
             GAuthWSMessage gAuthWSMessage = new GAuthWSMessage(code);
-            SequoiaMod.getWebSocketFeature().sendAsJson(gAuthWSMessage);
+            SequoiaMod.getWebSocketFeature().sendMessage(gAuthWSMessage);
             sentGAuthWSMessage = true;
             context.getSource()
                     .sendSuccess(

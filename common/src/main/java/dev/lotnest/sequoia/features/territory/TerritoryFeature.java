@@ -33,7 +33,7 @@ public class TerritoryFeature extends Feature {
         }
 
         GuildRank guildRank = com.wynntils.core.components.Models.Guild.getGuildRank();
-        if (guildRank != GuildRank.STRATEGIST && guildRank != GuildRank.CHIEF && guildRank != GuildRank.OWNER) {
+        if (guildRank.ordinal() >= GuildRank.STRATEGIST.ordinal()) {
             return;
         }
 

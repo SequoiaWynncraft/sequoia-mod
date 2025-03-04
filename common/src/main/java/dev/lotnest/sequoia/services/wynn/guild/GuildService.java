@@ -6,6 +6,7 @@ package dev.lotnest.sequoia.services.wynn.guild;
 
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Service;
+import dev.lotnest.sequoia.core.http.HttpClients;
 import dev.lotnest.sequoia.utils.URLUtils;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -18,17 +19,17 @@ public final class GuildService extends Service {
     }
 
     public CompletableFuture<GuildResponse> getGuild(String guildName) {
-        String normalUrl = String.format(BASE_URL, URLUtils.sanitize(guildName));
+        String baseUrl = String.format(BASE_URL, URLUtils.sanitize(guildName));
         String prefixUrl = String.format(BASE_URL, "prefix/" + URLUtils.sanitize(guildName));
 
         CompletableFuture<GuildResponse> normalResponse =
-                SequoiaMod.getHttpClient().getJsonAsync(normalUrl, GuildResponse.class);
+                HttpClients.WYNNCRAFT_API.getJsonAsync(baseUrl, GuildResponse.class);
         return normalResponse.thenCompose(response -> {
             if (response != null) {
                 SequoiaMod.debug("Fetched guild data: " + response);
                 return CompletableFuture.completedFuture(response);
             } else {
-                return SequoiaMod.getHttpClient()
+                return HttpClients.WYNNCRAFT_API
                         .getJsonAsync(prefixUrl, GuildResponse.class)
                         .thenApply(prefixResponse -> {
                             if (prefixResponse != null) {

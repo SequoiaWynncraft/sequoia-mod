@@ -5,7 +5,7 @@
 package dev.lotnest.sequoia.mc.mixin;
 
 import dev.lotnest.sequoia.SequoiaMod;
-import dev.lotnest.sequoia.features.WebSocketFeature;
+import dev.lotnest.sequoia.features.ws.WebSocketFeature;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import net.minecraft.client.multiplayer.ClientCommonPacketListenerImpl;
 import net.minecraft.client.multiplayer.ServerData;

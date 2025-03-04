@@ -7,6 +7,7 @@ package dev.lotnest.sequoia.services.wynn.player;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Service;
 import dev.lotnest.sequoia.core.components.Services;
+import dev.lotnest.sequoia.core.http.HttpClients;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -21,29 +22,25 @@ public final class PlayerService extends Service {
 
     public CompletableFuture<PlayerResponse> getPlayer(String username) {
         String url = String.format(BASE_URL, username);
-        return SequoiaMod.getHttpClient()
-                .getJsonAsync(url, PlayerResponse.class)
-                .thenCompose(playerResponse -> {
-                    if (playerResponse == null) {
-                        UUID uuid = Services.Mojang.getUUID(username).join();
-                        return getPlayer(uuid.toString());
-                    }
-                    SequoiaMod.debug("Fetched player data for username: " + username);
-                    return CompletableFuture.completedFuture(playerResponse);
-                });
+        return HttpClients.WYNNCRAFT_API.getJsonAsync(url, PlayerResponse.class).thenCompose(playerResponse -> {
+            if (playerResponse == null) {
+                UUID uuid = Services.Mojang.getUUID(username).join();
+                return getPlayer(uuid.toString());
+            }
+            SequoiaMod.debug("Fetched player data for username: " + username);
+            return CompletableFuture.completedFuture(playerResponse);
+        });
     }
 
     public CompletableFuture<PlayerResponse> getPlayerFullResult(String username) {
         String url = String.format(FULL_RESULT_URL, username);
-        return SequoiaMod.getHttpClient()
-                .getJsonAsync(url, PlayerResponse.class)
-                .thenCompose(playerResponse -> {
-                    if (playerResponse == null) {
-                        UUID uuid = Services.Mojang.getUUID(username).join();
-                        return getPlayerFullResult(uuid.toString());
-                    }
-                    SequoiaMod.debug("Fetched full player data for username: " + username);
-                    return CompletableFuture.completedFuture(playerResponse);
-                });
+        return HttpClients.WYNNCRAFT_API.getJsonAsync(url, PlayerResponse.class).thenCompose(playerResponse -> {
+            if (playerResponse == null) {
+                UUID uuid = Services.Mojang.getUUID(username).join();
+                return getPlayerFullResult(uuid.toString());
+            }
+            SequoiaMod.debug("Fetched full player data for username: " + username);
+            return CompletableFuture.completedFuture(playerResponse);
+        });
     }
 }

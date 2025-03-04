@@ -73,8 +73,7 @@ public class RaidsFeature extends Feature {
             return;
         }
 
-        if (!com.wynntils.core.components.Models.WorldState.onWorld()
-                && !com.wynntils.core.components.Models.WorldState.onHousing()) {
+        if (!com.wynntils.core.components.Models.Character.hasCharacter()) {
             return;
         }
 
