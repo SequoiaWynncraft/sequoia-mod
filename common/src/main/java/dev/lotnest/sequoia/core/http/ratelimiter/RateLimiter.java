@@ -15,26 +15,31 @@ public class RateLimiter {
     private long lastRefillTime;
 
     public RateLimiter(int maxConcurrentRequests, double requestsPerMinute) {
-        this.concurrencySemaphore = new Semaphore(maxConcurrentRequests);
-        this.capacity = requestsPerMinute;
-        this.tokens = requestsPerMinute;
-        this.refillRate = requestsPerMinute / 60000.0;
-        this.lastRefillTime = System.currentTimeMillis();
+        concurrencySemaphore = new Semaphore(maxConcurrentRequests);
+        capacity = requestsPerMinute;
+        tokens = requestsPerMinute;
+        refillRate = requestsPerMinute / 60000.0;
+        lastRefillTime = System.currentTimeMillis();
     }
 
-    private void waitForToken() throws InterruptedException {
-        while (true) {
-            long sleepTime;
-            synchronized (this) {
+    private void waitForToken() {
+        synchronized (this) {
+            while (tokens < 1) {
                 refillTokens();
                 if (tokens >= 1) {
                     tokens -= 1;
                     return;
                 }
-                double missingTokens = 1 - tokens;
-                sleepTime = (long) Math.ceil(missingTokens / refillRate);
+                long sleepTime = (long) Math.ceil((1 - tokens) / refillRate);
+                try {
+                    wait(sleepTime);
+                } catch (InterruptedException exception) {
+                    Thread.currentThread().interrupt();
+                    SequoiaMod.warn("Interrupted while waiting for rate limiter", exception);
+                    return;
+                }
             }
-            Thread.sleep(sleepTime);
+            tokens -= 1;
         }
     }
 
@@ -44,6 +49,7 @@ public class RateLimiter {
         if (elapsed > 0) {
             tokens = Math.min(capacity, tokens + elapsed * refillRate);
             lastRefillTime = now;
+            notifyAll();
         }
     }
 
