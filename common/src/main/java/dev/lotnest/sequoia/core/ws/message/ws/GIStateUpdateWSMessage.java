@@ -6,7 +6,7 @@ package dev.lotnest.sequoia.core.ws.message.ws;
 
 import static dev.lotnest.sequoia.core.ws.WSConstants.GSON;
 
-import blue.endless.jankson.annotation.SerializedName;
+import com.google.gson.annotations.SerializedName;
 import dev.lotnest.sequoia.core.ws.message.IStateOpCode;
 import dev.lotnest.sequoia.core.ws.message.WSMessage;
 import dev.lotnest.sequoia.core.ws.type.WSMessageType;

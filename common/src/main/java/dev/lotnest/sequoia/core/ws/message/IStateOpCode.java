@@ -4,8 +4,8 @@
  */
 package dev.lotnest.sequoia.core.ws.message;
 
-import blue.endless.jankson.annotation.SerializedName;
 import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
