@@ -11,8 +11,10 @@ import com.wynntils.services.map.pois.TerritoryPoi;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.core.ws.message.istateopcodes.GuildMapDataIStateOpCode;
+import dev.lotnest.sequoia.core.ws.message.ws.GIStateUpdateWSMessage;
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -23,29 +25,35 @@ public class GuildMapDataRelayerFeature extends Feature {
                 .scheduleAtFixedRate(this::relayGuildMapData, 0, 10, TimeUnit.MINUTES);
     }
 
-    private void relayGuildMapData() {
-        if (!isEnabled()) {
-            return;
-        }
+    public void relayGuildMapData() {
+        try {
+            SequoiaMod.debug("Checking if guild map data relay is possible");
 
-        if (!Models.Character.hasCharacter()) {
-            return;
-        }
+            if (!isEnabled()) return;
+            if (!Models.Character.hasCharacter()) return;
 
-        doRelayGuildMapData();
+            doRelayGuildMapData();
+        } catch (Exception exception) {
+            SequoiaMod.error("Failed to relay guild map data", exception);
+        }
     }
 
     private void doRelayGuildMapData() {
+        SequoiaMod.debug("Gathering guild map data for relay");
+
         Map<String, GuildMapDataIStateOpCode.Data.TerritoryData> territoryDataMap =
                 Models.Territory.getTerritoryPoisFromAdvancement().stream()
+                        .filter(Objects::nonNull)
                         .map(this::mapToFriendlyTerritoryNameTerritoryDataPair)
                         .collect(Collectors.toMap(Pair::getKey, Pair::getValue));
 
         GuildMapDataIStateOpCode.Data guildMapDataIStateOpCodeData =
                 new GuildMapDataIStateOpCode.Data(territoryDataMap, OffsetDateTime.now());
         GuildMapDataIStateOpCode guildMapDataIStateOpCode = new GuildMapDataIStateOpCode(guildMapDataIStateOpCodeData);
+        GIStateUpdateWSMessage giStateUpdateWSMessage =
+                new GIStateUpdateWSMessage(new GIStateUpdateWSMessage.Data(guildMapDataIStateOpCode));
 
-        SequoiaMod.getWebSocketFeature().sendMessage(guildMapDataIStateOpCode);
+        SequoiaMod.getWebSocketFeature().sendMessage(giStateUpdateWSMessage);
     }
 
     private Pair<String, GuildMapDataIStateOpCode.Data.TerritoryData> mapToFriendlyTerritoryNameTerritoryDataPair(
@@ -58,33 +66,29 @@ public class GuildMapDataRelayerFeature extends Feature {
                         (byte) territoryPoi.getTerritoryInfo().getTreasury().getLevel(),
                         new GuildMapDataIStateOpCode.Data.TerritoryData.Stored(
                                 territoryPoi.getTerritoryInfo().getGuildName(),
-                                territoryPoi
-                                        .getTerritoryInfo()
-                                        .getStorage(GuildResource.EMERALDS)
-                                        .current(),
-                                territoryPoi
-                                        .getTerritoryInfo()
-                                        .getStorage(GuildResource.ORE)
-                                        .current(),
-                                territoryPoi
-                                        .getTerritoryInfo()
-                                        .getStorage(GuildResource.WOOD)
-                                        .current(),
-                                territoryPoi
-                                        .getTerritoryInfo()
-                                        .getStorage(GuildResource.CROPS)
-                                        .current(),
-                                territoryPoi
-                                        .getTerritoryInfo()
-                                        .getStorage(GuildResource.FISH)
-                                        .current()),
+                                getStorageSafe(territoryPoi, GuildResource.EMERALDS),
+                                getStorageSafe(territoryPoi, GuildResource.ORE),
+                                getStorageSafe(territoryPoi, GuildResource.WOOD),
+                                getStorageSafe(territoryPoi, GuildResource.CROPS),
+                                getStorageSafe(territoryPoi, GuildResource.FISH)),
                         new GuildMapDataIStateOpCode.Data.TerritoryData.Generation(
                                 territoryPoi.getTerritoryInfo().getGuildName(),
-                                territoryPoi.getTerritoryInfo().getGeneration(GuildResource.EMERALDS),
-                                territoryPoi.getTerritoryInfo().getGeneration(GuildResource.ORE),
-                                territoryPoi.getTerritoryInfo().getGeneration(GuildResource.WOOD),
-                                territoryPoi.getTerritoryInfo().getGeneration(GuildResource.CROPS),
-                                territoryPoi.getTerritoryInfo().getGeneration(GuildResource.FISH))));
+                                getGenerationSafe(territoryPoi, GuildResource.EMERALDS),
+                                getGenerationSafe(territoryPoi, GuildResource.ORE),
+                                getGenerationSafe(territoryPoi, GuildResource.WOOD),
+                                getGenerationSafe(territoryPoi, GuildResource.CROPS),
+                                getGenerationSafe(territoryPoi, GuildResource.FISH))));
+    }
+
+    private int getStorageSafe(TerritoryPoi territoryPoi, GuildResource resource) {
+        return territoryPoi.getTerritoryInfo().getStorage(resource) != null
+                ? territoryPoi.getTerritoryInfo().getStorage(resource).current()
+                : 0;
+    }
+
+    private int getGenerationSafe(TerritoryPoi territoryPoi, GuildResource resource) {
+        Integer generation = territoryPoi.getTerritoryInfo().getGeneration(resource);
+        return generation != null ? generation : 0;
     }
 
     @Override

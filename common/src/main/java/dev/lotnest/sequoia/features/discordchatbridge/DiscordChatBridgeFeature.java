@@ -102,7 +102,6 @@ public class DiscordChatBridgeFeature extends Feature {
                 GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
                         username, nickname, message, TimeUtils.wsTimestamp(), McUtils.playerName()));
                 SequoiaMod.getWebSocketFeature().sendMessage(gChatMessageWSMessage);
-                SequoiaMod.debug("Sending guild chat message to Discord: " + gChatMessageWSMessage);
             }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to send guild chat message to Discord", exception);
