@@ -21,23 +21,34 @@ public class MojangApiHttpClient extends HttpClient {
     @Override
     public HttpResponse<String> get(String url) {
         RateLimiters.MOJANG_API.acquire();
-        return super.get(url);
+        try {
+            return super.get(url);
+        } finally {
+            RateLimiters.MOJANG_API.release();
+        }
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> getAsync(String url) {
-        return CompletableFuture.runAsync(RateLimiters.MOJANG_API::acquire).thenCompose(v -> super.getAsync(url));
+        return CompletableFuture.runAsync(RateLimiters.MOJANG_API::acquire)
+                .thenCompose(v -> super.getAsync(url))
+                .whenComplete((response, throwable) -> RateLimiters.MOJANG_API.release());
     }
 
     @Override
     public HttpResponse<String> post(String url, String body) {
         RateLimiters.MOJANG_API.acquire();
-        return super.post(url, body);
+        try {
+            return super.post(url, body);
+        } finally {
+            RateLimiters.MOJANG_API.release();
+        }
     }
 
     @Override
     public CompletableFuture<HttpResponse<String>> postAsync(String url, String body) {
         return CompletableFuture.runAsync(RateLimiters.MOJANG_API::acquire)
-                .thenCompose(v -> super.postAsync(url, body));
+                .thenCompose(v -> super.postAsync(url, body))
+                .whenComplete((response, throwable) -> RateLimiters.MOJANG_API.release());
     }
 }
