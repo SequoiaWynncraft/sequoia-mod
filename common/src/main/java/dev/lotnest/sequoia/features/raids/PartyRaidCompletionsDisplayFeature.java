@@ -8,6 +8,7 @@ import com.wynntils.core.components.Managers;
 import com.wynntils.core.components.Models;
 import com.wynntils.core.text.StyledText;
 import com.wynntils.mc.event.TitleSetTextEvent;
+import com.wynntils.models.raid.event.RaidEndedEvent;
 import com.wynntils.models.raid.type.RaidKind;
 import com.wynntils.models.raid.type.RaidRoomType;
 import com.wynntils.utils.mc.McUtils;
@@ -23,6 +24,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import org.apache.commons.lang3.StringUtils;
 
 public class PartyRaidCompletionsDisplayFeature extends Feature {
+    private boolean shownRaidCompletionsForCurrentParty = false;
+
     public enum PartyRaidCompletionsDisplayType {
         MANUAL,
         AUTOMATIC,
@@ -31,6 +34,8 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onRaidIntro(TitleSetTextEvent event) {
+        if (shownRaidCompletionsForCurrentParty) return;
+
         Managers.TickScheduler.scheduleNextTick(() -> {
             Component component = event.getComponent();
             StyledText styledText = StyledText.fromComponent(component);
@@ -46,9 +51,20 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
                                     + SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType());
                         }
                     });
+                    shownRaidCompletionsForCurrentParty = true;
                 });
             }
         });
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
+        shownRaidCompletionsForCurrentParty = false;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
+        shownRaidCompletionsForCurrentParty = false;
     }
 
     private void handleManualDisplay(String playerName) {

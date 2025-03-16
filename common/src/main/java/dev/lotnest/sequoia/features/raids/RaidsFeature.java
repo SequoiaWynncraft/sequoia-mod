@@ -10,6 +10,7 @@ import com.wynntils.mc.event.TickEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.models.raid.event.RaidEndedEvent;
 import com.wynntils.models.raid.type.RaidRoomType;
+import com.wynntils.models.spells.event.SpellEvent;
 import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
@@ -34,6 +35,8 @@ public class RaidsFeature extends Feature {
     private static final float CIRCLE_HEIGHT = 0.2F;
 
     private boolean isGluttonWarningDisplayed = false;
+
+    private int spellsCasted = 0;
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGluttonGambitCheck(TickEvent event) {
@@ -137,6 +140,8 @@ public class RaidsFeature extends Feature {
             SequoiaMod.debug("Clearing glutton warning as raid has completed");
             isGluttonWarningDisplayed = false;
         }
+
+        spellsCasted = 0;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -145,6 +150,28 @@ public class RaidsFeature extends Feature {
             SequoiaMod.debug("Clearing glutton warning as raid has failed");
             isGluttonWarningDisplayed = false;
         }
+
+        spellsCasted = 0;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onSpellCast(SpellEvent.Cast event) {
+        if (!SequoiaMod.CONFIG.raidsFeature.maddeningMageGambitMiscastTracker()) return;
+        if (!Models.Gambit.hasChosenGambit(GambitModel.GambitType.MADDENING)) return;
+        if (com.wynntils.core.components.Models.Raid.getCurrentRaid() == null) return;
+
+        // We want to track the spells cast by the player, regardless of the feature state, as the player may
+        // enable the feature at later time.
+        spellsCasted++;
+        if (spellsCasted == 9) {
+            spellsCasted = 0;
+        }
+
+        if (!isEnabled()) return;
+
+        PlayerUtils.sendTitle(
+                Component.translatable("sequoia.feature.raidsFeature.maddeningMageGambitMiscastWarningTitle"),
+                Component.translatable("sequoia.feature.raidsFeature.maddeningMageGambitMiscastWarningSubtitle"));
     }
 
     @Override

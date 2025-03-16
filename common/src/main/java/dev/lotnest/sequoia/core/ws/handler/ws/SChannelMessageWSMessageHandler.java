@@ -8,10 +8,10 @@ import static dev.lotnest.sequoia.core.ws.WSConstants.GSON;
 
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.core.text.Fonts;
 import dev.lotnest.sequoia.core.ws.handler.WSMessageHandler;
 import dev.lotnest.sequoia.core.ws.message.ws.discordchatbridge.SChannelMessageWSMessage;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 
 public class SChannelMessageWSMessageHandler extends WSMessageHandler {
     public SChannelMessageWSMessageHandler(String message) {
@@ -26,11 +26,11 @@ public class SChannelMessageWSMessageHandler extends WSMessageHandler {
             SChannelMessageWSMessage.Data sChannelMessageWSMessageData =
                     sChannelMessageWSMessage.getSChannelMessageData();
 
-            McUtils.sendMessageToClient(Component.literal("[DISCORD] ")
+            McUtils.sendMessageToClient(Fonts.BannerPill.parse("discord")
                     .withStyle(ChatFormatting.AQUA)
-                    .append(Component.literal(sChannelMessageWSMessageData.displayName() + ": ")
+                    .append(Fonts.Default.parse(" " + sChannelMessageWSMessageData.displayName() + ": ")
                             .withStyle(ChatFormatting.DARK_AQUA))
-                    .append(Component.literal(sChannelMessageWSMessageData.message())
+                    .append(Fonts.Default.parse(sChannelMessageWSMessageData.message())
                             .withStyle(ChatFormatting.AQUA)));
         }
     }

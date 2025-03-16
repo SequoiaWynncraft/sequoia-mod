@@ -13,6 +13,6 @@
     "defaultRequire": 1
   },
   "minVersion": "0.8.5",
-  "package": "dev.lotnest.sequoia.mc.mixin",
+  "package": "dev.lotnest.sequoia.mc.mixins",
   "required": true
 }

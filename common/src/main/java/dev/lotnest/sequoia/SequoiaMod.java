@@ -19,6 +19,7 @@ import dev.lotnest.sequoia.core.components.Service;
 import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.core.persisted.SequoiaConfig;
+import dev.lotnest.sequoia.core.text.Fonts;
 import dev.lotnest.sequoia.features.ws.WebSocketFeature;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +39,7 @@ public final class SequoiaMod {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     private static final MutableComponent PREFIX = Component.empty()
-            .append(Component.literal("Sequoia")
-                    .withStyle(style -> style.withColor(0x19A775).withBold(true)))
+            .append(Fonts.BannerPill.parse(MOD_ID).withStyle(style -> style.withColor(0x19A775)))
             .append(Component.literal(" » ")
                     .withStyle(style -> style.withColor(ChatFormatting.GRAY).withBold(false)))
             .append(Component.empty().withStyle(ChatFormatting.YELLOW));

@@ -6,7 +6,6 @@ package dev.lotnest.sequoia.core.persisted;
 
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.features.messagefilter.MessageFilterDecisionType;
-import dev.lotnest.sequoia.features.raids.RaidsFeature;
 import io.wispforest.owo.config.annotation.Config;
 import io.wispforest.owo.config.annotation.Expanded;
 import io.wispforest.owo.config.annotation.Modmenu;
@@ -161,12 +160,12 @@ public class ConfigModel {
         public dev.lotnest.sequoia.features.raids.RaidsFeature.RangeIndicatorDisplayType
                 farsightedGambitOverlayDisplayType =
                         dev.lotnest.sequoia.features.raids.RaidsFeature.RangeIndicatorDisplayType.AUTOMATIC;
-
         public dev.lotnest.sequoia.features.raids.RaidsFeature.RangeIndicatorDisplayType
                 myopicGambitOverlayDisplayType =
                         dev.lotnest.sequoia.features.raids.RaidsFeature.RangeIndicatorDisplayType.AUTOMATIC;
         public dev.lotnest.sequoia.features.raids.RaidsFeature.GluttonyWarningType gluttonyDisplayType =
                 dev.lotnest.sequoia.features.raids.RaidsFeature.GluttonyWarningType.TEXT;
+        public boolean maddeningMageGambitMiscastTracker = true;
 
         @Nest
         @Expanded
