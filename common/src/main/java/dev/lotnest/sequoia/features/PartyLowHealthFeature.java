@@ -42,37 +42,23 @@ public class PartyLowHealthFeature extends Feature {
     @SubscribeEvent
     public void onPlayerRender(PlayerRenderEvent event) {
         Entity entity = ((EntityRenderStateExtension) event.getPlayerRenderState()).getEntity();
-        if (!(entity instanceof AbstractClientPlayer player)) {
-            return;
-        }
+        if (!(entity instanceof AbstractClientPlayer player)) return;
 
-        if (!Models.Character.hasCharacter()) {
-            return;
-        }
+        if (!Models.WorldState.onWorld() || !Models.WorldState.onHousing()) return;
 
-        if (PlayerUtils.isSelf(player)) {
-            return;
-        }
+        if (PlayerUtils.isSelf(player)) return;
 
-        if (!Models.Player.isLocalPlayer(player)) {
-            return;
-        }
+        if (!Models.Player.isLocalPlayer(player)) return;
 
         List<String> partyMembers = partyMembersSupplier.get();
-        if (partyMembers.size() < 2) {
-            return;
-        }
+        if (partyMembers.size() < 2) return;
 
         int line = 0;
         for (String scoreboardLine : PlayerUtils.getScoreboardLines()) {
             Matcher matcher = PLAYER_HEALTH_SCOREBOARD_LINE_PATTERN.matcher(scoreboardLine);
-            if (!matcher.matches()) {
-                continue;
-            }
+            if (!matcher.matches()) continue;
+            if (line >= partyMembers.size()) return;
 
-            if (line >= partyMembers.size()) {
-                return;
-            }
             line++;
             String playerName = partyMembers.get(line);
             Matcher scoreboardHealthMatcher = SCOREBOARD_HEALTH_PATTERN.matcher(scoreboardLine);

@@ -30,7 +30,7 @@ public class GuildMapDataRelayerFeature extends Feature {
             SequoiaMod.debug("Checking if guild map data relay is possible");
 
             if (!isEnabled()) return;
-            if (!Models.Character.hasCharacter()) return;
+            if (!Models.WorldState.onWorld() || !Models.WorldState.onHousing()) return;
 
             doRelayGuildMapData();
         } catch (Exception exception) {

@@ -74,9 +74,7 @@ public final class PlayerUtils {
                 for (PlayerScoreEntry entry : scoreboard.listPlayerScores(sidebarObjective)) {
                     if (!entry.isHidden()) {
                         Component scoreboardLineComponent = entry.ownerName();
-                        if (scoreboardLineComponent != null
-                                && !scoreboardLineComponent.getString().isBlank()
-                                && !scoreboardLineComponent.getString().matches("À+")) {
+                        if (!scoreboardLineComponent.getString().matches("À+")) {
                             displayedLines.add(scoreboardLineComponent.getString());
                         }
                     }

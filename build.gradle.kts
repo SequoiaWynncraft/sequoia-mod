@@ -15,7 +15,7 @@ val fabricApiVersion by extra { "0.110.5+1.21.4" }
 
 val parchmentVersion by extra { null }
 
-val wynntilsVersion by extra { "3.0.9" }
+val wynntilsVersion by extra { "3.0.10" }
 val owoLibVersion by extra { "0.12.20+1.21.4" }
 val webSocketVersion by extra { "1.5.7" }
 val devAuthVersion by extra { "1.2.1" }

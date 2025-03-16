@@ -64,22 +64,14 @@ public class RaidsFeature extends Feature {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onPlayerRender(PlayerRenderEvent event) {
-        if (!isEnabled()) {
-            return;
-        }
+        if (!isEnabled()) return;
 
         Entity entity = ((EntityRenderStateExtension) event.getPlayerRenderState()).getEntity();
-        if (!(entity instanceof AbstractClientPlayer player)) {
-            return;
-        }
+        if (!(entity instanceof AbstractClientPlayer player)) return;
 
-        if (!com.wynntils.core.components.Models.Character.hasCharacter()) {
-            return;
-        }
-
-        if (!PlayerUtils.isSelf(player)) {
-            return;
-        }
+        if (!com.wynntils.core.components.Models.WorldState.onWorld()
+                || !com.wynntils.core.components.Models.WorldState.onHousing()) return;
+        if (!PlayerUtils.isSelf(player)) return;
 
         switch (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlayDisplayType()) {
             case AUTOMATIC -> {
@@ -95,16 +87,14 @@ public class RaidsFeature extends Feature {
                             CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
                 }
             }
-            case FORCED -> {
-                WynnUtils.renderCircle(
-                        BUFFER_SOURCE,
-                        CIRCLE_SEGMENTS,
-                        CIRCLE_HEIGHT,
-                        event.getPoseStack(),
-                        player.position(),
-                        3.0F,
-                        CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
-            }
+            case FORCED -> WynnUtils.renderCircle(
+                    BUFFER_SOURCE,
+                    CIRCLE_SEGMENTS,
+                    CIRCLE_HEIGHT,
+                    event.getPoseStack(),
+                    player.position(),
+                    3.0F,
+                    CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
 
             case DISABLED -> {}
             default -> throw new IllegalStateException(

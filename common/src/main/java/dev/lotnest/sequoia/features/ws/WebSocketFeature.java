@@ -151,7 +151,7 @@ public class WebSocketFeature extends Feature {
             return null;
         }
 
-        if (!isAuthenticating && !isAuthenticated && Models.Character.hasCharacter()) {
+        if (!isAuthenticating && !isAuthenticated && (Models.WorldState.onWorld() || Models.WorldState.onHousing())) {
             authenticate();
             return null;
         }
@@ -350,9 +350,7 @@ public class WebSocketFeature extends Feature {
 
     @Override
     public void onEnable() {
-        if (!Models.Character.hasCharacter()) {
-            return;
-        }
+        if (!Models.WorldState.onWorld() || !Models.WorldState.onHousing()) return;
 
         initClient();
         connectIfNeeded();
