@@ -294,6 +294,8 @@ public class WebSocketFeature extends Feature {
             return;
         }
 
+        if (!Models.WorldState.onWorld() || !Models.WorldState.onHousing()) return;
+
         Managers.TickScheduler.scheduleLater(
                 () -> {
                     if (!isEnabled()) {
