@@ -8,9 +8,11 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.event.TickEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
+import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
 import com.wynntils.models.raid.type.RaidRoomType;
 import com.wynntils.models.spells.event.SpellEvent;
+import com.wynntils.models.worlds.event.WorldStateEvent;
 import com.wynntils.utils.colors.CommonColors;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
@@ -118,16 +120,14 @@ public class RaidsFeature extends Feature {
                             CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
                 }
             }
-            case FORCED -> {
-                WynnUtils.renderCircle(
-                        BUFFER_SOURCE,
-                        CIRCLE_SEGMENTS,
-                        CIRCLE_HEIGHT,
-                        event.getPoseStack(),
-                        player.position(),
-                        12.0F,
-                        CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
-            }
+            case FORCED -> WynnUtils.renderCircle(
+                    BUFFER_SOURCE,
+                    CIRCLE_SEGMENTS,
+                    CIRCLE_HEIGHT,
+                    event.getPoseStack(),
+                    player.position(),
+                    12.0F,
+                    CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
             case DISABLED -> {}
             default -> throw new IllegalStateException(
                     "Unexpected value: " + SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlayDisplayType());
@@ -135,9 +135,26 @@ public class RaidsFeature extends Feature {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onCharacterUpdate(CharacterUpdateEvent event) {
+        if (isGluttonWarningDisplayed) {
+            isGluttonWarningDisplayed = false;
+        }
+
+        spellsCasted = 0;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onWorldStateUpdate(WorldStateEvent event) {
+        if (isGluttonWarningDisplayed) {
+            isGluttonWarningDisplayed = false;
+        }
+
+        spellsCasted = 0;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
         if (isGluttonWarningDisplayed) {
-            SequoiaMod.debug("Clearing glutton warning as raid has completed");
             isGluttonWarningDisplayed = false;
         }
 
@@ -147,7 +164,6 @@ public class RaidsFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
         if (isGluttonWarningDisplayed) {
-            SequoiaMod.debug("Clearing glutton warning as raid has failed");
             isGluttonWarningDisplayed = false;
         }
 
@@ -165,13 +181,13 @@ public class RaidsFeature extends Feature {
         spellsCasted++;
         if (spellsCasted == 9) {
             spellsCasted = 0;
+
+            if (!isEnabled()) return;
+
+            PlayerUtils.sendTitle(
+                    Component.translatable("sequoia.feature.raidsFeature.maddeningMageGambitMiscastWarningTitle"),
+                    Component.translatable("sequoia.feature.raidsFeature.maddeningMageGambitMiscastWarningSubtitle"));
         }
-
-        if (!isEnabled()) return;
-
-        PlayerUtils.sendTitle(
-                Component.translatable("sequoia.feature.raidsFeature.maddeningMageGambitMiscastWarningTitle"),
-                Component.translatable("sequoia.feature.raidsFeature.maddeningMageGambitMiscastWarningSubtitle"));
     }
 
     @Override

@@ -4,27 +4,38 @@
  */
 package dev.lotnest.sequoia.features.raids;
 
+import com.wynntils.core.WynntilsMod;
+import com.wynntils.core.components.Handlers;
 import com.wynntils.core.components.Managers;
 import com.wynntils.core.components.Models;
 import com.wynntils.core.text.StyledText;
+import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.mc.event.TitleSetTextEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
 import com.wynntils.models.raid.type.RaidKind;
 import com.wynntils.models.raid.type.RaidRoomType;
 import com.wynntils.utils.mc.McUtils;
+import com.wynntils.utils.mc.StyledTextUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
+import dev.lotnest.sequoia.core.events.RaidStartedEvent;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.compress.utils.Lists;
 
 public class PartyRaidCompletionsDisplayFeature extends Feature {
+    private static final Pattern PARTY_LIST_ALL = Pattern.compile("§e.*Party members: (.*)");
+
     private boolean shownRaidCompletionsForCurrentParty = false;
+    private boolean expectingPartyListMessage = false;
 
     public enum PartyRaidCompletionsDisplayType {
         MANUAL,
@@ -35,26 +46,46 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onRaidIntro(TitleSetTextEvent event) {
         if (shownRaidCompletionsForCurrentParty) return;
+        Component component = event.getComponent();
+        StyledText styledText = StyledText.fromComponent(component);
+        RaidKind raidKind = RaidKind.fromTitle(styledText);
 
         Managers.TickScheduler.scheduleNextTick(() -> {
-            Component component = event.getComponent();
-            StyledText styledText = StyledText.fromComponent(component);
-            RaidKind raidKind = RaidKind.fromTitle(styledText);
-
             if (raidKind != null && Models.Raid.getCurrentRoom() == RaidRoomType.INTRO) {
-                Managers.TickScheduler.scheduleNextTick(() -> {
-                    getPartyMembers().forEach(partyMember -> {
-                        switch (SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType()) {
-                            case MANUAL -> handleManualDisplay(partyMember);
-                            case AUTOMATIC -> handleAutomaticDisplay(partyMember);
-                            default -> throw new IllegalStateException("Unexpected value: "
-                                    + SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType());
-                        }
-                    });
-                    shownRaidCompletionsForCurrentParty = true;
-                });
+                WynntilsMod.postEvent(new RaidStartedEvent());
             }
         });
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRaidStarted(RaidStartedEvent event) {
+        SequoiaMod.debug("RaidStartedEvent");
+        expectingPartyListMessage = true;
+        Handlers.Command.queueCommand("party list");
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onChatReceived(ChatMessageReceivedEvent event) {
+        if (event.getMessageType() != MessageType.FOREGROUND) return;
+        if (!expectingPartyListMessage) return;
+
+        SequoiaMod.debug("Received chat message while expecting party list message");
+
+        List<String> partyMembers = tryParsePartyList(event.getOriginalStyledText());
+        if (partyMembers.isEmpty()) return;
+
+        event.setCanceled(true);
+        expectingPartyListMessage = false;
+
+        partyMembers.forEach(partyMember -> {
+            switch (SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType()) {
+                case MANUAL -> handleManualDisplay(partyMember);
+                case AUTOMATIC -> handleAutomaticDisplay(partyMember);
+                default -> throw new IllegalStateException("Unexpected value: "
+                        + SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType());
+            }
+        });
+        shownRaidCompletionsForCurrentParty = true;
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -89,13 +120,23 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
         });
     }
 
-    private List<String> getPartyMembers() {
-        Models.Party.requestData();
-        return Stream.concat(
-                        Stream.of(Models.Party.getPartyLeader().orElse(null)), Models.Party.getPartyMembers().stream())
-                .filter(StringUtils::isNotBlank)
-                .filter(username -> !McUtils.playerName().equals(username))
-                .toList();
+    private List<String> tryParsePartyList(StyledText styledText) {
+        SequoiaMod.debug("Trying to parse party list");
+
+        Matcher partyListAllMatcher = StyledTextUtils.unwrap(styledText).getMatcher(PARTY_LIST_ALL);
+        if (!partyListAllMatcher.matches()) {
+            SequoiaMod.debug("Failed to parse party list");
+            return Collections.emptyList();
+        } else {
+            String[] partyMembers = StyledText.fromString(partyListAllMatcher.group(1))
+                    .getStringWithoutFormatting()
+                    .split("(?:,(?: and)? )");
+            List<String> partyMemberList = Lists.newArrayList();
+            Collections.addAll(partyMemberList, partyMembers);
+
+            SequoiaMod.debug("Found party members in party list: " + partyMemberList);
+            return partyMemberList;
+        }
     }
 
     @Override
