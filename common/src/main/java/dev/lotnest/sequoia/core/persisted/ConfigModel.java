@@ -5,6 +5,7 @@
 package dev.lotnest.sequoia.core.persisted;
 
 import dev.lotnest.sequoia.SequoiaMod;
+import dev.lotnest.sequoia.features.ItemSizeFeature;
 import dev.lotnest.sequoia.features.messagefilter.MessageFilterDecisionType;
 import io.wispforest.owo.config.annotation.Config;
 import io.wispforest.owo.config.annotation.Expanded;
@@ -70,6 +71,14 @@ public class ConfigModel {
     @Nest
     @Expanded
     public TerritoryFeature territoryFeature = new TerritoryFeature();
+
+    @Nest
+    @Expanded
+    public ItemSizeFeature itemSizeFeature = new ItemSizeFeature();
+
+    //    @Nest
+    //    @Expanded
+    //    public PartyLowHealthFeature partyLowHealthFeature = new PartyLowHealthFeature();
 
     @Nest
     @Expanded
@@ -212,5 +221,20 @@ public class ConfigModel {
     public static class TerritoryFeature {
         public boolean enabled = true;
         public boolean showCapturedTerritoryInfo = true;
+    }
+
+    //    public static class PartyLowHealthFeature {
+    //        public boolean enabled = true;
+    //    }
+
+    public static class ItemSizeFeature {
+        public boolean enabled = true;
+        public float itemSize = 1.0f;
+        public float RotationX = 0.0f;
+        public float RotationY = 0.0f;
+        public float RotationZ = 0.0f;
+        public float PositionX = 0.0f;
+        public float PositionY = 0.0f;
+        public float PositionZ = 0.0f;
     }
 }

@@ -6,7 +6,8 @@
     "ItemEntityRendererMixin",
     "ResourceLoadStateTrackerMixin",
     "ScreenMixin",
-    "TitleScreenMixin"
+    "TitleScreenMixin",
+    "MixinHeldItemRenderer"
   ],
   "compatibilityLevel": "JAVA_17",
   "injectors": {

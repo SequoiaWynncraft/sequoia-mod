@@ -39,7 +39,6 @@ public class TerritoryModel extends Model {
         if (!isTerritoryMenuOpening) {
             return;
         }
-
         isTerritoryMenuOpening = false;
 
         StyledText title = StyledText.fromComponent(event.getTitle());

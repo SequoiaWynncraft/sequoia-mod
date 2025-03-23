@@ -37,7 +37,7 @@ import org.java_websocket.handshake.ServerHandshake;
 
 public class WebSocketFeature extends Feature {
     private static final String WS_DEV_URL = "ws://localhost:8085/sequoia-tree/ws";
-    private static final String WS_PROD_URL = "wss://lotnest.dev/sequoia-mod/ws";
+    private static final String WS_PROD_URL = "wss://api.sequoia.ooo/ws";
 
     private WebSocketClient client;
     private boolean isFirstConnection = false;

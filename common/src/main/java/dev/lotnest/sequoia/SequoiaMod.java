@@ -18,6 +18,7 @@ import dev.lotnest.sequoia.core.components.Models;
 import dev.lotnest.sequoia.core.components.Service;
 import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.events.SequoiaCrashEvent;
+import dev.lotnest.sequoia.core.http.HttpClient;
 import dev.lotnest.sequoia.core.persisted.SequoiaConfig;
 import dev.lotnest.sequoia.core.text.Fonts;
 import dev.lotnest.sequoia.features.ws.WebSocketFeature;
@@ -106,7 +107,7 @@ public final class SequoiaMod {
         SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
         versionInt = Integer.parseInt(modVersion.replaceAll("\\D", ""));
-        httpClient = HttpClient.newHttpClient();
+        HttpClient httpClient = HttpClient.newHttpClient();
 
         LOGGER.info(
                 "Sequoia: Starting version {} (using {} on Minecraft {})",
