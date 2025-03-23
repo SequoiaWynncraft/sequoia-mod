@@ -33,7 +33,6 @@ public class RaidsFeature extends Feature {
             MultiBufferSource.immediate(new ByteBufferBuilder(256));
 
     private static final int CIRCLE_SEGMENTS = 128;
-
     private static final float CIRCLE_HEIGHT = 0.2F;
 
     private boolean isGluttonWarningDisplayed = false;
@@ -78,60 +77,55 @@ public class RaidsFeature extends Feature {
                 || !com.wynntils.core.components.Models.WorldState.onHousing()) return;
         if (!PlayerUtils.isSelf(player)) return;
 
-        switch (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlayDisplayType()) {
-            case AUTOMATIC -> {
-                if (Models.Gambit.hasChosenGambit(GambitModel.GambitType.FARSIGHTED)
-                        && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
-                    WynnUtils.renderCircle(
+        Runnable farsightedAction =
+                switch (SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlayDisplayType()) {
+                    case AUTOMATIC -> Models.Gambit.hasChosenGambit(GambitModel.GambitType.FARSIGHTED)
+                                    && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null
+                            ? () -> WynnUtils.renderCircle(
+                                    BUFFER_SOURCE,
+                                    CIRCLE_SEGMENTS,
+                                    CIRCLE_HEIGHT,
+                                    event.getPoseStack(),
+                                    player.position(),
+                                    3.0F,
+                                    CommonColors.LIGHT_BLUE.withAlpha(95).asInt())
+                            : () -> {};
+                    case FORCED -> () -> WynnUtils.renderCircle(
                             BUFFER_SOURCE,
                             CIRCLE_SEGMENTS,
                             CIRCLE_HEIGHT,
                             event.getPoseStack(),
                             player.position(),
                             3.0F,
-                            CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
-                }
-            }
-            case FORCED -> WynnUtils.renderCircle(
-                    BUFFER_SOURCE,
-                    CIRCLE_SEGMENTS,
-                    CIRCLE_HEIGHT,
-                    event.getPoseStack(),
-                    player.position(),
-                    3.0F,
-                    CommonColors.LIGHT_BLUE.withAlpha((95)).asInt());
+                            CommonColors.LIGHT_BLUE.withAlpha(95).asInt());
+                    case DISABLED -> () -> {};
+                };
+        farsightedAction.run();
 
-            case DISABLED -> {}
-            default -> throw new IllegalStateException(
-                    "Unexpected value: " + SequoiaMod.CONFIG.raidsFeature.farsightedGambitOverlayDisplayType());
-        }
-
-        switch (SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlayDisplayType()) {
-            case AUTOMATIC -> {
-                if (Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
-                        && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null) {
-                    WynnUtils.renderCircle(
+        Runnable myopicAction =
+                switch (SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlayDisplayType()) {
+                    case AUTOMATIC -> Models.Gambit.hasChosenGambit(GambitModel.GambitType.MYOPIC)
+                                    && com.wynntils.core.components.Models.Raid.getCurrentRaid() != null
+                            ? () -> WynnUtils.renderCircle(
+                                    BUFFER_SOURCE,
+                                    CIRCLE_SEGMENTS,
+                                    CIRCLE_HEIGHT,
+                                    event.getPoseStack(),
+                                    player.position(),
+                                    12.0F,
+                                    CommonColors.LIGHT_GREEN.withAlpha(95).asInt())
+                            : () -> {};
+                    case FORCED -> () -> WynnUtils.renderCircle(
                             BUFFER_SOURCE,
                             CIRCLE_SEGMENTS,
                             CIRCLE_HEIGHT,
                             event.getPoseStack(),
                             player.position(),
                             12.0F,
-                            CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
-                }
-            }
-            case FORCED -> WynnUtils.renderCircle(
-                    BUFFER_SOURCE,
-                    CIRCLE_SEGMENTS,
-                    CIRCLE_HEIGHT,
-                    event.getPoseStack(),
-                    player.position(),
-                    12.0F,
-                    CommonColors.LIGHT_GREEN.withAlpha((95)).asInt());
-            case DISABLED -> {}
-            default -> throw new IllegalStateException(
-                    "Unexpected value: " + SequoiaMod.CONFIG.raidsFeature.myopicGambitOverlayDisplayType());
-        }
+                            CommonColors.LIGHT_GREEN.withAlpha(95).asInt());
+                    case DISABLED -> () -> {};
+                };
+        myopicAction.run();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
