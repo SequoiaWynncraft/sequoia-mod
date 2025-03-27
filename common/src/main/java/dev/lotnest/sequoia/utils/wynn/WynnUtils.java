@@ -175,44 +175,41 @@ public final class WynnUtils {
      *
      * @param poseStack The pose stack to render with. This is supposed to be the pose stack from the event.
      *                  We do the translation here, so no need to do it before passing it in.
-     * @param radius
-     * @param color
+     * @param radius The radius of the circle.
+     * @param color The color of the circle.
      */
     public static void renderCircle(
-            MultiBufferSource.BufferSource BUFFER_SOURCE,
-            int CIRCLE_SEGMENTS,
-            float CIRCLE_HEIGHT,
+            MultiBufferSource.BufferSource bufferSource,
+            int circleSegments,
+            float circleHeight,
             PoseStack poseStack,
             Position position,
             float radius,
             int color) {
-        // Circle must be rendered on both sides, otherwise it will be invisible when looking at
-        // it from the outside
         RenderSystem.disableCull();
 
         poseStack.pushPose();
         poseStack.translate(-position.x(), -position.y(), -position.z());
-        VertexConsumer consumer = BUFFER_SOURCE.getBuffer(CustomRenderType.POSITION_COLOR_QUAD);
+        VertexConsumer consumer = bufferSource.getBuffer(CustomRenderType.POSITION_COLOR_QUAD);
 
         Matrix4f matrix4f = poseStack.last().pose();
-        double angleStep = 2 * Math.PI / CIRCLE_SEGMENTS;
-        double startingAngle = -(System.currentTimeMillis() % 40000) * 2 * Math.PI / 40000.0;
-        double angle = startingAngle;
-        for (int i = 0; i < CIRCLE_SEGMENTS; i++) {
+        double angleStep = 2 * Math.PI / circleSegments;
+        double angle = -(System.currentTimeMillis() % 40000) * 2 * Math.PI / 40000.0;
+        for (int i = 0; i < circleSegments; i++) {
             float x = (float) (position.x() + Math.sin(angle) * radius);
             float z = (float) (position.z() + Math.cos(angle) * radius);
             consumer.addVertex(matrix4f, x, (float) position.y(), z).setColor(color);
-            consumer.addVertex(matrix4f, x, (float) position.y() + CIRCLE_HEIGHT, z)
+            consumer.addVertex(matrix4f, x, (float) position.y() + circleHeight, z)
                     .setColor(color);
             angle += angleStep;
             float x2 = (float) (position.x() + Math.sin(angle) * radius);
             float z2 = (float) (position.z() + Math.cos(angle) * radius);
-            consumer.addVertex(matrix4f, x2, (float) position.y() + CIRCLE_HEIGHT, z2)
+            consumer.addVertex(matrix4f, x2, (float) position.y() + circleHeight, z2)
                     .setColor(color);
             consumer.addVertex(matrix4f, x2, (float) position.y(), z2).setColor(color);
         }
 
-        BUFFER_SOURCE.endBatch();
+        bufferSource.endBatch();
         poseStack.popPose();
         RenderSystem.enableCull();
     }

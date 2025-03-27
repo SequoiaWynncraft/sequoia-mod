@@ -20,7 +20,6 @@ import dev.lotnest.sequoia.features.GuildRewardStorageTrackerFeature;
 import dev.lotnest.sequoia.features.OuterVoidTrackerFeature;
 import dev.lotnest.sequoia.features.PlayerIgnoreFeature;
 import dev.lotnest.sequoia.features.SequoiaOSTFeature;
-import dev.lotnest.sequoia.features.WebSocketFeature;
 import dev.lotnest.sequoia.features.discordchatbridge.DiscordChatBridgeFeature;
 import dev.lotnest.sequoia.features.guildraidtracker.GuildRaidTrackerFeature;
 import dev.lotnest.sequoia.features.messagefilter.MessageFilterFeature;
@@ -31,6 +30,8 @@ import dev.lotnest.sequoia.features.raids.PartyRaidCompletionsDisplayFeature;
 import dev.lotnest.sequoia.features.raids.RaidsFeature;
 import dev.lotnest.sequoia.features.raids.TNARaidFeature;
 import dev.lotnest.sequoia.features.territory.TerritoryFeature;
+import dev.lotnest.sequoia.features.ws.WebSocketFeature;
+import dev.lotnest.sequoia.features.ws.relayer.GuildMapDataRelayerFeature;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -74,6 +75,7 @@ public final class FeatureManager extends Manager {
         registerFeature(new PartyRaidCompletionsDisplayFeature());
         registerFeature(new TerritoryFeature());
         registerFeature(new GuildRewardStorageTrackerFeature());
+        registerFeature(new GuildMapDataRelayerFeature());
 
         synchronized (McUtils.options()) {
             McUtils.options().load();

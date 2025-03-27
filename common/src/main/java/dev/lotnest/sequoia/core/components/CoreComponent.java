@@ -4,6 +4,4 @@
  */
 package dev.lotnest.sequoia.core.components;
 
-public abstract class CoreComponent implements Translatable {
-    public abstract String getTypeName();
-}
+public abstract class CoreComponent implements Translatable {}

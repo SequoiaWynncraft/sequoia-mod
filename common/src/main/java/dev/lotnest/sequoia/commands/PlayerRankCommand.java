@@ -49,7 +49,7 @@ public class PlayerRankCommand extends Command {
                                         Component.translatable("sequoia.command.playerRank.playerNotFound", username)));
                     } else {
                         String rank = playerResponse.getSupportRank();
-                        if (!StringUtils.equals(playerResponse.getRank(), "Player")) {
+                        if (StringUtils.isNotBlank(playerResponse.getRank())) {
                             rank = playerResponse.getRank();
                         }
 

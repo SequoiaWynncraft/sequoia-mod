@@ -4,33 +4,38 @@
  */
 package dev.lotnest.sequoia.features.raids;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.wynntils.core.WynntilsMod;
+import com.wynntils.core.components.Handlers;
 import com.wynntils.core.components.Managers;
 import com.wynntils.core.components.Models;
+import com.wynntils.core.text.StyledText;
 import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
+import com.wynntils.handlers.chat.type.MessageType;
+import com.wynntils.mc.event.TitleSetTextEvent;
+import com.wynntils.models.raid.event.RaidEndedEvent;
+import com.wynntils.models.raid.type.RaidKind;
+import com.wynntils.models.raid.type.RaidRoomType;
 import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.mc.StyledTextUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
-import dev.lotnest.sequoia.core.events.PartyPlayerJoinedEvent;
-import java.util.concurrent.TimeUnit;
+import dev.lotnest.sequoia.core.events.RaidStartedEvent;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.compress.utils.Lists;
 
 public class PartyRaidCompletionsDisplayFeature extends Feature {
-    private static final Pattern PARTY_PLAYER_JOINED_PATTERN =
-            Pattern.compile("(?:§e)?(?:.*?) (?:§o)?(\\w+)(?:§r)?(?:§e)? has joined your party, say(?:\\s*.*?)?hello!");
+    private static final Pattern PARTY_LIST_ALL = Pattern.compile("§e.*Party members: (.*)");
 
-    private final Cache<String, Long> cachedPartyMembers =
-            CacheBuilder.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES).build();
+    private boolean shownRaidCompletionsForCurrentParty = false;
+    private boolean expectingPartyListMessage = false;
 
     public enum PartyRaidCompletionsDisplayType {
         MANUAL,
@@ -38,61 +43,66 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
         DISABLED
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPartyPlayerJoinPre(ChatMessageReceivedEvent event) {
-        if (!isEnabled()) {
-            return;
-        }
+    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
+    public void onRaidIntro(TitleSetTextEvent event) {
+        if (shownRaidCompletionsForCurrentParty) return;
+        Component component = event.getComponent();
+        StyledText styledText = StyledText.fromComponent(component);
+        RaidKind raidKind = RaidKind.fromTitle(styledText);
 
-        Matcher partyPlayerJoinedMatcher =
-                event.getOriginalStyledText().stripAlignment().getMatcher(PARTY_PLAYER_JOINED_PATTERN);
-        if (!partyPlayerJoinedMatcher.matches()) {
-            return;
-        }
-
-        String playerName = partyPlayerJoinedMatcher.group(1);
-
-        boolean isNickname = event.getOriginalStyledText().contains("§o");
-        if (isNickname) {
-            playerName = StyledTextUtils.extractNameAndNick(event.getOriginalStyledText())
-                    .key();
-        }
-
-        if (StringUtils.isBlank(playerName)) {
-            return;
-        }
-
-        if (StringUtils.equals(playerName, McUtils.playerName())) {
-            Models.Party.requestData();
-            return;
-        }
-
-        WynntilsMod.postEvent(new PartyPlayerJoinedEvent(playerName));
+        Managers.TickScheduler.scheduleNextTick(() -> {
+            if (raidKind != null && Models.Raid.getCurrentRoom() == RaidRoomType.INTRO) {
+                WynntilsMod.postEvent(new RaidStartedEvent());
+            }
+        });
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    public void onPartyPlayerJoinPost(PartyPlayerJoinedEvent event) {
-        if (!isEnabled()) {
-            return;
-        }
+    public void onRaidStarted(RaidStartedEvent event) {
+        SequoiaMod.debug("RaidStartedEvent");
+        expectingPartyListMessage = true;
+        Handlers.Command.queueCommand("party list");
+    }
 
-        if (cachedPartyMembers.getIfPresent(event.getPlayerName()) != null) {
-            return;
-        }
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onChatReceived(ChatMessageReceivedEvent event) {
+        if (event.getMessageType() != MessageType.FOREGROUND) return;
+        if (!expectingPartyListMessage) return;
 
-        switch (SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType()) {
-            case MANUAL -> handleManualDisplay(event.getPlayerName());
-            case AUTOMATIC -> handleAutomaticDisplay(event.getPlayerName());
-            default -> throw new IllegalStateException("Unexpected value: "
-                    + SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType());
-        }
+        SequoiaMod.debug("Received chat message while expecting party list message");
+
+        List<String> partyMembers = tryParsePartyList(event.getOriginalStyledText());
+        if (partyMembers.isEmpty()) return;
+
+        event.setCanceled(true);
+        expectingPartyListMessage = false;
+
+        partyMembers.forEach(partyMember -> {
+            switch (SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType()) {
+                case MANUAL -> handleManualDisplay(partyMember);
+                case AUTOMATIC -> handleAutomaticDisplay(partyMember);
+                default -> throw new IllegalStateException("Unexpected value: "
+                        + SequoiaMod.CONFIG.raidsFeature.PartyRaidCompletionsDisplayFeature.displayType());
+            }
+        });
+        shownRaidCompletionsForCurrentParty = true;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRaidCompletedEvent(RaidEndedEvent.Completed event) {
+        shownRaidCompletionsForCurrentParty = false;
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onRaidFailedEvent(RaidEndedEvent.Failed event) {
+        shownRaidCompletionsForCurrentParty = false;
     }
 
     private void handleManualDisplay(String playerName) {
-        Managers.TickScheduler.scheduleNextTick(() -> McUtils.sendMessageToClient(
+        McUtils.sendMessageToClient(
                 Component.translatable("sequoia.feature.partyRaidCompletionsDisplayFeature.clickToView")
                         .withStyle(style -> style.withClickEvent(
-                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/seq playerRaids " + playerName)))));
+                                new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/seq playerRaids " + playerName))));
     }
 
     private void handleAutomaticDisplay(String playerName) {
@@ -101,7 +111,6 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
                 return;
             }
 
-            cachedPartyMembers.put(playerName, System.currentTimeMillis());
             McUtils.sendMessageToClient(SequoiaMod.prefix(Component.translatable(
                             "sequoia.command.playerRaids.showingPlayerRaids",
                             playerResponse.getUsername(),
@@ -109,6 +118,25 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
                     .append("\n")
                     .append(playerResponse.getGlobalData().getRaids().toPrettyMessage(playerResponse.getRanking()))));
         });
+    }
+
+    private List<String> tryParsePartyList(StyledText styledText) {
+        SequoiaMod.debug("Trying to parse party list");
+
+        Matcher partyListAllMatcher = StyledTextUtils.unwrap(styledText).getMatcher(PARTY_LIST_ALL);
+        if (!partyListAllMatcher.matches()) {
+            SequoiaMod.debug("Failed to parse party list");
+            return Collections.emptyList();
+        } else {
+            String[] partyMembers = StyledText.fromString(partyListAllMatcher.group(1))
+                    .getStringWithoutFormatting()
+                    .split("(?:,(?: and)? )");
+            List<String> partyMemberList = Lists.newArrayList();
+            Collections.addAll(partyMemberList, partyMembers);
+
+            SequoiaMod.debug("Found party members in party list: " + partyMemberList);
+            return partyMemberList;
+        }
     }
 
     @Override

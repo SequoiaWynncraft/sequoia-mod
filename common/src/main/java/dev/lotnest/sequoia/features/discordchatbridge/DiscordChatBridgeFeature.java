@@ -12,7 +12,7 @@ import com.wynntils.handlers.chat.type.RecipientType;
 import com.wynntils.utils.mc.McUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
-import dev.lotnest.sequoia.core.websocket.messages.discordchatbridge.GChatMessageWSMessage;
+import dev.lotnest.sequoia.core.ws.message.ws.discordchatbridge.GChatMessageWSMessage;
 import dev.lotnest.sequoia.utils.TimeUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,17 +38,17 @@ public class DiscordChatBridgeFeature extends Feature {
             return;
         }
 
-        if (!RecipientType.GUILD.matchPattern(event.getStyledText(), MessageType.FOREGROUND)) {
+        if (!RecipientType.GUILD.matchPattern(event.getOriginalStyledText(), MessageType.FOREGROUND)) {
             return;
         }
 
-        StyledText messageTextWithoutNewLines = event.getStyledText()
+        StyledText messageTextWithoutNewLines = event.getOriginalStyledText()
                 .replaceAll("\n", "")
                 .replaceAll("\uDAFF\uDFFC\uE001\uDB00\uDC06\\s+", "")
                 .replaceAll("\\s{2,}", " ");
         MutableComponent messageComponent = messageTextWithoutNewLines.getComponent();
 
-        if (messageTextWithoutNewLines == null || messageTextWithoutNewLines.isBlank()) {
+        if (messageTextWithoutNewLines.isBlank()) {
             return;
         }
 
@@ -101,12 +101,10 @@ public class DiscordChatBridgeFeature extends Feature {
 
                 GChatMessageWSMessage gChatMessageWSMessage = new GChatMessageWSMessage(new GChatMessageWSMessage.Data(
                         username, nickname, message, TimeUtils.wsTimestamp(), McUtils.playerName()));
-                SequoiaMod.getWebSocketFeature().sendAsJson(gChatMessageWSMessage);
-                SequoiaMod.debug("Sending guild chat message to Discord: " + gChatMessageWSMessage);
+                SequoiaMod.getWebSocketFeature().sendMessage(gChatMessageWSMessage);
             }
         } catch (Exception exception) {
             SequoiaMod.error("Failed to send guild chat message to Discord", exception);
-            return;
         }
     }
 

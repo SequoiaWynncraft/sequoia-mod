@@ -6,6 +6,7 @@ package dev.lotnest.sequoia.services.mojang;
 
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Service;
+import dev.lotnest.sequoia.core.http.HttpClients;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -22,7 +23,7 @@ public final class MojangService extends Service {
 
     public CompletableFuture<UUID> getUUID(String username) {
         String url = String.format(USERS_PROFILES_MINECRAFT_BASE_URL, username);
-        return SequoiaMod.getHttpClient()
+        return HttpClients.MOJANG_API
                 .getJsonAsync(url, MojangUsersProfilesMinecraftResponse.class)
                 .thenApply(response -> {
                     if (response != null) {

@@ -20,7 +20,8 @@ import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.events.SequoiaCrashEvent;
 import dev.lotnest.sequoia.core.http.HttpClient;
 import dev.lotnest.sequoia.core.persisted.SequoiaConfig;
-import dev.lotnest.sequoia.features.WebSocketFeature;
+import dev.lotnest.sequoia.core.text.Fonts;
+import dev.lotnest.sequoia.features.ws.WebSocketFeature;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -39,8 +40,7 @@ public final class SequoiaMod {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     private static final MutableComponent PREFIX = Component.empty()
-            .append(Component.literal("Sequoia")
-                    .withStyle(style -> style.withColor(0x19A775).withBold(true)))
+            .append(Fonts.BannerPill.parse(MOD_ID).withStyle(style -> style.withColor(0x19A775)))
             .append(Component.literal(" » ")
                     .withStyle(style -> style.withColor(ChatFormatting.GRAY).withBold(false)))
             .append(Component.empty().withStyle(ChatFormatting.YELLOW));
@@ -52,7 +52,6 @@ public final class SequoiaMod {
     private static boolean isDevelopmentBuild = false;
     private static boolean isDevelopmentEnvironment = false;
     private static boolean isInitCompleted = false;
-    private static HttpClient httpClient = null;
 
     public static void error(String message) {
         LOGGER.error(message);
@@ -107,8 +106,8 @@ public final class SequoiaMod {
         isDevelopmentBuild = modVersion.contains("SNAPSHOT");
         SequoiaMod.isDevelopmentEnvironment = isDevelopmentEnvironment;
         version = "v" + modVersion;
-        versionInt = Integer.parseInt(modVersion.replaceAll("[^0-9]", ""));
-        httpClient = HttpClient.newHttpClient();
+        versionInt = Integer.parseInt(modVersion.replaceAll("\\D", ""));
+        HttpClient httpClient = HttpClient.newHttpClient();
 
         LOGGER.info(
                 "Sequoia: Starting version {} (using {} on Minecraft {})",
@@ -129,7 +128,6 @@ public final class SequoiaMod {
                         components.add(component);
                     } catch (IllegalAccessException exception) {
                         error("Internal error in " + registryClass.getSimpleName(), exception);
-                        throw new RuntimeException(exception);
                     }
                 });
     }
@@ -175,6 +173,10 @@ public final class SequoiaMod {
         return PREFIX.copy().append(component);
     }
 
+    public static ModLoader getModLoader() {
+        return modLoader;
+    }
+
     public static String getVersion() {
         return version;
     }
@@ -197,10 +199,6 @@ public final class SequoiaMod {
 
     public static WebSocketFeature getWebSocketFeature() {
         return Managers.Feature.getFeatureInstance(WebSocketFeature.class);
-    }
-
-    public static HttpClient getHttpClient() {
-        return httpClient;
     }
 
     public enum ModLoader {

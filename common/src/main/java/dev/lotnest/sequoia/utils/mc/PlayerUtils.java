@@ -25,18 +25,18 @@ public final class PlayerUtils {
         sendTitle(title, null);
     }
 
-    public static void sendTitle(Component title, Component subTitle) {
-        sendTitle(title, subTitle, 10, 50, 10);
+    public static void sendTitle(Component title, Component subtitle) {
+        sendTitle(title, subtitle, 10, 50, 10);
     }
 
     public static void sendTitle(
-            Component title, Component subTitle, int fadeInTicks, int stayTicks, int fadeOutTicks) {
+            Component title, Component subtitle, int fadeInTicks, int stayTicks, int fadeOutTicks) {
         if (title != null) {
             sendTitleText(title);
         }
 
-        if (subTitle != null) {
-            sendSubtitleText(subTitle);
+        if (subtitle != null) {
+            sendSubtitleText(subtitle);
         }
 
         sendTitlesAnimation(fadeInTicks, stayTicks, fadeOutTicks);
@@ -74,9 +74,7 @@ public final class PlayerUtils {
                 for (PlayerScoreEntry entry : scoreboard.listPlayerScores(sidebarObjective)) {
                     if (!entry.isHidden()) {
                         Component scoreboardLineComponent = entry.ownerName();
-                        if (scoreboardLineComponent != null
-                                && !scoreboardLineComponent.getString().isBlank()
-                                && !scoreboardLineComponent.getString().matches("À+")) {
+                        if (!scoreboardLineComponent.getString().matches("À+")) {
                             displayedLines.add(scoreboardLineComponent.getString());
                         }
                     }

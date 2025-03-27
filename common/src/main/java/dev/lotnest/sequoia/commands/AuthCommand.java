@@ -10,14 +10,15 @@ import com.mojang.brigadier.context.CommandContext;
 import com.wynntils.core.components.Managers;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.command.Command;
-import dev.lotnest.sequoia.core.websocket.messages.GAuthWSMessage;
+import dev.lotnest.sequoia.core.ws.message.ws.session.GAuthWSMessage;
+import dev.lotnest.sequoia.utils.wynn.WynnUtils;
 import java.util.regex.Pattern;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 
 public class AuthCommand extends Command {
-    private static final Pattern CODE_PATTERN = Pattern.compile("[a-z0-9]{32}");
+    private static final Pattern CODE_PATTERN = Pattern.compile("[a-z0-9]{64}");
 
     private boolean sentGAuthWSMessage = false;
 
@@ -44,6 +45,13 @@ public class AuthCommand extends Command {
                 return 1;
             }
 
+            if (Boolean.FALSE.equals(WynnUtils.isSequoiaGuildMember().join())) {
+                context.getSource()
+                        .sendFailure(
+                                SequoiaMod.prefix(Component.translatable("sequoia.command.notASequoiaGuildMember")));
+                return 1;
+            }
+
             if (SequoiaMod.getWebSocketFeature().isAuthenticated()) {
                 context.getSource()
                         .sendFailure(
@@ -63,7 +71,7 @@ public class AuthCommand extends Command {
             }
 
             GAuthWSMessage gAuthWSMessage = new GAuthWSMessage(code);
-            SequoiaMod.getWebSocketFeature().sendAsJson(gAuthWSMessage);
+            SequoiaMod.getWebSocketFeature().sendMessage(gAuthWSMessage);
             sentGAuthWSMessage = true;
             context.getSource()
                     .sendSuccess(
