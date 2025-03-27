@@ -76,10 +76,6 @@ public class ConfigModel {
     @Expanded
     public ItemSizeFeature itemSizeFeature = new ItemSizeFeature();
 
-    //    @Nest
-    //    @Expanded
-    //    public PartyLowHealthFeature partyLowHealthFeature = new PartyLowHealthFeature();
-
     @Nest
     @Expanded
     public GuildRewardStorageTrackerFeature guildRewardStorageTrackerFeature = new GuildRewardStorageTrackerFeature();
@@ -222,10 +218,6 @@ public class ConfigModel {
         public boolean enabled = true;
         public boolean showCapturedTerritoryInfo = true;
     }
-
-    //    public static class PartyLowHealthFeature {
-    //        public boolean enabled = true;
-    //    }
 
     public static class ItemSizeFeature {
         public boolean enabled = true;

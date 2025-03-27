@@ -9,12 +9,10 @@ import com.wynntils.core.components.Models;
 import com.wynntils.mc.event.PlayerRenderEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.utils.colors.CommonColors;
-import com.wynntils.utils.type.ThrottledSupplier;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
 import dev.lotnest.sequoia.utils.mc.PlayerUtils;
 import dev.lotnest.sequoia.utils.wynn.WynnUtils;
-import java.time.Duration;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +20,7 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.SubscribeEvent;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 
 public class PartyLowHealthFeature extends Feature {
@@ -35,22 +34,37 @@ public class PartyLowHealthFeature extends Feature {
     private static final int CIRCLE_SEGMENTS = 128;
     private static final float CIRCLE_HEIGHT = 0.1F;
     private static final int CIRCLE_TRANSPARENCY = 95;
+    private static final List<String> partyMembers = Lists.newArrayList();
 
-    private final ThrottledSupplier<List<String>> partyMembersSupplier =
-            new ThrottledSupplier<>(WynnUtils::getPartyMembersFromTabList, Duration.ofMillis(250));
+    //    @SubscribeEvent
+    //    public void onPartyOtherJoin(PartyEvent.OtherJoined event) {
+    //        partyMembers.add(event.getPlayerName());
+    //    }
+    //
+    //    @SubscribeEvent
+    //    public void onPartyOtherLeave(PartyEvent.OtherLeft event) {
+    //        partyMembers.removeIf(s -> s.matches(event.getPlayerName()));
+    //    }
+    //
+    //    @SubscribeEvent
+    //    public void onPartyCreate(ChatMessageReceivedEvent event) {
+    //
+    //        partyMembers.add(event.getPlayerName());
+    //    }
+
+    //    @SubscribeEvent
+    //    public void onPartyPromote(PartyEvent.Promoted event) {
+    //        return;
+    //    }
 
     @SubscribeEvent
     public void onPlayerRender(PlayerRenderEvent event) {
         Entity entity = ((EntityRenderStateExtension) event.getPlayerRenderState()).getEntity();
         if (!(entity instanceof AbstractClientPlayer player)) return;
-
-        if (!Models.WorldState.onWorld() || !Models.WorldState.onHousing()) return;
-
+        if (!Models.WorldState.onWorld() && !Models.WorldState.onHousing()) return;
         if (PlayerUtils.isSelf(player)) return;
-
         if (!Models.Player.isLocalPlayer(player)) return;
-
-        List<String> partyMembers = partyMembersSupplier.get();
+        SequoiaMod.debug(String.valueOf(partyMembers));
         if (partyMembers.size() < 2) return;
 
         int line = 0;
@@ -59,7 +73,6 @@ public class PartyLowHealthFeature extends Feature {
             if (!matcher.matches()) continue;
             if (line >= partyMembers.size()) return;
 
-            line++;
             String playerName = partyMembers.get(line);
             Matcher scoreboardHealthMatcher = SCOREBOARD_HEALTH_PATTERN.matcher(scoreboardLine);
 
@@ -78,6 +91,7 @@ public class PartyLowHealthFeature extends Feature {
                             CommonColors.RED.withAlpha(CIRCLE_TRANSPARENCY).asInt());
                 }
             }
+            line++;
         }
     }
 

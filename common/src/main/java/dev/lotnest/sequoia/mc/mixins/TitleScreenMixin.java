@@ -70,7 +70,10 @@ public abstract class TitleScreenMixin {
         "[QZZ] has taken control of Bloody Trail!",
         "[GsW] has taken control of Entrance to Bucie!",
         "I broke into Lotnest's code to say mewo - Ninja",
-        "\"tyfr\""
+        "\"tyfr\"",
+        "Those who NoL",
+        "Growing its roots since 2022",
+        "Join Seq, they said. It will be fun, they said."
     };
 
     @Shadow

@@ -12,7 +12,7 @@ import java.time.Duration;
 
 public final class HttpUtils {
     public static final String USER_AGENT = SequoiaMod.MOD_ID + "-mod/" + SequoiaMod.getVersion()
-            + "(minecraft:Lotnest; discord:@lotnest; github:Lotnest; mailto:lotnestyt@gmail.com; restrictions:no-reply-not-allowed)";
+            + "(minecraft:Iriya__; discord:@Iriya__; github:Iriya__; mailto:iriyadiscord@gmail.com; restrictions:no-reply-not-allowed)";
     public static final Duration TIMEOUT_DURATION = Duration.ofSeconds(30);
 
     private HttpUtils() {}
