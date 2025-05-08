@@ -10,7 +10,6 @@ import com.wynntils.mc.event.TickEvent;
 import com.wynntils.mc.extension.EntityRenderStateExtension;
 import com.wynntils.models.character.event.CharacterUpdateEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
-import com.wynntils.models.raid.type.RaidRoomType;
 import com.wynntils.models.spells.event.SpellEvent;
 import com.wynntils.models.worlds.event.WorldStateEvent;
 import com.wynntils.utils.colors.CommonColors;
@@ -28,6 +27,8 @@ import net.minecraft.world.entity.Entity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 
+import static com.wynntils.core.components.Models.Raid;
+
 public class RaidsFeature extends Feature {
     private static final MultiBufferSource.BufferSource BUFFER_SOURCE =
             MultiBufferSource.immediate(new ByteBufferBuilder(256));
@@ -39,20 +40,23 @@ public class RaidsFeature extends Feature {
 
     private int spellsCasted = 0;
 
+    private static boolean isInFinalBuffRoom() {
+        return Raid.isInBuffRoom() && Raid.getCurrentRaid().completedChallengeCount() == 3;
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onGluttonGambitCheck(TickEvent event) {
         if (SequoiaMod.CONFIG.raidsFeature.gluttonyDisplayType() == GluttonyWarningType.DISABLED) {
             return;
         }
 
-        if (com.wynntils.core.components.Models.Raid.getCurrentRoom() != RaidRoomType.BUFF_3
-                || !Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
+        if (isInFinalBuffRoom() || !Models.Gambit.hasChosenGambit(GambitModel.GambitType.GLUTTON)) {
             isGluttonWarningDisplayed = false;
             return;
         }
 
         if (!isGluttonWarningDisplayed
-                && com.wynntils.core.components.Models.Raid.getCurrentRoom() == RaidRoomType.BUFF_3
+                && isInFinalBuffRoom()
                 && Models.Raid.getRaidBuffs(McUtils.playerName()).size() == 2) {
             switch (SequoiaMod.CONFIG.raidsFeature.gluttonyDisplayType()) {
                 case TEXT -> McUtils.sendMessageToClient(SequoiaMod.prefix(

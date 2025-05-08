@@ -1,7 +1,7 @@
 import com.diffplug.gradle.spotless.SpotlessExtension
 
 val modId by extra { "sequoia" }
-val modVersion by extra { "0.6.4" } // https://semver.org/
+val modVersion by extra { "0.6.5" } // https://semver.org/
 
 val minecraftVersion by extra { "1.21.4" } // MUST manually update fabric.mod.json and neoforge.mods.toml
 
@@ -15,7 +15,7 @@ val fabricApiVersion by extra { "0.110.5+1.21.4" }
 
 val parchmentVersion by extra { null }
 
-val wynntilsVersion by extra { "3.0.10" }
+val wynntilsVersion by extra { "3.0.18" }
 val owoLibVersion by extra { "0.12.20+1.21.4" }
 val webSocketVersion by extra { "1.5.7" }
 val devAuthVersion by extra { "1.2.1" }
