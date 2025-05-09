@@ -13,14 +13,12 @@ import com.wynntils.handlers.chat.event.ChatMessageReceivedEvent;
 import com.wynntils.handlers.chat.type.MessageType;
 import com.wynntils.mc.event.TitleSetTextEvent;
 import com.wynntils.models.raid.event.RaidEndedEvent;
-import com.wynntils.models.raid.type.RaidKind;
-import com.wynntils.models.raid.type.RaidRoomType;
+import com.wynntils.models.raid.event.RaidStartedEvent;
 import com.wynntils.utils.mc.McUtils;
 import com.wynntils.utils.mc.StyledTextUtils;
 import dev.lotnest.sequoia.SequoiaMod;
 import dev.lotnest.sequoia.core.components.Services;
 import dev.lotnest.sequoia.core.consumers.features.Feature;
-import dev.lotnest.sequoia.core.events.RaidStartedEvent;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -41,20 +39,6 @@ public class PartyRaidCompletionsDisplayFeature extends Feature {
         MANUAL,
         AUTOMATIC,
         DISABLED
-    }
-
-    @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
-    public void onRaidIntro(TitleSetTextEvent event) {
-        if (shownRaidCompletionsForCurrentParty) return;
-        Component component = event.getComponent();
-        StyledText styledText = StyledText.fromComponent(component);
-        RaidKind raidKind = RaidKind.fromTitle(styledText);
-
-        Managers.TickScheduler.scheduleNextTick(() -> {
-            if (raidKind != null && Models.Raid.getCurrentRoom() == RaidRoomType.INTRO) {
-                WynntilsMod.postEvent(new RaidStartedEvent());
-            }
-        });
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
